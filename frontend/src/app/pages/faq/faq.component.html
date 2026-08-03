@@ -1,0 +1,149 @@
+<section class="faq-hero">
+    <div class="hero-pattern"></div>
+
+    <div class="container position-relative text-center">
+        <span class="page-label">
+            <i class="bi bi-question-circle"></i>
+            Help Center
+        </span>
+
+        <h1>Frequently Asked Questions</h1>
+
+        <p>
+            Find answers about accounts, orders, payments, farmer registration,
+            delivery, returns, and marketplace services.
+        </p>
+
+        <div class="faq-search">
+            <i class="bi bi-search"></i>
+
+            <input type="search" placeholder="Search questions" [(value)]="searchText"
+                (input)="searchText = $any($event.target).value">
+        </div>
+    </div>
+</section>
+
+<section class="faq-category-section">
+    <div class="container">
+        <div class="row g-3">
+
+            @for (category of categories; track category.title) {
+            <div class="col-sm-6 col-lg">
+                <article class="faq-category-card h-100">
+                    <div class="category-icon">
+                        <i class="bi {{ category.icon }}"></i>
+                    </div>
+
+                    <h3>
+                        {{ category.title }}
+                    </h3>
+
+                    <p>
+                        {{ category.items.length }} Questions
+                    </p>
+                </article>
+            </div>
+            }
+
+        </div>
+    </div>
+</section>
+
+<section class="faq-main-section">
+    <div class="container">
+
+        @if (filteredCategories.length > 0) {
+
+        @for (category of filteredCategories; track category.title) {
+        <section class="faq-group">
+
+            <div class="faq-group-heading">
+                <div class="group-icon">
+                    <i class="bi {{ category.icon }}"></i>
+                </div>
+
+                <div>
+                    <h2>
+                        {{ category.title }}
+                    </h2>
+
+                    <p>
+                        {{ category.description }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="accordion" [id]="'accordion-' + $index">
+
+                @for (item of category.items; track item.id) {
+                <div class="accordion-item">
+
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" [class.collapsed]="!$first" type="button"
+                            data-bs-toggle="collapse" [attr.data-bs-target]="'#' + item.id"
+                            [attr.aria-expanded]="$first" [attr.aria-controls]="item.id">
+                            {{ item.question }}
+                        </button>
+                    </h2>
+
+                    <div [id]="item.id" class="accordion-collapse collapse" [class.show]="$first"
+                        [attr.data-bs-parent]="'#accordion-' + $parent.$index">
+                        <div class="accordion-body">
+                            {{ item.answer }}
+                        </div>
+                    </div>
+
+                </div>
+                }
+
+            </div>
+
+        </section>
+        }
+
+        } @else {
+
+        <div class="empty-result">
+            <div class="empty-icon">
+                <i class="bi bi-search"></i>
+            </div>
+
+            <h2>No Questions Found</h2>
+
+            <p>
+                Try a different search keyword or contact our support team.
+            </p>
+        </div>
+
+        }
+
+    </div>
+</section>
+
+<section class="support-cta">
+    <div class="container">
+        <div class="row align-items-center g-4">
+
+            <div class="col-lg-8">
+                <span>Still Need Help?</span>
+
+                <h2>
+                    Our Support Team Is Ready to Assist You
+                </h2>
+
+                <p>
+                    Contact us for help with your account, orders, payments,
+                    farmer registration, or seller onboarding.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <a href="/contact" class="btn btn-warning rounded-pill px-4">
+                    Contact Support
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>

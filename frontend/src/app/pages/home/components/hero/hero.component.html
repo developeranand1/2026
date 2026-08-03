@@ -1,0 +1,125 @@
+<section id="home" class="hero-section">
+    <div class="hero-pattern"></div>
+
+    <div class="container position-relative">
+        <div class="row align-items-center g-4 py-5">
+
+            <div class="col-lg-7">
+                <span class="hero-badge">
+                    <i class="bi bi-patch-check-fill"></i>
+                    India's Trusted Digital Agriculture Marketplace
+                </span>
+
+                <h1 class="hero-title">
+                    Freshness from the Farm,
+                    <span>Delivered to Your Doorstep</span>
+                </h1>
+
+                <p class="hero-description">
+                    Buy fresh vegetables, fruits, grains, pulses, and other
+                    agricultural products directly from trusted local farmers.
+                </p>
+
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+
+                    <input #searchInput type="search" placeholder="Search products, crops, or categories"
+                        (keyup.enter)="searchProduct(searchInput.value)">
+
+                    <button type="button" (click)="searchProduct(searchInput.value)">
+                        Search
+                    </button>
+                </div>
+
+                <div class="hero-actions">
+                    <a routerLink="/buyer-journey" class="btn btn-warning rounded-pill px-4">
+                        Shop Now
+                        <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+
+                    <a routerLink="/farmer-journey" class="btn btn-light rounded-pill px-4">
+                        Join as a Farmer
+                    </a>
+                </div>
+
+                <div class="row g-3 hero-stats">
+                    <div class="col-4">
+                        <strong>2,500+</strong>
+                        <span>Farmers</span>
+                    </div>
+
+                    <div class="col-4">
+                        <strong>8,000+</strong>
+                        <span>Products</span>
+                    </div>
+
+                    <div class="col-4">
+                        <strong>50+</strong>
+                        <span>Cities</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="farm-visual">
+                    <div class="sun"></div>
+
+                    <div class="cloud cloud-one">
+                        ☁
+                    </div>
+
+                    <div class="cloud cloud-two">
+                        ☁
+                    </div>
+
+                    <div class="farmer-card">
+                        <span class="farmer-icon">
+                            👨🏽‍🌾
+                        </span>
+
+                        <div>
+                            <small>Direct from Farmers</small>
+                            <h3>Fresh and Trusted</h3>
+                            <p>Farm freshness with village trust</p>
+                        </div>
+                    </div>
+
+                    <div class="crop crop-one">🌾</div>
+                    <div class="crop crop-two">🌱</div>
+                    <div class="crop crop-three">🥕</div>
+
+                    <div class="field"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="trust-section">
+    <div class="container">
+        <div class="row g-3 text-center">
+
+            <div class="col-6 col-lg-3">
+                <i class="bi bi-shield-check"></i>
+                <span>Secure Shopping</span>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <i class="bi bi-truck"></i>
+                <span>Fast Delivery</span>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Easy Returns</span>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <i class="bi bi-headset"></i>
+                <span>Customer Support</span>
+            </div>
+
+        </div>
+    </div>
+</section>

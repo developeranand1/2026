@@ -1,0 +1,94 @@
+.section {
+    padding: 60px 0;
+}
+
+.section-soft {
+    background: var(--gb-background);
+}
+
+.section-heading {
+    max-width: 620px;
+}
+
+.section-heading>span {
+    color: var(--gb-green);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.section-heading h2 {
+    margin: 7px 0;
+    color: var(--gb-text);
+    font-size: clamp(25px, 4vw, 37px);
+    font-weight: 600;
+}
+
+.section-heading p {
+    margin: 0;
+    color: var(--gb-muted);
+    font-size: 12px;
+}
+
+.benefit-card {
+    padding: 22px;
+    border: 1px solid var(--gb-border);
+    border-radius: 14px;
+    background: white;
+}
+
+.benefit-icon,
+.step-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--gb-green-light);
+    color: var(--gb-green);
+    font-size: 20px;
+}
+
+.benefit-card h3,
+.step-card h3 {
+    margin: 14px 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gb-text);
+}
+
+.benefit-card p,
+.step-card p {
+    margin: 0;
+    color: var(--gb-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.how-section {
+    background: #fffdf5;
+}
+
+.step-card {
+    position: relative;
+    padding: 24px;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 12px 28px rgba(20, 74, 34, 0.09);
+}
+
+.step-number {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    color: var(--gb-green-light);
+    font-size: 36px;
+    font-weight: 700;
+}
+
+@media (max-width: 767px) {
+    .section {
+        padding: 48px 0;
+    }
+}

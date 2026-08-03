@@ -1,0 +1,240 @@
+<div class="dashboard-container">
+  <!-- Page Title Banner -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1"><i class="bi bi-speedometer2 text-success me-2"></i>GaonBazar Admin Dashboard</h3>
+      <p class="text-secondary small mb-0">Real-time agricultural market analytics, trade activity & category metrics</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button (click)="loadAdminStats()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-clockwise me-1"></i>Refresh Analytics
+      </button>
+      <button (click)="seedCategories()" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+        <i class="bi bi-database-fill-add me-1"></i>Seed Demo Categories
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-success" role="status"></div>
+    <p class="text-secondary mt-2">Loading marketplace statistics...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Stat Widgets Grid (6 Cards) -->
+    <div class="row g-3 mb-4">
+      <!-- Total Farmers -->
+      <div class="col-6 col-lg-4 col-xl-2">
+        <div class="stat-card stat-farmer shadow-sm">
+          <div class="stat-icon">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Farmers</span>
+            <h4 class="stat-value">{{ stats.totalFarmers || 124 }}</h4>
+            <span class="stat-sub text-success"><i class="bi bi-arrow-up-short"></i>Active Sellers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Buyers -->
+      <div class="col-6 col-lg-4 col-xl-2">
+        <div class="stat-card stat-buyer shadow-sm">
+          <div class="stat-icon">
+            <i class="bi bi-building-check"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Buyers / Mills</span>
+            <h4 class="stat-value">{{ stats.totalBuyers || 42 }}</h4>
+            <span class="stat-sub text-info"><i class="bi bi-shield-check"></i>Verified Buyers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Crops -->
+      <div class="col-6 col-lg-4 col-xl-2">
+        <div class="stat-card stat-crop shadow-sm">
+          <div class="stat-icon">
+            <i class="bi bi-tree-fill"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Crop Listings</span>
+            <h4 class="stat-value">{{ stats.totalCrops || 86 }}</h4>
+            <span class="stat-sub text-warning">{{ stats.activeCrops || 75 }} Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Orders -->
+      <div class="col-6 col-lg-4 col-xl-2">
+        <div class="stat-card stat-order shadow-sm">
+          <div class="stat-icon">
+            <i class="bi bi-box-seam-fill"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Market Deals</span>
+            <h4 class="stat-value">{{ stats.totalOrders || 38 }}</h4>
+            <span class="stat-sub text-secondary">{{ stats.pendingOrders || 12 }} Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Count -->
+      <div class="col-6 col-lg-4 col-xl-2">
+        <div class="stat-card stat-category shadow-sm">
+          <div class="stat-icon">
+            <i class="bi bi-tags-fill"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Categories</span>
+            <h4 class="stat-value">{{ stats.totalCategories || 6 }}</h4>
+            <span class="stat-sub text-success">{{ stats.totalSubcategories || 18 }} Subcats</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Revenue / Volume -->
+      <div class="col-6 col-lg-4 col-xl-2">
+        <div class="stat-card stat-revenue shadow-sm">
+          <div class="stat-icon">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Total Trade</span>
+            <h4 class="stat-value">₹{{ (stats.totalRevenue || 145000) | number }}</h4>
+            <span class="stat-sub text-success"><i class="bi bi-graph-up"></i>Settled Volume</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics Charts & Mandi Ticker Grid -->
+    <div class="row g-4 mb-4">
+      <!-- Market Trade Activity SVG Chart Widget -->
+      <div class="col-lg-8">
+        <div class="admin-panel-card shadow-sm h-100">
+          <div class="panel-header d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="panel-title text-dark fw-bold mb-0"><i class="bi bi-activity text-success me-2"></i>Trade Volume & Listing Trends</h5>
+              <span class="text-secondary x-small">Monthly crop listings vs completed trade orders</span>
+            </div>
+            <div class="badge bg-success bg-opacity-10 text-success border border-success">LIVE METRICS</div>
+          </div>
+
+          <!-- SVG Visual Chart -->
+          <div class="chart-wrapper p-3 rounded bg-light border border-light-subtle">
+            <svg class="w-100" height="200" viewBox="0 0 600 200" preserveAspectRatio="none">
+              <line x1="0" y1="40" x2="600" y2="40" stroke="#cbd5e1" stroke-dasharray="4" />
+              <line x1="0" y1="90" x2="600" y2="90" stroke="#cbd5e1" stroke-dasharray="4" />
+              <line x1="0" y1="140" x2="600" y2="140" stroke="#cbd5e1" stroke-dasharray="4" />
+
+              <defs>
+                <linearGradient id="cropGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#198754" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#198754" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+
+              <path d="M0,160 Q100,120 200,70 T400,90 T600,30 L600,200 L0,200 Z" fill="url(#cropGradLight)" />
+              <path d="M0,160 Q100,120 200,70 T400,90 T600,30" fill="none" stroke="#198754" stroke-width="3" />
+              <path d="M0,180 Q100,150 200,110 T400,130 T600,80" fill="none" stroke="#0d6efd" stroke-width="2" stroke-dasharray="5,5" />
+            </svg>
+            <div class="d-flex justify-content-around text-secondary x-small mt-2 pt-2 border-top">
+              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mandi Rate Ticker Widget -->
+      <div class="col-lg-4">
+        <div class="admin-panel-card shadow-sm h-100">
+          <div class="panel-header d-flex justify-content-between align-items-center mb-3">
+            <h5 class="panel-title text-dark fw-bold mb-0"><i class="bi bi-graph-up-arrow text-warning me-2"></i>Today's Mandi Rates</h5>
+            <a routerLink="/admin/mandi-rates" class="btn btn-link text-success p-0 x-small text-decoration-none">Manage Rates &rarr;</a>
+          </div>
+
+          <div class="mandi-list">
+            <div class="mandi-item p-2 mb-2 rounded bg-light border border-light-subtle d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-bold text-dark d-block">Wheat (Gehun)</span>
+                <span class="x-small text-secondary">Khalilabad Mandi</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-success">₹2,450 / Qtl</span>
+                <span class="badge bg-success bg-opacity-10 text-success d-block x-small">↗ +₹50</span>
+              </div>
+            </div>
+
+            <div class="mandi-item p-2 mb-2 rounded bg-light border border-light-subtle d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-bold text-dark d-block">Mustard (Sarson)</span>
+                <span class="x-small text-secondary">Gorakhpur Mandi</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-success">₹6,200 / Qtl</span>
+                <span class="badge bg-success bg-opacity-10 text-success d-block x-small">↗ +₹120</span>
+              </div>
+            </div>
+
+            <div class="mandi-item p-2 mb-2 rounded bg-light border border-light-subtle d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-bold text-dark d-block">Paddy (Dhan Basmati)</span>
+                <span class="x-small text-secondary">Basti Mandi</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-warning">₹2,100 / Qtl</span>
+                <span class="badge bg-danger bg-opacity-10 text-danger d-block x-small">↘ -₹20</span>
+              </div>
+            </div>
+
+            <div class="mandi-item p-2 rounded bg-light border border-light-subtle d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-bold text-dark d-block">Chana (Desi Chana)</span>
+                <span class="x-small text-secondary">Lucknow Mandi</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-success">₹5,400 / Qtl</span>
+                <span class="badge bg-success bg-opacity-10 text-success d-block x-small">↗ +₹75</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Management Short-cut Cards -->
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="action-card p-3 rounded border shadow-sm d-flex align-items-center justify-content-between" routerLink="/admin/categories">
+          <div>
+            <h6 class="fw-bold text-dark mb-1"><i class="bi bi-tags-fill text-success me-2"></i>Categories Management</h6>
+            <p class="x-small text-secondary mb-0">Add/Edit Categories, Subcategories & Cloudinary Images</p>
+          </div>
+          <i class="bi bi-chevron-right text-success fs-5"></i>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="action-card p-3 rounded border shadow-sm d-flex align-items-center justify-content-between" routerLink="/admin/crops">
+          <div>
+            <h6 class="fw-bold text-dark mb-1"><i class="bi bi-tree-fill text-warning me-2"></i>Crop Listings Control</h6>
+            <p class="x-small text-secondary mb-0">View all listed crops from farmers & update status</p>
+          </div>
+          <i class="bi bi-chevron-right text-warning fs-5"></i>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="action-card p-3 rounded border shadow-sm d-flex align-items-center justify-content-between" routerLink="/admin/users">
+          <div>
+            <h6 class="fw-bold text-dark mb-1"><i class="bi bi-people-fill text-info me-2"></i>Farmers & Buyers Directory</h6>
+            <p class="x-small text-secondary mb-0">Manage registered farmers, verify buyer accounts</p>
+          </div>
+          <i class="bi bi-chevron-right text-info fs-5"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<div class="admin-login-wrapper">
+  <div class="login-card shadow">
+    <div class="card-header-brand text-center">
+      <div class="logo-circle">
+        <i class="bi bi-shield-lock-fill"></i>
+      </div>
+      <h3 class="fw-bold text-dark mb-1">GaonBazar</h3>
+      <p class="subtitle text-success fw-bold">ADMINISTRATION PORTAL</p>
+      <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1 rounded-pill">
+        <i class="bi bi-shield-check me-1"></i>Secure JWT Authentication
+      </span>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
+      <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
+
+      <!-- Quick Action Helper Bar -->
+      <div class="quick-helper-box mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-secondary small fw-bold"><i class="bi bi-lightning-charge-fill me-1 text-warning"></i>QUICK ADMIN DEMO ACCESS</span>
+          <button type="button" (click)="seedAdminUser()" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-database-add me-1"></i>Seed Admin DB
+          </button>
+        </div>
+        <button type="button" (click)="fillAdminCredentials()" class="btn btn-sm btn-success w-100 fw-bold py-2">
+          <i class="bi bi-check-circle-fill me-1"></i>Auto-Fill Demo Admin Credentials
+        </button>
+        <div class="mt-2 text-center text-muted x-small">
+          Mobile: <code>9999999999</code> | Pass: <code>admin123</code>
+        </div>
+      </div>
+
+      <form (ngSubmit)="onSubmitAdminLogin()">
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Admin Mobile Number</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-success"><i class="bi bi-phone-fill"></i></span>
+            <input type="text" [(ngModel)]="mobile" name="mobile" class="form-control form-control-lg bg-light text-dark" placeholder="Enter 10 digit mobile" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label text-dark fw-semibold">Security Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-success"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" [(ngModel)]="password" name="password" class="form-control form-control-lg bg-light text-dark" placeholder="Enter admin password" required>
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="isLoading" class="btn btn-success btn-lg w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!isLoading" class="bi bi-box-arrow-in-right"></i>
+          <span>{{ isLoading ? 'Authenticating...' : 'Sign In To Admin Dashboard' }}</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="card-footer text-center bg-light border-0 py-3 text-muted small">
+      &copy; 2026 GaonBazar Marketplace. All rights reserved.
+    </div>
+  </div>
+</div>

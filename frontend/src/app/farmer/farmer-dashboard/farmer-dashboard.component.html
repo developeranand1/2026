@@ -1,0 +1,204 @@
+<div class="farmer-dashboard-view animate-fade-in">
+  <!-- Hero Profile Banner -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 brand-hero-banner">
+    <div class="card-body p-4 p-md-5 text-white">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+            <span class="hero-avatar bg-white text-success rounded-circle d-inline-flex align-items-center justify-content-center shadow" style="width:56px; height:56px; font-size: 1.8rem;">
+              <i class="bi bi-person-fill"></i>
+            </span>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h3 class="fw-bold mb-0 text-white">Welcome, {{ farmerUser?.name || 'Kisan Brother' }}!</h3>
+                @if (isLoggedIn) {
+                  <span class="badge bg-light text-success fw-bold rounded-pill px-3 py-1">
+                    <i class="bi bi-patch-check-fill text-warning me-1"></i> Verified Account
+                  </span>
+                } @else {
+                  <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1">
+                    <i class="bi bi-person-lock me-1"></i> Guest Mode
+                  </span>
+                }
+              </div>
+              <p class="mb-0 opacity-90 mt-1 d-flex flex-wrap align-items-center gap-3 small">
+                @if (farmerUser?.mobile) {
+                  <span><i class="bi bi-telephone-fill me-1"></i>+91 {{ farmerUser?.mobile }}</span>
+                }
+                <span><i class="bi bi-geo-alt-fill me-1"></i>{{ farmerUser?.district ? (farmerUser?.district + ', ' + farmerUser?.state) : (farmerUser?.state || 'Bihar') }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 text-lg-end">
+          <button type="button" class="btn btn-light btn-sm rounded-pill px-3 py-2 fw-bold text-success shadow-sm me-2 mb-1" (click)="fetchLiveMandiRates()">
+            <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoadingRates"></i> Sync Mandi Rates
+          </button>
+          <a routerLink="/farmer/profile" class="btn btn-warning btn-sm rounded-pill px-3 py-2 fw-bold text-dark shadow-sm mb-1">
+            <i class="bi bi-person-lines-fill me-1"></i> Edit Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Metrics Row (4 Stat Cards) -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-success">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Listed Crops</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">3 Crops</h4>
+            <small class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Active Listings</small>
+          </div>
+          <span class="bg-success-subtle text-success p-3 rounded-circle fs-3"><i class="bi bi-flower1"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-primary">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Avg Mandi Price</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">₹2,150<small class="fs-6 text-muted">/Qtl</small></h4>
+            <small class="text-primary fw-semibold"><i class="bi bi-graph-up-arrow me-1"></i>Live Rates</small>
+          </div>
+          <span class="bg-primary-subtle text-primary p-3 rounded-circle fs-3"><i class="bi bi-currency-rupee"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-warning">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Active Orders</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">0 Orders</h4>
+            <small class="text-muted fw-semibold">Ready for buyers</small>
+          </div>
+          <span class="bg-warning-subtle text-warning p-3 rounded-circle fs-3"><i class="bi bi-box-seam"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-info">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Direct Settlement</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">₹0.00</h4>
+            <small class="text-info fw-semibold"><i class="bi bi-shield-check me-1"></i>0% Commission</small>
+          </div>
+          <span class="bg-info-subtle text-info p-3 rounded-circle fs-3"><i class="bi bi-bank"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Action Navigation -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+      <i class="bi bi-grid-fill text-success"></i>
+      Farmer Operations & Quick Actions
+    </h5>
+
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-3">
+        <a routerLink="/farmer/mandi-rates" class="card border text-decoration-none shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100">
+          <span class="fs-2 text-primary mb-2 d-block"><i class="bi bi-graph-up-arrow"></i></span>
+          <strong class="text-dark small d-block mb-1">Mandi Rates (मंडी भाव)</strong>
+          <small class="text-muted">Live Commodity Prices</small>
+        </a>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-3">
+        <a routerLink="/farmer/profile" class="card border text-decoration-none shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100">
+          <span class="fs-2 text-success mb-2 d-block"><i class="bi bi-person-badge-fill"></i></span>
+          <strong class="text-dark small d-block mb-1">My Profile (प्रोफ़ाइल)</strong>
+          <small class="text-muted">Update Land & Bank A/C</small>
+        </a>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card border shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100 cursor-pointer">
+          <span class="fs-2 text-warning mb-2 d-block"><i class="bi bi-box-seam"></i></span>
+          <strong class="text-dark small d-block mb-1">Crop Listings</strong>
+          <small class="text-muted">3 Produce Listed</small>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card border shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100 cursor-pointer">
+          <span class="fs-2 text-info mb-2 d-block"><i class="bi bi-people-fill"></i></span>
+          <strong class="text-dark small d-block mb-1">Buyer Network</strong>
+          <small class="text-muted">Verified Wholesalers</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Mandi Rates Quick Preview -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div>
+        <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-currency-rupee text-success"></i>
+          Live Mandi Commodity Rates (मंडी भाव)
+        </h5>
+        <small class="text-muted">Market rates for <strong>{{ farmerUser?.state || 'Bihar' }}</strong></small>
+      </div>
+      <a routerLink="/farmer/mandi-rates" class="btn btn-outline-success btn-sm rounded-pill px-3">
+        View All Mandi Rates <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    @if (isLoadingRates) {
+      <div class="text-center py-4">
+        <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+        <span class="text-muted small">Fetching latest market prices...</span>
+      </div>
+    } @else {
+      <div class="row g-3">
+        @for (rate of mandiRates; track rate.crop) {
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="card border rounded-3 p-3 bg-light hover-elevate h-100">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <span class="fs-2">{{ rate.icon }}</span>
+                <div>
+                  <h6 class="fw-bold text-dark mb-0">{{ rate.crop }}</h6>
+                  <small class="text-muted">{{ farmerUser?.state || 'Bihar' }} Mandi</small>
+                </div>
+              </div>
+              <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-end">
+                <div>
+                  <small class="text-muted d-block" style="font-size: 11px;">Modal Rate</small>
+                  <h5 class="fw-bold text-success mb-0">{{ rate.rate | currency:'INR':'symbol':'1.0-0' }}</h5>
+                </div>
+                <small class="text-muted fw-semibold">/ {{ rate.unit }}</small>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Orders Empty State Card -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+      <i class="bi bi-box-seam text-success"></i>
+      Recent Buyer Orders
+    </h5>
+
+    @if (recentOrders.length === 0) {
+      <div class="text-center py-5 border rounded-3 bg-light">
+        <i class="bi bi-box-seam fs-1 text-success opacity-50 mb-2 d-block"></i>
+        <h6 class="fw-bold text-dark mb-1">No Buyer Orders Yet</h6>
+        <p class="text-muted small mb-0 px-3">Your listed crops are active on the GaonBazar marketplace. Buyer orders will appear here.</p>
+      </div>
+    }
+  </div>
+</div>

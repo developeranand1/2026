@@ -1,0 +1,453 @@
+.page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 70px 0;
+    background: linear-gradient(120deg,
+            var(--gb-green-dark),
+            var(--gb-green));
+    color: white;
+}
+
+.hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    background-image: radial-gradient(circle,
+            white 1px,
+            transparent 1px);
+    background-size: 24px 24px;
+}
+
+.page-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 11px;
+}
+
+.page-hero h1 {
+    max-width: 700px;
+    margin: 15px 0 10px;
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 600;
+    line-height: 1.08;
+}
+
+.page-hero h1 span {
+    display: block;
+    color: var(--gb-yellow);
+}
+
+.page-hero p {
+    max-width: 650px;
+    margin-bottom: 20px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.page-hero .btn {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hero-visual {
+    position: relative;
+    min-height: 330px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.main-icon {
+    font-size: 120px;
+}
+
+.floating-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 13px;
+    border-radius: 10px;
+    background: white;
+    color: var(--gb-text);
+    font-size: 10px;
+    font-weight: 600;
+    box-shadow: 0 12px 28px rgba(7, 45, 20, 0.2);
+}
+
+.floating-card i {
+    color: var(--gb-green);
+}
+
+.card-one {
+    top: 35px;
+    left: 20px;
+}
+
+.card-two {
+    top: 110px;
+    right: 20px;
+}
+
+.card-three {
+    bottom: 35px;
+    left: 30px;
+}
+
+.section {
+    padding: 65px 0;
+}
+
+.section-soft {
+    padding: 65px 0;
+    background: var(--gb-background);
+}
+
+.section-heading {
+    max-width: 650px;
+}
+
+.section-heading>span,
+.mission-card>span {
+    color: var(--gb-green);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.section-heading h2,
+.mission-card h2 {
+    margin: 7px 0 12px;
+    color: var(--gb-text);
+    font-size: clamp(25px, 4vw, 38px);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.section-heading p,
+.mission-card p {
+    color: var(--gb-muted);
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.story-visual {
+    position: relative;
+}
+
+.farm-scene {
+    position: relative;
+    min-height: 390px;
+    overflow: hidden;
+    border-radius: 24px;
+    background: linear-gradient(#a7dbed 0 58%,
+            #76b957 58%);
+}
+
+.sun {
+    position: absolute;
+    top: 30px;
+    right: 45px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #ffd75a;
+}
+
+.cloud {
+    position: absolute;
+    color: white;
+}
+
+.cloud-one {
+    top: 40px;
+    left: 30px;
+    font-size: 55px;
+}
+
+.cloud-two {
+    top: 115px;
+    right: 20px;
+    font-size: 40px;
+}
+
+.farmer {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: 95px;
+    transform: translateX(-50%);
+    font-size: 90px;
+}
+
+.ground {
+    position: absolute;
+    inset: auto 0 0;
+    height: 38%;
+    background: repeating-linear-gradient(165deg,
+            #487e31 0 12px,
+            #5f9f40 12px 24px);
+}
+
+.crop {
+    position: absolute;
+    z-index: 2;
+    bottom: 18px;
+    font-size: 50px;
+}
+
+.crop-one {
+    left: 25px;
+}
+
+.crop-two {
+    left: 42%;
+}
+
+.crop-three {
+    right: 25px;
+}
+
+.experience-card {
+    position: absolute;
+    right: -15px;
+    bottom: 25px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 12px 28px rgba(20, 74, 34, 0.15);
+}
+
+.experience-card strong,
+.experience-card span {
+    display: block;
+}
+
+.experience-card strong {
+    color: var(--gb-green);
+    font-size: 14px;
+}
+
+.experience-card span {
+    margin-top: 3px;
+    color: var(--gb-muted);
+    font-size: 10px;
+}
+
+.story-points {
+    display: grid;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.story-point {
+    display: flex;
+    gap: 11px;
+}
+
+.story-point>i {
+    margin-top: 2px;
+    color: var(--gb-green);
+    font-size: 16px;
+}
+
+.story-point h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.story-point p {
+    margin: 0;
+    color: var(--gb-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.mission-card {
+    padding: 28px;
+    border: 1px solid var(--gb-border);
+    border-radius: 16px;
+    background: white;
+}
+
+.mission-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 17px;
+    border-radius: 13px;
+    background: var(--gb-green-light);
+    color: var(--gb-green);
+    font-size: 22px;
+}
+
+.mission-card h2 {
+    font-size: 23px;
+}
+
+.values-section {
+    background: white;
+}
+
+.value-card,
+.partner-card {
+    padding: 22px;
+    border: 1px solid var(--gb-border);
+    border-radius: 14px;
+    background: white;
+    transition: 0.2s ease;
+}
+
+.value-card:hover,
+.partner-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(20, 74, 34, 0.09);
+}
+
+.value-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--gb-green-light);
+    color: var(--gb-green);
+    font-size: 20px;
+}
+
+.value-card h3,
+.partner-card h3 {
+    margin: 14px 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.value-card p,
+.partner-card p {
+    margin: 0;
+    color: var(--gb-muted);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.stats-section {
+    padding: 45px 0;
+    background: var(--gb-yellow);
+}
+
+.stat-item strong,
+.stat-item span {
+    display: block;
+}
+
+.stat-item strong {
+    color: var(--gb-text);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.stat-item span {
+    margin-top: 4px;
+    color: rgba(24, 51, 34, 0.75);
+    font-size: 11px;
+}
+
+.team-section {
+    background: var(--gb-background);
+}
+
+.partner-card {
+    text-align: center;
+}
+
+.partner-icon {
+    width: 70px;
+    height: 70px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--gb-green-light);
+    font-size: 34px;
+}
+
+.about-cta {
+    padding: 55px 0;
+    background: linear-gradient(120deg,
+            var(--gb-green-dark),
+            var(--gb-green));
+    color: white;
+}
+
+.about-cta span {
+    color: var(--gb-yellow);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.about-cta h2 {
+    max-width: 760px;
+    margin: 7px 0;
+    font-size: clamp(26px, 4vw, 39px);
+    font-weight: 600;
+}
+
+.about-cta p {
+    max-width: 700px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+}
+
+.about-cta .btn {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 991px) {
+    .hero-visual {
+        min-height: 300px;
+    }
+
+    .experience-card {
+        right: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .page-hero {
+        padding: 55px 0;
+    }
+
+    .page-hero h1 {
+        font-size: 36px;
+    }
+
+    .section,
+    .section-soft {
+        padding: 48px 0;
+    }
+
+    .farm-scene {
+        min-height: 330px;
+    }
+
+    .main-icon {
+        font-size: 95px;
+    }
+
+    .stat-item strong {
+        font-size: 23px;
+    }
+}

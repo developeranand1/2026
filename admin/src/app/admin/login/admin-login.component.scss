@@ -1,0 +1,70 @@
+.admin-login-wrapper {
+  min-height: 100vh;
+  background: #f4f7f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.card-header-brand {
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+  background: linear-gradient(180deg, #e8f5e9 0%, #ffffff 100%);
+
+  .logo-circle {
+    width: 64px;
+    height: 64px;
+    background: #198754;
+    color: #ffffff;
+    border-radius: 50%;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+}
+
+.quick-helper-box {
+  background: #f8fafc;
+  border: 1px dashed #198754;
+  padding: 1rem;
+  border-radius: 12px;
+
+  .x-small {
+    font-size: 0.75rem;
+
+    code {
+      color: #198754;
+      background: #e2e8f0;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+  }
+}
+
+.btn-success {
+  background: #198754;
+  border: none;
+
+  &:hover {
+    background: #157347;
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+  }
+}

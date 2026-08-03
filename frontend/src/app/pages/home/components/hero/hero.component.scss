@@ -1,0 +1,266 @@
+.hero-section {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(120deg,
+            var(--gb-green-dark),
+            var(--gb-green));
+    color: white;
+}
+
+.hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.07;
+    background-image:
+        radial-gradient(circle at 25% 25%,
+            white 1px,
+            transparent 1px),
+        radial-gradient(circle at 75% 75%,
+            white 1px,
+            transparent 1px);
+    background-size: 26px 26px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.hero-title {
+    max-width: 700px;
+    margin: 16px 0 10px;
+    font-size: clamp(36px, 6vw, 62px);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+}
+
+.hero-title span {
+    display: block;
+    color: var(--gb-yellow);
+}
+
+.hero-description {
+    max-width: 620px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.search-box {
+    max-width: 650px;
+    min-height: 58px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    padding: 6px 6px 6px 16px;
+    border-radius: 14px;
+    background: white;
+    color: var(--gb-muted);
+    box-shadow: 0 20px 40px rgba(7, 45, 20, 0.2);
+}
+
+.search-box input {
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    color: var(--gb-text);
+    font-size: 13px;
+}
+
+.search-box button {
+    min-height: 46px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--gb-yellow);
+    color: var(--gb-text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.hero-actions .btn {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hero-stats {
+    max-width: 500px;
+    margin-top: 18px;
+}
+
+.hero-stats strong {
+    display: block;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.hero-stats span {
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 11px;
+}
+
+.farm-visual {
+    position: relative;
+    min-height: 410px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px 28px 90px 28px;
+    background: linear-gradient(#a7dbed 0 58%,
+            #73b957 58%);
+    box-shadow: 0 20px 45px rgba(7, 45, 20, 0.25);
+}
+
+.sun {
+    position: absolute;
+    top: 35px;
+    right: 45px;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #ffd75a;
+    box-shadow: 0 0 0 14px rgba(255, 215, 90, 0.2);
+}
+
+.cloud {
+    position: absolute;
+    color: white;
+    opacity: 0.9;
+}
+
+.cloud-one {
+    top: 40px;
+    left: 30px;
+    font-size: 60px;
+}
+
+.cloud-two {
+    top: 120px;
+    right: 20px;
+    font-size: 45px;
+}
+
+.field {
+    position: absolute;
+    inset: auto 0 0;
+    height: 38%;
+    background: repeating-linear-gradient(165deg,
+            #487e31 0 12px,
+            #5f9f40 12px 24px);
+}
+
+.crop {
+    position: absolute;
+    z-index: 2;
+    bottom: 20px;
+    font-size: 60px;
+}
+
+.crop-one {
+    left: 28px;
+}
+
+.crop-two {
+    left: 42%;
+}
+
+.crop-three {
+    right: 28px;
+}
+
+.farmer-card {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    width: 78%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    transform: translate(-50%, -28%);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--gb-text);
+    box-shadow: 0 12px 28px rgba(20, 74, 34, 0.14);
+}
+
+.farmer-icon {
+    font-size: 55px;
+}
+
+.farmer-card small {
+    color: var(--gb-green);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.farmer-card h3 {
+    margin: 3px 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.farmer-card p {
+    margin: 0;
+    color: var(--gb-muted);
+    font-size: 10px;
+}
+
+.trust-section {
+    padding: 15px 0;
+    background: var(--gb-yellow);
+    color: var(--gb-text);
+}
+
+.trust-section i {
+    margin-right: 5px;
+    font-size: 15px;
+}
+
+.trust-section span {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+@media (max-width: 991px) {
+    .farm-visual {
+        min-height: 360px;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .search-box {
+        grid-template-columns: auto 1fr;
+    }
+
+    .search-box button {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .farm-visual {
+        min-height: 330px;
+    }
+}

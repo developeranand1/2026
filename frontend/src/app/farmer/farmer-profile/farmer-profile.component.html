@@ -1,0 +1,161 @@
+<div class="farmer-profile-view animate-fade-in">
+  <!-- Page Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+        <i class="bi bi-person-lines-fill text-success"></i>
+        Farmer Profile Management (किसान प्रोफ़ाइल)
+      </h3>
+      <p class="text-muted mb-0">Update your personal information, farm details, and bank account for direct settlements</p>
+    </div>
+
+    <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSaving" (click)="onSaveProfile()">
+      @if (isSaving) {
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...
+      } @else {
+        <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+      }
+    </button>
+  </div>
+
+  <form (ngSubmit)="onSaveProfile()" #profileForm="ngForm">
+    <div class="row g-4">
+      
+      <!-- Personal Information Card -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+          <h5 class="fw-bold text-success mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+            <i class="bi bi-person-vcard-fill"></i> Personal & Location Details
+          </h5>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Full Name (किसान का पूरा नाम) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill"></i></span>
+              <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.name" name="name" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Mobile Number <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-phone-fill"></i></span>
+                <input type="tel" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.mobile" name="mobile" maxlength="10" required>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Father's Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.fatherName" name="fatherName">
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Email Address <span class="text-muted">(Optional)</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope-fill"></i></span>
+              <input type="email" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.email" name="email">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Village (गांव) <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="profileData.village" name="village" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Block / City (ब्लॉक / शहर)</label>
+              <input type="text" class="form-control" [(ngModel)]="profileData.city" name="city">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">District (जिला) <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="profileData.district" name="district" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">State (राज्य) <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="profileData.state" name="state" required>
+                @for (st of statesList; track st) {
+                  <option [value]="st">{{ st }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-1">
+            <label class="form-label fw-semibold text-secondary">Pincode (पिनकोड) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="profileData.pincode" name="pincode" maxlength="6" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Farm & Bank Details Card -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+          <h5 class="fw-bold text-success mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+            <i class="bi bi-flower1"></i> Farm Land & Irrigation Information
+          </h5>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Total Land Holding</label>
+              <div class="input-group">
+                <input type="text" class="form-control" [(ngModel)]="profileData.totalLand" name="totalLand">
+                <select class="form-select" [(ngModel)]="profileData.landUnit" name="landUnit">
+                  <option value="Bigha">Bigha</option>
+                  <option value="Acre">Acre</option>
+                  <option value="Hectare">Hectare</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Irrigation Type</label>
+              <select class="form-select" [(ngModel)]="profileData.irrigationType" name="irrigationType">
+                <option value="Irrigated">Irrigated (सिंचित)</option>
+                <option value="Rainfed">Rainfed (वर्षा आधारित)</option>
+                <option value="Partial">Partial (आंशिक)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank Account Card -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+          <h5 class="fw-bold text-success mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+            <i class="bi bi-bank2"></i> Bank Account for 0% Settlement
+          </h5>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Account Holder Name</label>
+            <input type="text" class="form-control" [(ngModel)]="profileData.bankHolder" name="bankHolder">
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Account Number</label>
+              <input type="text" class="form-control" [(ngModel)]="profileData.bankAccount" name="bankAccount">
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">IFSC Code</label>
+              <input type="text" class="form-control" [(ngModel)]="profileData.bankIfsc" name="bankIfsc">
+            </div>
+          </div>
+
+          <div class="mb-1">
+            <label class="form-label fw-semibold text-secondary">Bank Name</label>
+            <input type="text" class="form-control" [(ngModel)]="profileData.bankName" name="bankName">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>

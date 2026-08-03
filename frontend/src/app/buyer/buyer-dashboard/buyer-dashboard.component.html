@@ -1,0 +1,165 @@
+<div class="buyer-dashboard-view animate-fade-in">
+  <!-- Hero Profile & Status Banner -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 brand-hero-banner-buyer" style="background: linear-gradient(135deg, #0d233a 0%, #1b4965 50%, #2b4c7e 100%); color: white;">
+    <div class="card-body p-4 p-md-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+            <span class="hero-avatar bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center shadow" style="width:56px; height:56px; font-size: 1.8rem;">
+              <i class="bi bi-building"></i>
+            </span>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h3 class="fw-bold mb-0 text-white">Welcome, {{ buyerUser?.companyName || buyerUser?.name || 'Wholesale Buyer' }}! 🌾</h3>
+                <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1">
+                  <i class="bi bi-patch-check-fill me-1"></i> Verified Trader
+                </span>
+              </div>
+              <p class="mb-0 opacity-90 mt-1 d-flex flex-wrap align-items-center gap-3 small">
+                @if (buyerUser?.mobile) {
+                  <span><i class="bi bi-telephone-fill me-1"></i>+91 {{ buyerUser?.mobile }}</span>
+                }
+                <span><i class="bi bi-geo-alt-fill me-1"></i>{{ buyerUser?.district ? (buyerUser?.district + ', ' + buyerUser?.state) : (buyerUser?.state || 'Uttar Pradesh') }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 text-lg-end">
+          <a routerLink="/buyer/profile" class="btn btn-warning btn-sm rounded-pill px-3 py-2 fw-bold text-dark shadow-sm me-2 mb-1">
+            <i class="bi bi-person-lines-fill me-1"></i> Business Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Trade Metrics Row (4 Enterprise Stat Cards) -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-primary">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Active Orders</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">3 Orders</h4>
+            <small class="text-primary fw-semibold"><i class="bi bi-truck me-1"></i>In Procurement</small>
+          </div>
+          <span class="bg-primary-subtle text-primary p-3 rounded-circle fs-3"><i class="bi bi-box-seam"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-success">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Farmer Stock Available</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">1,250 Qtl</h4>
+            <small class="text-success fw-semibold"><i class="bi bi-flower1 me-1"></i>Direct Mandis</small>
+          </div>
+          <span class="bg-success-subtle text-success p-3 rounded-circle fs-3"><i class="bi bi-tree"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-warning">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Escrow Wallet</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">₹2,50,000</h4>
+            <small class="text-warning fw-bold"><i class="bi bi-shield-check me-1"></i>Secured Trade</small>
+          </div>
+          <span class="bg-warning-subtle text-warning p-3 rounded-circle fs-3"><i class="bi bi-wallet2"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-info">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Avg Procurement Rate</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">₹2,050<small class="fs-6 text-muted">/Qtl</small></h4>
+            <small class="text-info fw-semibold"><i class="bi bi-graph-up-arrow me-1"></i>Wholesale Rate</small>
+          </div>
+          <span class="bg-info-subtle text-info p-3 rounded-circle fs-3"><i class="bi bi-currency-rupee"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Farmer Produce Marketplace Grid -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div>
+        <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+          <i class="bi bi-flower1 text-success"></i>
+          Direct Farmer Crop Produce Marketplace (फसल बाज़ार)
+        </h5>
+        <p class="text-muted mb-0">Buy directly from verified farmers at zero middleman commission</p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      @for (crop of cropsList; track crop.name) {
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card border rounded-3 p-3 bg-light hover-elevate h-100 position-relative">
+            <span class="badge bg-success text-white position-absolute top-0 end-0 mt-3 me-3 rounded-pill px-2 py-1 small">
+              ⭐ {{ crop.rating }}
+            </span>
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="fs-1 p-2 bg-white rounded-circle shadow-sm" style="line-height:1;">{{ crop.icon }}</span>
+              <div>
+                <h6 class="fw-bold text-dark mb-0">{{ crop.name }}</h6>
+                <small class="text-muted d-block"><i class="bi bi-person-fill text-success me-1"></i>{{ crop.farmer }}</small>
+                <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ crop.location }}</small>
+              </div>
+            </div>
+
+            <div class="bg-white p-3 rounded-3 mb-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted">Available Quantity</small>
+                <strong class="text-dark">{{ crop.qty }}</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Direct Price</small>
+                <strong class="text-success fs-6">{{ crop.price | currency:'INR':'symbol':'1.0-0' }}/Qtl</strong>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-success btn-sm w-100 rounded-pill fw-bold mt-auto" (click)="buyCropProduce(crop)">
+              Buy Produce
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Recent Trade Orders -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+      <i class="bi bi-bag-check text-primary"></i>
+      Recent Trade Orders
+    </h5>
+
+    @for (order of recentOrders; track order.id) {
+      <div class="card border p-3 rounded-3 mb-2 bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <span class="fs-2">{{ order.icon }}</span>
+            <div>
+              <strong class="text-dark fs-6">{{ order.crop }}</strong>
+              <small class="text-muted d-block">{{ order.qty }} • {{ order.date }}</small>
+            </div>
+          </div>
+          <div class="text-end">
+            <strong class="text-dark fs-6 d-block">{{ order.price | currency:'INR':'symbol':'1.0-0' }}</strong>
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small">{{ order.status }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

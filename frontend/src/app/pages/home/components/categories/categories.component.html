@@ -1,0 +1,36 @@
+<section id="categories" class="section section-soft">
+    <div class="container">
+
+        <div class="section-heading text-center mx-auto">
+            <span>Popular Categories</span>
+            <h2>Choose What You Need</h2>
+            <p>
+                Fresh and trusted agriculture products in one place.
+            </p>
+        </div>
+
+        <div class="row g-3 mt-3">
+
+            @for (category of categories; track category.name) {
+            <div class="col-6 col-md-4 col-lg-2">
+                <article class="category-card h-100">
+
+                    <div class="category-icon">
+                        {{ category.icon }}
+                    </div>
+
+                    <h3>
+                        {{ category.name }}
+                    </h3>
+
+                    <p>
+                        {{ category.totalProducts }} Products
+                    </p>
+
+                </article>
+            </div>
+            }
+
+        </div>
+    </div>
+</section>

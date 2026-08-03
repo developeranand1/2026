@@ -1,0 +1,465 @@
+<section class="contact-hero">
+    <div class="hero-pattern"></div>
+
+    <div class="container position-relative">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="page-badge">
+                    <i class="bi bi-headset"></i>
+                    Contact GaonBazar
+                </span>
+
+                <h1>
+                    We Are Here to
+                    <span>Help You Grow</span>
+                </h1>
+
+                <p>
+                    Contact our support team for account assistance, farmer
+                    registration, seller onboarding, orders, payments, delivery,
+                    partnerships, or general enquiries.
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="support-visual">
+                    <div class="support-main-icon">
+                        <i class="bi bi-headset"></i>
+                    </div>
+
+                    <div class="support-card support-card-one">
+                        <i class="bi bi-clock"></i>
+
+                        <div>
+                            <strong>Quick Support</strong>
+                            <span>Monday to Saturday</span>
+                        </div>
+                    </div>
+
+                    <div class="support-card support-card-two">
+                        <i class="bi bi-chat-dots"></i>
+
+                        <div>
+                            <strong>Chat Assistance</strong>
+                            <span>Fast responses</span>
+                        </div>
+                    </div>
+
+                    <div class="support-card support-card-three">
+                        <i class="bi bi-shield-check"></i>
+
+                        <div>
+                            <strong>Trusted Help</strong>
+                            <span>Secure support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-info-section">
+    <div class="container">
+        <div class="row g-3">
+
+            <div class="col-md-6 col-lg-3">
+                <article class="contact-info-card h-100">
+                    <div class="contact-info-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+
+                    <h3>Office Address</h3>
+
+                    <p>
+                        New Delhi, India
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <article class="contact-info-card h-100">
+                    <div class="contact-info-icon">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+
+                    <h3>Phone Number</h3>
+
+                    <a href="tel:+919876543210">
+                        +91 98765 43210
+                    </a>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <article class="contact-info-card h-100">
+                    <div class="contact-info-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+
+                    <h3>Email Address</h3>
+
+                    <a href="mailto:support@gaonbazar.com">
+                        supportgaonbazar.com
+                    </a>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <article class="contact-info-card h-100">
+                    <div class="contact-info-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+
+                    <h3>Working Hours</h3>
+
+                    <p>
+                        Mon–Sat, 9:00 AM–6:00 PM
+                    </p>
+                </article>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="contact-main-section">
+    <div class="container">
+        <div class="row g-4 align-items-stretch">
+
+            <div class="col-lg-7">
+                <div class="contact-form-card h-100">
+
+                    <div class="section-heading">
+                        <span>Send a Message</span>
+
+                        <h2>
+                            Tell Us How We Can Help
+                        </h2>
+
+                        <p>
+                            Fill in the form and our team will contact you as soon as
+                            possible.
+                        </p>
+                    </div>
+
+                    @if (isSubmitted) {
+                    <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Your message has been submitted successfully.
+                        </span>
+                    </div>
+                    }
+
+                    <form #contactFormRef="ngForm" (ngSubmit)="submitContactForm(contactFormRef)" novalidate>
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">
+                                    Full Name
+                                    <span>*</span>
+                                </label>
+
+                                <input id="fullName" name="fullName" type="text" class="form-control"
+                                    placeholder="Enter your full name" [(ngModel)]="contactForm.fullName"
+                                    #fullName="ngModel" required minlength="3">
+
+                                @if (fullName.invalid && fullName.touched) {
+                                <small class="form-error">
+                                    Please enter at least 3 characters.
+                                </small>
+                                }
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">
+                                    Email Address
+                                    <span>*</span>
+                                </label>
+
+                                <input id="email" name="email" type="email" class="form-control"
+                                    placeholder="Enter your email address" [(ngModel)]="contactForm.email"
+                                    #email="ngModel" required email>
+
+                                @if (email.invalid && email.touched) {
+                                <small class="form-error">
+                                    Please enter a valid email address.
+                                </small>
+                                }
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">
+                                    Phone Number
+                                </label>
+
+                                <input id="phone" name="phone" type="tel" class="form-control"
+                                    placeholder="Enter your phone number" [(ngModel)]="contactForm.phone"
+                                    #phone="ngModel" pattern="[0-9]{10}">
+
+                                @if (phone.invalid && phone.touched) {
+                                <small class="form-error">
+                                    Enter a valid 10-digit phone number.
+                                </small>
+                                }
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="subject" class="form-label">
+                                    Subject
+                                    <span>*</span>
+                                </label>
+
+                                <select id="subject" name="subject" class="form-select"
+                                    [(ngModel)]="contactForm.subject" #subject="ngModel" required>
+                                    <option value="">
+                                        Select a subject
+                                    </option>
+
+                                    <option value="General Enquiry">
+                                        General Enquiry
+                                    </option>
+
+                                    <option value="Buyer Support">
+                                        Buyer Support
+                                    </option>
+
+                                    <option value="Farmer Registration">
+                                        Farmer Registration
+                                    </option>
+
+                                    <option value="Seller Support">
+                                        Seller Support
+                                    </option>
+
+                                    <option value="Order and Delivery">
+                                        Order and Delivery
+                                    </option>
+
+                                    <option value="Payment and Refund">
+                                        Payment and Refund
+                                    </option>
+
+                                    <option value="Business Partnership">
+                                        Business Partnership
+                                    </option>
+                                </select>
+
+                                @if (subject.invalid && subject.touched) {
+                                <small class="form-error">
+                                    Please select a subject.
+                                </small>
+                                }
+                            </div>
+
+                            <div class="col-12">
+                                <label for="message" class="form-label">
+                                    Message
+                                    <span>*</span>
+                                </label>
+
+                                <textarea id="message" name="message" rows="6" class="form-control"
+                                    placeholder="Write your message" [(ngModel)]="contactForm.message"
+                                    #message="ngModel" required minlength="10"></textarea>
+
+                                @if (message.invalid && message.touched) {
+                                <small class="form-error">
+                                    Please enter at least 10 characters.
+                                </small>
+                                }
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success rounded-pill px-4">
+                                    Send Message
+                                    <i class="bi bi-send ms-1"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <aside class="support-sidebar h-100">
+                    <span class="sidebar-label">
+                        Support Options
+                    </span>
+
+                    <h2>
+                        Choose the Right Support Channel
+                    </h2>
+
+                    <p>
+                        Our support channels are designed for buyers, farmers,
+                        sellers, and delivery partners.
+                    </p>
+
+                    <div class="support-option">
+                        <div class="support-option-icon">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+
+                        <div>
+                            <h3>Buyer Support</h3>
+
+                            <p>
+                                Assistance with orders, payments, returns, and delivery.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="support-option">
+                        <div class="support-option-icon">
+                            <i class="bi bi-flower1"></i>
+                        </div>
+
+                        <div>
+                            <h3>Farmer Support</h3>
+
+                            <p>
+                                Help with registration, crop listings, pricing, and orders.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="support-option">
+                        <div class="support-option-icon">
+                            <i class="bi bi-shop"></i>
+                        </div>
+
+                        <div>
+                            <h3>Seller Support</h3>
+
+                            <p>
+                                Product, inventory, settlement, and account assistance.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="support-option">
+                        <div class="support-option-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+
+                        <div>
+                            <h3>Delivery Support</h3>
+
+                            <p>
+                                Help with delivery assignments, routes, and order status.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="emergency-support">
+                        <i class="bi bi-headset"></i>
+
+                        <div>
+                            <small>Need immediate assistance?</small>
+
+                            <a href="tel:+919876543210">
+                                Call +91 98765 43210
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="map-section">
+    <div class="container">
+        <div class="map-placeholder">
+            <div class="map-content">
+                <div class="map-icon">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+
+                <h2>GaonBazar Office</h2>
+
+                <p>
+                    New Delhi, India
+                </p>
+
+                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-light btn-sm rounded-pill px-4">
+                    Open in Google Maps
+                    <i class="bi bi-box-arrow-up-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-faq-section">
+    <div class="container">
+        <div class="section-heading text-center mx-auto">
+            <span>Quick Help</span>
+
+            <h2>
+                Common Support Questions
+            </h2>
+
+            <p>
+                Find quick answers before contacting the support team.
+            </p>
+        </div>
+
+        <div class="accordion mx-auto mt-4" id="contactFaq">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#contactFaqOne">
+                        How quickly will the support team respond?
+                    </button>
+                </h2>
+
+                <div id="contactFaqOne" class="accordion-collapse collapse show" data-bs-parent="#contactFaq">
+                    <div class="accordion-body">
+                        Most enquiries are reviewed during working hours. Response
+                        time depends on the enquiry type and support volume.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#contactFaqTwo">
+                        How can I register as a farmer?
+                    </button>
+                </h2>
+
+                <div id="contactFaqTwo" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+                    <div class="accordion-body">
+                        Open the farmer registration page, submit your profile and
+                        farm details, and wait for account verification.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#contactFaqThree">
+                        Where can I report a payment issue?
+                    </button>
+                </h2>
+
+                <div id="contactFaqThree" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+                    <div class="accordion-body">
+                        Select Payment and Refund in the contact form and include your
+                        order number and payment reference.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

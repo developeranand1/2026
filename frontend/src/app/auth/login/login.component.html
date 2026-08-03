@@ -1,0 +1,607 @@
+<div class="auth-page-wrapper d-flex align-items-center justify-content-center min-vh-100 py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-xl-10">
+        <div class="card border-0 shadow-lg overflow-hidden auth-card">
+          <div class="row g-0">
+            
+            <!-- Left Side: Graphic / Info Showcase -->
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-5 text-white brand-showcase">
+              <div class="brand-header">
+                <a routerLink="/" class="text-white text-decoration-none d-flex align-items-center gap-2">
+                  <span class="logo-icon"><i class="bi bi-flower1"></i></span>
+                  <span class="logo-text fw-bold fs-4">GaonBazar.com</span>
+                </a>
+              </div>
+              
+              <div class="brand-content my-auto">
+                <h2 class="display-6 fw-bold mb-3">किसान से सीधे खरीदार तक</h2>
+                <p class="lead opacity-90">Join India's trusted digital marketplace. We connect local farmers directly with businesses, wholesalers, and consumers for fresh produce at fair prices.</p>
+                
+                <div class="features-list mt-4 d-flex flex-column gap-3">
+                  <div class="feature-item d-flex align-items-center gap-3">
+                    <span class="feature-icon bg-white text-success rounded-circle"><i class="bi bi-shield-check text-success fs-5"></i></span>
+                    <span><strong>100% Secure</strong> & Verified Users</span>
+                  </div>
+                  <div class="feature-item d-flex align-items-center gap-3">
+                    <span class="feature-icon bg-white text-success rounded-circle"><i class="bi bi-cash-stack text-success fs-5"></i></span>
+                    <span>Direct Settlements, Zero Hidden Fees</span>
+                  </div>
+                  <div class="feature-item d-flex align-items-center gap-3">
+                    <span class="feature-icon bg-white text-success rounded-circle"><i class="bi bi-truck text-success fs-5"></i></span>
+                    <span>Fast Logistics & Mandi Rate Updates</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="brand-footer pt-3 border-top border-light-subtle opacity-75 d-flex justify-content-between align-items-center">
+                <small>© 2026 GaonBazar. All rights reserved.</small>
+                <small><i class="bi bi-patch-check-fill text-warning me-1"></i> ISO Verified</small>
+              </div>
+            </div>
+
+            <!-- Right Side: Interactive Card Form -->
+            <div class="col-lg-7 p-4 p-md-5 bg-white d-flex flex-column justify-content-center">
+              
+              <!-- Mobile Logo View -->
+              <div class="text-center d-lg-none mb-4">
+                <a routerLink="/" class="text-success text-decoration-none d-flex align-items-center justify-content-center gap-2">
+                  <span class="logo-icon fs-2"><i class="bi bi-flower1"></i></span>
+                  <span class="logo-text fw-bold fs-3 text-success">GaonBazar.com</span>
+                </a>
+                <p class="text-muted small mt-1">Connecting Farmers & Buyers Direct</p>
+              </div>
+
+              <!-- Header Mode Tabs -->
+              <div class="auth-tabs-nav mb-4 bg-light p-1 rounded-pill d-flex">
+                <button 
+                  type="button" 
+                  class="btn w-50 rounded-pill py-2 text-center" 
+                  [class.btn-success]="activeTab === 'login'" 
+                  [class.text-dark]="activeTab !== 'login'"
+                  [class.active]="activeTab === 'login'"
+                  (click)="setTab('login')"
+                >
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </button>
+                <button 
+                  type="button" 
+                  class="btn w-50 rounded-pill py-2 text-center" 
+                  [class.btn-success]="activeTab === 'register'" 
+                  [class.text-dark]="activeTab !== 'register'"
+                  [class.active]="activeTab === 'register'"
+                  (click)="setTab('register')"
+                >
+                  <i class="bi bi-person-plus me-1"></i> Register
+                </button>
+              </div>
+
+              <!-- Role Switch Selection (Dual Pills) -->
+              <div class="role-selection-wrapper mb-4 text-center">
+                <p class="text-muted small fw-semibold mb-2">CHOOSE YOUR ACCOUNT TYPE</p>
+                <div class="d-flex justify-content-center gap-2 gap-sm-3">
+                  <button 
+                    type="button" 
+                    class="role-pill-btn d-flex align-items-center justify-content-center gap-2 px-3 px-sm-4 py-2 rounded-pill"
+                    [class.active]="selectedRole === 'farmer'"
+                    (click)="setRole('farmer')"
+                  >
+                    <span class="role-icon"><i class="bi bi-person-badge"></i></span>
+                    <span class="role-label fw-bold">Farmer (किसान)</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    class="role-pill-btn d-flex align-items-center justify-content-center gap-2 px-3 px-sm-4 py-2 rounded-pill"
+                    [class.active]="selectedRole === 'buyer'"
+                    (click)="setRole('buyer')"
+                  >
+                    <span class="role-icon"><i class="bi bi-building"></i></span>
+                    <span class="role-label fw-bold">Buyer (खरीदार)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Error Messages Banner -->
+              @if (errorMessage) {
+                <div class="alert alert-danger d-flex align-items-center gap-2 alert-dismissible fade show border-0 shadow-sm" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                  <div>{{ errorMessage }}</div>
+                  <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+                </div>
+              }
+
+              <!-- LOGIN FORM -->
+              @if (activeTab === 'login') {
+                <form (ngSubmit)="onSubmitLogin()" #loginForm="ngForm" class="auth-form animate-fade-in">
+                  <h3 class="fw-bold mb-1 text-dark">Welcome back!</h3>
+                  <p class="text-muted mb-4">Log in to manage crops, view mandi rates, and handle deals.</p>
+
+                  <!-- Mobile Number -->
+                  <div class="mb-3">
+                    <label for="loginMobile" class="form-label fw-semibold text-secondary">
+                      <i class="bi bi-phone-fill text-success me-1"></i> Mobile Number (मोबाइल नंबर) <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-telephone-fill"></i></span>
+                      <input 
+                        type="tel" 
+                        id="loginMobile" 
+                        class="form-control border-start-0 ps-0" 
+                        placeholder="e.g. 9876543210" 
+                        maxlength="10"
+                        name="mobile" 
+                        [(ngModel)]="loginData.mobile" 
+                        required
+                        #loginMobile="ngModel"
+                        [class.is-invalid]="loginMobile.touched && (loginMobile.errors || loginData.mobile.length !== 10)"
+                      >
+                      <button type="button" class="btn btn-outline-success btn-sm px-3" (click)="onQuickOtp()" title="Send OTP via SMS/WhatsApp">
+                        <i class="bi bi-chat-left-dots-fill me-1"></i> OTP
+                      </button>
+                    </div>
+                    @if (loginMobile.touched && (loginMobile.errors || (loginData.mobile && loginData.mobile.length !== 10))) {
+                      <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle-fill me-1"></i> Please enter a valid 10-digit mobile number.</div>
+                    }
+                  </div>
+
+                  <!-- Password -->
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                      <label for="loginPassword" class="form-label fw-semibold text-secondary mb-0">
+                        <i class="bi bi-key-fill text-success me-1"></i> Password (पासवर्ड) <span class="text-danger">*</span>
+                      </label>
+                      <a routerLink="/faq" class="text-success text-decoration-none small fw-semibold"><i class="bi bi-question-circle me-1"></i> Forgot Password?</a>
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-lock-fill"></i></span>
+                      <input 
+                        [type]="showPassword ? 'text' : 'password'" 
+                        id="loginPassword" 
+                        class="form-control border-start-0 border-end-0 ps-0" 
+                        placeholder="••••••" 
+                        name="password" 
+                        [(ngModel)]="loginData.password" 
+                        required
+                      >
+                      <button 
+                        type="button" 
+                        class="btn btn-light border border-start-0 text-secondary px-3" 
+                        (click)="showPassword = !showPassword"
+                        [title]="showPassword ? 'Hide password' : 'Show password'"
+                      >
+                        <i class="bi" [class.bi-eye-fill]="!showPassword" [class.bi-eye-slash-fill]="showPassword"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Submit button -->
+                  <button 
+                    type="submit" 
+                    class="btn btn-success btn-lg w-100 rounded-pill py-2 fw-bold text-white shadow-sm mt-2 btn-submit"
+                    [disabled]="isLoading || !loginForm.valid"
+                  >
+                    @if (isLoading) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Logging in...
+                    } @else {
+                      <i class="bi bi-box-arrow-in-right me-2"></i> Access Account
+                    }
+                  </button>
+
+                  <!-- Divider / Social Login Options -->
+                  <div class="position-relative text-center my-4">
+                    <hr class="text-muted">
+                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small fw-semibold">
+                      OR CONNECT WITH
+                    </span>
+                  </div>
+
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-danger w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                        (click)="onSocialLogin('Google')"
+                      >
+                        <i class="bi bi-google"></i> Google
+                      </button>
+                    </div>
+                    <div class="col-6">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-success w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                        (click)="onSocialLogin('WhatsApp')"
+                      >
+                        <i class="bi bi-whatsapp"></i> WhatsApp
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="text-center mt-4">
+                    <span class="text-muted">Don't have an account? </span>
+                    <button type="button" class="btn btn-link text-success p-0 border-0 fw-bold text-decoration-none align-baseline" (click)="setTab('register')">Register Now</button>
+                  </div>
+                </form>
+              }
+
+              <!-- REGISTER FORM -->
+              @if (activeTab === 'register') {
+                <form (ngSubmit)="onSubmitRegister()" #regForm="ngForm" class="auth-form animate-fade-in">
+                  <h3 class="fw-bold mb-1 text-dark">Create your account</h3>
+                  <p class="text-muted mb-4">Complete the fields below to join the GaonBazar network.</p>
+
+                  <div class="row">
+                    <!-- Full Name -->
+                    <div class="col-md-6 mb-3">
+                      <label for="regName" class="form-label fw-semibold text-secondary">
+                        <i class="bi bi-person-fill text-success me-1"></i> {{ selectedRole === 'farmer' ? 'Farmer Name (किसान का नाम)' : 'Contact Name (संपर्ककर्ता)' }} <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-person-badge-fill"></i></span>
+                        <input 
+                          type="text" 
+                          id="regName" 
+                          class="form-control border-start-0 ps-0" 
+                          placeholder="e.g. Rajesh Kumar" 
+                          name="name" 
+                          [(ngModel)]="registerData.name" 
+                          required
+                        >
+                      </div>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="col-md-6 mb-3">
+                      <label for="regMobile" class="form-label fw-semibold text-secondary">
+                        <i class="bi bi-phone-fill text-success me-1"></i> Mobile Number (मोबाइल) <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-telephone-fill"></i></span>
+                        <input 
+                          type="tel" 
+                          id="regMobile" 
+                          class="form-control border-start-0 ps-0" 
+                          placeholder="e.g. 9876543210" 
+                          maxlength="10"
+                          name="mobile" 
+                          [(ngModel)]="registerData.mobile" 
+                          required
+                          #regMobile="ngModel"
+                          [class.is-invalid]="regMobile.touched && (regMobile.errors || registerData.mobile.length !== 10)"
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Optional Email -->
+                  <div class="mb-3">
+                    <label for="regEmail" class="form-label fw-semibold text-secondary">
+                      <i class="bi bi-envelope-fill text-success me-1"></i> Email Address (ईमेल) <span class="text-muted">(Optional)</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-at"></i></span>
+                      <input 
+                        type="email" 
+                        id="regEmail" 
+                        class="form-control border-start-0 ps-0" 
+                        placeholder="name@example.com" 
+                        name="email" 
+                        [(ngModel)]="registerData.email"
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Passwords -->
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="regPassword" class="form-label fw-semibold text-secondary">
+                        <i class="bi bi-lock-fill text-success me-1"></i> Password (पासवर्ड) <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-key-fill"></i></span>
+                        <input 
+                          [type]="showRegPassword ? 'text' : 'password'" 
+                          id="regPassword" 
+                          class="form-control border-start-0 border-end-0 ps-0" 
+                          placeholder="Min 6 characters" 
+                          name="password" 
+                          [(ngModel)]="registerData.password" 
+                          required
+                          #regPass="ngModel"
+                          [class.is-invalid]="regPass.touched && registerData.password.length < 6"
+                        >
+                        <button 
+                          type="button" 
+                          class="btn btn-light border border-start-0 text-secondary px-3" 
+                          (click)="showRegPassword = !showRegPassword"
+                        >
+                          <i class="bi" [class.bi-eye-fill]="!showRegPassword" [class.bi-eye-slash-fill]="showRegPassword"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="regConfirmPassword" class="form-label fw-semibold text-secondary">
+                        <i class="bi bi-shield-lock-fill text-success me-1"></i> Confirm Password <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light text-secondary border-end-0"><i class="bi bi-shield-check"></i></span>
+                        <input 
+                          [type]="showRegConfirmPassword ? 'text' : 'password'" 
+                          id="regConfirmPassword" 
+                          class="form-control border-start-0 border-end-0 ps-0" 
+                          placeholder="Re-enter password" 
+                          name="confirmPassword" 
+                          [(ngModel)]="registerData.confirmPassword" 
+                          required
+                          #regConfirm="ngModel"
+                          [class.is-invalid]="regConfirm.touched && registerData.password !== registerData.confirmPassword"
+                        >
+                        <button 
+                          type="button" 
+                          class="btn btn-light border border-start-0 text-secondary px-3" 
+                          (click)="showRegConfirmPassword = !showRegConfirmPassword"
+                        >
+                          <i class="bi" [class.bi-eye-fill]="!showRegConfirmPassword" [class.bi-eye-slash-fill]="showRegConfirmPassword"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- FARMER SPECIAL SPECIFIC FIELDS -->
+                  @if (selectedRole === 'farmer') {
+                    <div class="role-fields-card p-3 mb-4 rounded border animate-slide-down">
+                      <h6 class="fw-bold text-success mb-3"><i class="bi bi-geo-alt-fill me-1"></i> Farmer Address / Location (किसान का पता)</h6>
+                      
+                      <div class="row">
+                        <!-- Village -->
+                        <div class="col-md-6 mb-3">
+                          <label for="farmerVillage" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-house-door-fill text-success me-1"></i> Village (गांव) <span class="text-danger">*</span>
+                          </label>
+                          <input 
+                            type="text" 
+                            id="farmerVillage" 
+                            class="form-control" 
+                            placeholder="e.g. Bhagwanpur" 
+                            name="village" 
+                            [(ngModel)]="registerData.village" 
+                            [required]="selectedRole === 'farmer'"
+                          >
+                        </div>
+                        
+                        <!-- Block / Tehsil / City -->
+                        <div class="col-md-6 mb-3">
+                          <label for="farmerCity" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-buildings-fill text-success me-1"></i> Block / Tehsil / Town
+                          </label>
+                          <input 
+                            type="text" 
+                            id="farmerCity" 
+                            class="form-control" 
+                            placeholder="e.g. Muzaffarpur" 
+                            name="city" 
+                            [(ngModel)]="registerData.city"
+                          >
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <!-- District -->
+                        <div class="col-md-6 mb-3">
+                          <label for="farmerDistrict" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-map-fill text-success me-1"></i> District (जिला) <span class="text-danger">*</span>
+                          </label>
+                          <input 
+                            type="text" 
+                            id="farmerDistrict" 
+                            class="form-control" 
+                            placeholder="e.g. Muzaffarpur" 
+                            name="district" 
+                            [(ngModel)]="registerData.district"
+                            [required]="selectedRole === 'farmer'"
+                          >
+                        </div>
+
+                        <!-- State Selector -->
+                        <div class="col-md-6 mb-3">
+                          <label for="farmerState" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-globe-central-south text-success me-1"></i> State (राज्य) <span class="text-danger">*</span>
+                          </label>
+                          <select 
+                            id="farmerState" 
+                            class="form-select" 
+                            name="state" 
+                            [(ngModel)]="registerData.state" 
+                            required
+                          >
+                            @for (st of statesList; track st) {
+                              <option [value]="st">{{ st }}</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Pincode -->
+                      <div class="mb-1">
+                        <label for="farmerPincode" class="form-label fw-semibold text-secondary">
+                          <i class="bi bi-pin-map-fill text-success me-1"></i> Pincode (पिनकोड) <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                          type="text" 
+                          id="farmerPincode" 
+                          class="form-control" 
+                          placeholder="e.g. 842001" 
+                          maxlength="6"
+                          name="pincode" 
+                          [(ngModel)]="registerData.pincode"
+                          [required]="selectedRole === 'farmer'"
+                        >
+                      </div>
+                    </div>
+                  }
+
+                  <!-- BUYER SPECIAL SPECIFIC FIELDS -->
+                  @if (selectedRole === 'buyer') {
+                    <div class="role-fields-card p-3 mb-4 rounded border animate-slide-down">
+                      <h6 class="fw-bold text-success mb-3"><i class="bi bi-building-fill me-1"></i> Business Details (व्यवसाय का विवरण)</h6>
+
+                      <!-- Company/Business Name -->
+                      <div class="mb-3">
+                        <label for="buyerCompany" class="form-label fw-semibold text-secondary">
+                          <i class="bi bi-briefcase-fill text-success me-1"></i> Business / Company Name <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                          type="text" 
+                          id="buyerCompany" 
+                          class="form-control" 
+                          placeholder="e.g. Amit Traders Pvt Ltd" 
+                          name="companyName" 
+                          [(ngModel)]="registerData.companyName"
+                          [required]="selectedRole === 'buyer'"
+                        >
+                      </div>
+
+                      <div class="row">
+                        <!-- GST Number -->
+                        <div class="col-md-6 mb-3">
+                          <label for="buyerGst" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-receipt text-success me-1"></i> GSTIN Number <span class="text-muted">(Optional)</span>
+                          </label>
+                          <input 
+                            type="text" 
+                            id="buyerGst" 
+                            class="form-control" 
+                            placeholder="e.g. 09AAAAA1111A1Z1" 
+                            maxlength="15"
+                            name="gstNumber" 
+                            [(ngModel)]="registerData.gstNumber"
+                          >
+                        </div>
+
+                        <!-- Street Address -->
+                        <div class="col-md-6 mb-3">
+                          <label for="buyerStreet" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-geo-fill text-success me-1"></i> Street / Office Address <span class="text-danger">*</span>
+                          </label>
+                          <input 
+                            type="text" 
+                            id="buyerStreet" 
+                            class="form-control" 
+                            placeholder="e.g. Block C, Industrial Area" 
+                            name="street" 
+                            [(ngModel)]="registerData.street"
+                            [required]="selectedRole === 'buyer'"
+                          >
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <!-- City / District -->
+                        <div class="col-md-6 mb-3">
+                          <label for="buyerDistrict" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-buildings-fill text-success me-1"></i> City / District <span class="text-danger">*</span>
+                          </label>
+                          <input 
+                            type="text" 
+                            id="buyerDistrict" 
+                            class="form-control" 
+                            placeholder="e.g. Kanpur" 
+                            name="district" 
+                            [(ngModel)]="registerData.district"
+                            [required]="selectedRole === 'buyer'"
+                          >
+                        </div>
+
+                        <!-- State Selector -->
+                        <div class="col-md-6 mb-3">
+                          <label for="buyerState" class="form-label fw-semibold text-secondary">
+                            <i class="bi bi-globe-central-south text-success me-1"></i> State (राज्य) <span class="text-danger">*</span>
+                          </label>
+                          <select 
+                            id="buyerState" 
+                            class="form-select" 
+                            name="state" 
+                            [(ngModel)]="registerData.state" 
+                            required
+                          >
+                            @for (st of statesList; track st) {
+                              <option [value]="st">{{ st }}</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Pincode -->
+                      <div class="mb-1">
+                        <label for="buyerPincode" class="form-label fw-semibold text-secondary">
+                          <i class="bi bi-pin-map-fill text-success me-1"></i> Pincode (पिनकोड) <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                          type="text" 
+                          id="buyerPincode" 
+                          class="form-control" 
+                          placeholder="e.g. 208027" 
+                          maxlength="6"
+                          name="pincode" 
+                          [(ngModel)]="registerData.pincode"
+                          [required]="selectedRole === 'buyer'"
+                        >
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Submit button -->
+                  <button 
+                    type="submit" 
+                    class="btn btn-success btn-lg w-100 rounded-pill py-2 fw-bold text-white shadow-sm mt-2 btn-submit"
+                    [disabled]="isLoading || !regForm.valid"
+                  >
+                    @if (isLoading) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Registering...
+                    } @else {
+                      <i class="bi bi-person-plus me-2"></i> Create Free Account
+                    }
+                  </button>
+
+                  <!-- Divider / Social Login Options -->
+                  <div class="position-relative text-center my-4">
+                    <hr class="text-muted">
+                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small fw-semibold">
+                      OR REGISTER WITH
+                    </span>
+                  </div>
+
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-danger w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                        (click)="onSocialLogin('Google')"
+                      >
+                        <i class="bi bi-google"></i> Google
+                      </button>
+                    </div>
+                    <div class="col-6">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-success w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold"
+                        (click)="onSocialLogin('WhatsApp')"
+                      >
+                        <i class="bi bi-whatsapp"></i> WhatsApp
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="text-center mt-4">
+                    <span class="text-muted">Already have an account? </span>
+                    <button type="button" class="btn btn-link text-success p-0 border-0 fw-bold text-decoration-none align-baseline" (click)="setTab('register')">Login Here</button>
+                  </div>
+                </form>
+              }
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

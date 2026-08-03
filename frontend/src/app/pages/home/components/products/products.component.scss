@@ -1,0 +1,142 @@
+.section {
+    padding: 60px 0;
+}
+
+.section-heading {
+    max-width: 620px;
+}
+
+.section-heading>span {
+    color: var(--gb-green);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.section-heading h2 {
+    margin: 7px 0;
+    color: var(--gb-text);
+    font-size: clamp(25px, 4vw, 37px);
+    font-weight: 600;
+}
+
+.view-all-link {
+    color: var(--gb-green);
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.product-card {
+    overflow: hidden;
+    border: 1px solid var(--gb-border);
+    border-radius: 15px;
+    background: white;
+    transition: 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(20, 74, 34, 0.09);
+}
+
+.product-image {
+    position: relative;
+    min-height: 190px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg,
+            #f2f8ed,
+            #dfeecd);
+}
+
+.product-icon {
+    font-size: 84px;
+}
+
+.wishlist-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: white;
+    color: var(--gb-muted);
+}
+
+.fresh-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 9px;
+    border-radius: 20px;
+    background: var(--gb-green);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.product-body {
+    padding: 15px;
+}
+
+.verified-label {
+    color: var(--gb-green);
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.product-body h3 {
+    margin: 8px 0 5px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gb-text);
+}
+
+.rating {
+    color: #d39200;
+    font-size: 10px;
+}
+
+.location {
+    margin: 5px 0 0;
+    color: var(--gb-muted);
+    font-size: 10px;
+}
+
+.price-box strong {
+    color: var(--gb-green);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.price-box span {
+    color: var(--gb-muted);
+    font-size: 9px;
+}
+
+.price-box del {
+    display: block;
+    color: #999;
+    font-size: 9px;
+}
+
+.cart-button {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--gb-green);
+    color: white;
+}
+
+@media (max-width: 767px) {
+    .section {
+        padding: 48px 0;
+    }
+}

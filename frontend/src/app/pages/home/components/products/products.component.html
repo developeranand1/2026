@@ -1,0 +1,89 @@
+<section id="products" class="section">
+    <div class="container">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+            <div class="section-heading mb-0">
+                <span>Today's Fresh Harvest</span>
+                <h2>Directly from Farmers</h2>
+            </div>
+
+            <a href="#" class="view-all-link">
+                View All Products
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+
+            @for (product of products; track product.name) {
+            <div class="col-md-6 col-xl-3">
+
+                <article class="product-card h-100">
+
+                    <div class="product-image">
+                        <span class="product-icon">
+                            {{ product.icon }}
+                        </span>
+
+                        <button type="button" class="wishlist-button" aria-label="Add to wishlist">
+                            <i class="bi bi-heart"></i>
+                        </button>
+
+                        <small class="fresh-tag">
+                            Fresh
+                        </small>
+                    </div>
+
+                    <div class="product-body">
+
+                        <div class="verified-label">
+                            <i class="bi bi-patch-check-fill"></i>
+                            Verified Farmer
+                        </div>
+
+                        <h3>
+                            {{ product.name }}
+                        </h3>
+
+                        <div class="rating">
+                            <i class="bi bi-star-fill"></i>
+                            {{ product.rating }}
+                        </div>
+
+                        <p class="location">
+                            <i class="bi bi-geo-alt"></i>
+                            {{ product.location }}
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-end mt-3">
+
+                            <div class="price-box">
+                                <div>
+                                    <strong>
+                                        {{ product.price | currency:'INR':'symbol':'1.0-0' }}
+                                    </strong>
+
+                                    <span>
+                                        /{{ product.unit }}
+                                    </span>
+                                </div>
+
+                                <del>
+                                    {{ product.oldPrice | currency:'INR':'symbol':'1.0-0' }}
+                                </del>
+                            </div>
+
+                            <button type="button" class="cart-button" aria-label="Add to cart">
+                                <i class="bi bi-bag-plus"></i>
+                            </button>
+
+                        </div>
+                    </div>
+
+                </article>
+            </div>
+            }
+
+        </div>
+    </div>
+</section>

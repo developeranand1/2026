@@ -1,0 +1,229 @@
+<div class="category-page-container">
+  <!-- Page Header -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1"><i class="bi bi-tags-fill text-success me-2"></i>Category & Subcategory Management</h3>
+      <p class="text-secondary small mb-0">Organize crop categories, subcategories, images, and Cloudinary links for GaonBazar</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button (click)="seedDefaultCategories()" class="btn btn-outline-success btn-sm rounded-pill px-3">
+        <i class="bi bi-database-fill-gear me-1"></i>Seed Default Categories
+      </button>
+      <button (click)="openAddCategoryModal()" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+        <i class="bi bi-plus-circle-fill me-1"></i>+ Add New Category
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="card bg-white border p-3 mb-4 rounded-4 shadow-sm">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0 text-success"><i class="bi bi-search"></i></span>
+          <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="filterCategories()" class="form-control bg-light border-start-0 text-dark" placeholder="Search categories by name or description...">
+        </div>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <span class="text-secondary small">Showing <strong>{{ filteredCategories.length }}</strong> categories</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-success" role="status"></div>
+    <p class="text-secondary mt-2">Fetching categories from database...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredCategories.length === 0" class="text-center py-5 bg-white rounded-4 border shadow-sm">
+    <i class="bi bi-folder-x fs-1 text-secondary"></i>
+    <h5 class="text-dark mt-2">No Categories Found</h5>
+    <p class="text-secondary small">Click "Add New Category" or "Seed Default Categories" to populate crop categories.</p>
+    <button (click)="seedDefaultCategories()" class="btn btn-success btn-sm mt-2">Seed Default Categories</button>
+  </div>
+
+  <!-- Categories Cards Grid -->
+  <div *ngIf="!isLoading && filteredCategories.length > 0" class="row g-4">
+    <div *ngFor="let cat of filteredCategories" class="col-md-6 col-lg-4">
+      <div class="category-card shadow-sm h-100" [class.inactive]="!cat.isActive">
+        <div class="card-image-header" [style.background-image]="'url(' + (cat.image || presetImages[0].url) + ')'">
+          <div class="image-overlay">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <span class="badge" [class.bg-success]="cat.isActive" [class.bg-secondary]="!cat.isActive">
+                {{ cat.isActive ? 'Active' : 'Disabled' }}
+              </span>
+              <div class="action-btns">
+                <button (click)="openEditCategoryModal(cat)" class="btn btn-sm btn-light shadow-sm text-warning me-1" title="Edit Category">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button (click)="deleteCategory(cat)" class="btn btn-sm btn-light shadow-sm text-danger" title="Delete Category">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body-content p-3">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi {{ cat.icon || 'bi-tag-fill' }} text-success fs-5"></i>
+            <h5 class="fw-bold text-dark mb-0">{{ cat.name }}</h5>
+          </div>
+          <p class="text-secondary small mb-3 description-text">{{ cat.description || 'No description provided.' }}</p>
+
+          <!-- Subcategories Pill Section -->
+          <div class="subcategories-section border-top pt-3 mt-2">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="x-small text-success fw-bold">SUBCATEGORIES ({{ cat.subcategories?.length || 0 }})</span>
+              <button (click)="openAddSubcategoryModal(cat)" class="btn btn-sm btn-outline-success py-0 px-2 x-small">
+                + Add Sub
+              </button>
+            </div>
+
+            <div class="d-flex flex-wrap gap-1">
+              <span *ngFor="let sub of cat.subcategories" class="subcategory-pill badge bg-light border text-dark">
+                {{ sub.name }}
+                <i (click)="openEditSubcategoryModal(sub, cat)" class="bi bi-pencil-fill ms-1 text-warning edit-sub-icon" title="Edit Subcategory"></i>
+                <i (click)="deleteSubcategory(sub._id!)" class="bi bi-x-circle-fill ms-1 text-danger delete-sub-icon" title="Delete Subcategory"></i>
+              </span>
+              <span *ngIf="!cat.subcategories || cat.subcategories.length === 0" class="text-secondary x-small fst-italic">
+                No subcategories added yet.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer-bar p-2 bg-light border-top d-flex justify-content-between align-items-center px-3">
+          <span class="x-small text-secondary">Order: {{ cat.displayOrder || 0 }}</span>
+          <div class="form-check form-switch m-0">
+            <input class="form-check-input" type="checkbox" [checked]="cat.isActive" (change)="toggleCategoryStatus(cat)" id="switch-{{cat._id}}">
+            <label class="form-check-label text-secondary x-small" for="switch-{{cat._id}}">{{ cat.isActive ? 'Active' : 'Disabled' }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT CATEGORY MODAL -->
+  <div *ngIf="showCategoryModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+    <div class="modal-card-box p-4 rounded-4 shadow-lg">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h5 class="fw-bold text-dark mb-0">
+          <i class="bi bi-tags-fill text-success me-2"></i>{{ isEditCategory ? 'Edit Category' : 'Create New Category' }}
+        </h5>
+        <button (click)="closeCategoryModal()" class="btn-close"></button>
+      </div>
+
+      <div class="modal-body-form">
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Category Name *</label>
+          <input type="text" [(ngModel)]="categoryForm.name" class="form-control bg-light text-dark" placeholder="e.g. Food Grains, Oilseeds, Vegetables">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Description</label>
+          <textarea [(ngModel)]="categoryForm.description" class="form-control bg-light text-dark" rows="2" placeholder="Short description of this category"></textarea>
+        </div>
+
+        <!-- Cloudinary Direct File Upload -->
+        <div class="mb-3 p-3 bg-light rounded border">
+          <label class="form-label text-dark fw-bold d-block"><i class="bi bi-cloud-arrow-up-fill text-success me-1"></i>Upload Image to Cloudinary</label>
+          <input type="file" (change)="onFileSelected($event, 'category')" accept="image/*" class="form-control form-control-sm mb-2">
+          <div *ngIf="isUploading" class="text-success x-small fw-bold">
+            <span class="spinner-border spinner-border-sm me-1"></span>Uploading to Cloudinary (dxsailkcq)...
+          </div>
+          <span class="text-secondary x-small">Uploads directly to Cloudinary folder: <code>gaonbazar_categories</code></span>
+        </div>
+
+        <!-- Or Paste URL -->
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Or Image URL / Cloudinary Link</label>
+          <input type="text" [(ngModel)]="categoryForm.image" class="form-control bg-light text-dark" placeholder="https://res.cloudinary.com/... or https://images.unsplash.com/...">
+        </div>
+
+        <!-- Quick Preset Image Selector -->
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold d-block">Or Pick High-Quality Preset Image:</label>
+          <div class="preset-scroll-row d-flex gap-2">
+            <div *ngFor="let img of presetImages" (click)="selectPresetImage(img.url, 'category')" class="preset-chip btn btn-sm btn-outline-secondary text-start text-truncate" [class.active]="categoryForm.image === img.url">
+              {{ img.label }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Image -->
+        <div *ngIf="categoryForm.image" class="mb-3 text-center">
+          <label class="form-label text-dark fw-semibold d-block">Selected Image Preview:</label>
+          <img [src]="categoryForm.image" class="img-fluid rounded border border-success" style="max-height: 120px; object-fit: cover;">
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label text-dark fw-semibold">Bootstrap Icon Class</label>
+            <input type="text" [(ngModel)]="categoryForm.icon" class="form-control bg-light text-dark" placeholder="bi-grain, bi-tag-fill">
+          </div>
+          <div class="col-6">
+            <label class="form-label text-dark fw-semibold">Display Order</label>
+            <input type="number" [(ngModel)]="categoryForm.displayOrder" class="form-control bg-light text-dark">
+          </div>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" [(ngModel)]="categoryForm.isActive" id="catStatus">
+          <label class="form-check-label text-dark fw-semibold" for="catStatus">Active Status</label>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+        <button (click)="closeCategoryModal()" class="btn btn-outline-secondary btn-sm px-3">Cancel</button>
+        <button (click)="saveCategory()" class="btn btn-success btn-sm px-4 fw-bold">
+          {{ isEditCategory ? 'Save Changes' : 'Create Category' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT SUBCATEGORY MODAL -->
+  <div *ngIf="showSubcategoryModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+    <div class="modal-card-box p-4 rounded-4 shadow-lg">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h5 class="fw-bold text-dark mb-0">
+          <i class="bi bi-tag-fill text-success me-2"></i>{{ isEditSubcategory ? 'Edit Subcategory' : 'Add Subcategory under ' + selectedCategoryForSub?.name }}
+        </h5>
+        <button (click)="closeSubcategoryModal()" class="btn-close"></button>
+      </div>
+
+      <div class="modal-body-form">
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Subcategory Name *</label>
+          <input type="text" [(ngModel)]="subcategoryForm.name" class="form-control bg-light text-dark" placeholder="e.g. Wheat (Gehun), Basmati Paddy, Mustard Seeds">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Description</label>
+          <textarea [(ngModel)]="subcategoryForm.description" class="form-control bg-light text-dark" rows="2" placeholder="Subcategory details"></textarea>
+        </div>
+
+        <!-- Cloudinary Direct File Upload for Subcategory -->
+        <div class="mb-3 p-3 bg-light rounded border">
+          <label class="form-label text-dark fw-bold d-block"><i class="bi bi-cloud-arrow-up-fill text-success me-1"></i>Upload Subcategory Image to Cloudinary</label>
+          <input type="file" (change)="onFileSelected($event, 'subcategory')" accept="image/*" class="form-control form-control-sm mb-2">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-dark fw-semibold">Or Image URL</label>
+          <input type="text" [(ngModel)]="subcategoryForm.image" class="form-control bg-light text-dark" placeholder="Cloudinary or image link">
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+        <button (click)="closeSubcategoryModal()" class="btn btn-outline-secondary btn-sm px-3">Cancel</button>
+        <button (click)="saveSubcategory()" class="btn btn-success btn-sm px-4 fw-bold">
+          {{ isEditSubcategory ? 'Update Subcategory' : 'Add Subcategory' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

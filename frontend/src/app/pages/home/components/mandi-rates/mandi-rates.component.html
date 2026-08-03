@@ -1,0 +1,202 @@
+<section class="mandi-rates-section py-5">
+    <div class="container">
+        
+        <div class="row align-items-end g-3 mb-4">
+            <div class="col-md-8">
+                <div class="section-title-box">
+                    <span class="mandi-badge">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Live Mandi Prices
+                    </span>
+                    <h2 class="mandi-title">Mandi Bhav (Daily Rates)</h2>
+                    <p class="mandi-subtitle text-muted mb-0">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> {{ locationStatus }}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end text-start">
+                <div class="d-inline-flex flex-column gap-1">
+                    <span class="badge date-badge">
+                        <i class="bi bi-calendar3"></i> Date: {{ ratesDate || 'Today' }}
+                    </span>
+                    <span class="badge source-badge">
+                        <i class="bi bi-info-circle"></i> Source: {{ ratesSource === 'live_scraped' ? 'Live AGMARKNET Scraper' : 'Stored Fallback Rates' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card filter-card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form class="row g-3" (submit)="$event.preventDefault(); fetchMandiRates()">
+                    <div class="col-lg-3 col-md-6">
+                        <label for="stateFilter" class="form-label text-success font-weight-bold">State</label>
+                        <select id="stateFilter" name="selectedState" [(ngModel)]="selectedState" (change)="fetchMandiRates()" class="form-select">
+                            <option *ngFor="let s of statesList" [value]="s">{{ s }}</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <label for="districtFilter" class="form-label text-success font-weight-bold">District</label>
+                        <input id="districtFilter" name="selectedDistrict" type="text" [(ngModel)]="selectedDistrict" placeholder="Enter district (e.g. Gorakhpur)" (keyup.enter)="fetchMandiRates()" class="form-control" />
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label for="commodityFilter" class="form-label text-success font-weight-bold">Commodity</label>
+                        <select id="commodityFilter" name="selectedCommodity" [(ngModel)]="selectedCommodity" (change)="fetchMandiRates()" class="form-select">
+                            <option value="">All Commodities</option>
+                            <option *ngFor="let c of commoditiesList" [value]="c">{{ c }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-search w-100 py-2">
+                            <i class="bi bi-search"></i> Search Mandi Rates
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loading spinner -->
+        <div *ngIf="loadingRates" class="text-center py-5">
+            <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Fetching latest mandi bhav from AGMARKNET...</p>
+        </div>
+
+        <!-- Rates Display -->
+        <div *ngIf="!loadingRates" class="row g-4">
+            
+            <!-- Mandi Rates List Column -->
+            <div class="col-lg-7 col-12">
+                <div class="card rates-list-card border-0 shadow-sm">
+                    <div class="card-header bg-success text-white py-3">
+                        <h5 class="mb-0 font-weight-bold"><i class="bi bi-shop"></i> Mandi Rates in {{ selectedDistrict || 'this state' }}</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div *ngIf="mandiRates.length === 0" class="text-center py-5">
+                            <i class="bi bi-exclamation-triangle text-warning display-4 d-block mb-2"></i>
+                            <p class="text-muted">No Mandi rates found. Try selecting another state or typing a different district.</p>
+                        </div>
+                        
+                        <div class="list-group list-group-flush" *ngIf="mandiRates.length > 0">
+                            <div *ngFor="let rate of mandiRates" 
+                                 class="list-group-item list-group-item-action p-3 rate-item" 
+                                 [class.active]="selectedMandiRateForFarmers === rate"
+                                 (click)="selectMandiRate(rate)"
+                                 style="cursor: pointer;">
+                                <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 fw-bold rate-crop-name">
+                                        <i class="bi bi-flower1"></i> {{ rate.commodity }}
+                                    </h6>
+                                    <span class="fw-bold rate-modal-price">
+                                        Modal: ₹{{ rate.modal_price }}/Qtl
+                                    </span>
+                                </div>
+                                <div class="d-flex w-100 justify-content-between align-items-center mt-2">
+                                    <small class="rate-market text-muted">
+                                        <i class="bi bi-geo-alt"></i> {{ rate.market }} ({{ rate.district }}, {{ rate.state }})
+                                    </small>
+                                    <small class="rate-min-max text-muted">
+                                        Min: ₹{{ rate.min_price }} | Max: ₹{{ rate.max_price }}
+                                    </small>
+                                </div>
+                                <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                                    <span class="badge variety-badge">
+                                        Variety: {{ rate.variety }}
+                                    </span>
+                                    <span class="arrival-date text-muted small">
+                                        <i class="bi bi-clock"></i> Arrival: {{ rate.arrival_date }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farmer Listings Column (kisan ke details) -->
+            <div class="col-lg-5 col-12">
+                <div class="card farmers-list-card border-0 shadow-sm">
+                    <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-people-fill"></i> Farmers on GaonBazar</h5>
+                        <span class="badge bg-dark text-white" *ngIf="selectedMandiRateForFarmers">
+                            {{ selectedMandiRateForFarmers.commodity }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div *ngIf="!selectedMandiRateForFarmers" class="text-center py-5 text-muted">
+                            <i class="bi bi-arrow-left-circle display-4 mb-2 d-block"></i>
+                            Select a Mandi rate card to view contact details of farmers selling this crop.
+                        </div>
+
+                        <div *ngIf="selectedMandiRateForFarmers">
+                            <h6 class="text-muted mb-3 font-weight-bold">
+                                Direct Buying Options for <strong>{{ selectedMandiRateForFarmers.commodity }}</strong>:
+                            </h6>
+                            
+                            <div *ngIf="filteredFarmers.length === 0" class="text-center py-4">
+                                <p class="text-muted">No registered farmers found for this crop in this district yet.</p>
+                                <a routerLink="/farmer-journey" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-plus-circle"></i> Register as a Farmer
+                                </a>
+                            </div>
+
+                            <div class="row g-3" *ngIf="filteredFarmers.length > 0">
+                                <div class="col-12" *ngFor="let kisan of filteredFarmers">
+                                    <div class="card farmer-card border-light shadow-sm">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold text-success">
+                                                        <i class="bi bi-person-badge-fill"></i> {{ kisan.farmerName }}
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-geo-alt-fill text-danger"></i> {{ kisan.location }}
+                                                    </small>
+                                                </div>
+                                                <span class="badge grade-badge">
+                                                    {{ kisan.grade || 'Grade A' }}
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center my-3 price-info-box p-2 rounded">
+                                                <div>
+                                                    <span class="text-muted small d-block">Selling Price</span>
+                                                    <strong class="text-primary h5 mb-0">₹{{ kisan.expectedPrice }}/{{ kisan.unit || 'Qtl' }}</strong>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="text-muted small d-block">Quantity Available</span>
+                                                    <strong class="text-dark">{{ kisan.quantity }} {{ kisan.unit || 'Qtl' }}</strong>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <a href="tel:{{ kisan.mobile }}" class="btn btn-sm btn-outline-success w-100">
+                                                        <i class="bi bi-telephone-fill"></i> Call Farmer
+                                                    </a>
+                                                </div>
+                                                <div class="col-6">
+                                                    <a href="https://wa.me/{{ kisan.mobile }}?text=Hello%20{{ kisan.farmerName }},%20I%20saw%20your%20listing%20for%20{{ kisan.cropName }}%20on%20GaonBazar" 
+                                                       target="_blank" 
+                                                       class="btn btn-sm btn-success w-100 btn-whatsapp">
+                                                        <i class="bi bi-whatsapp"></i> WhatsApp
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

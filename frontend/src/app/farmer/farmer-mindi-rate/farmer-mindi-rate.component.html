@@ -1,0 +1,93 @@
+<div class="farmer-mandi-rate-view animate-fade-in">
+  <!-- Header Bar -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+        <i class="bi bi-graph-up-arrow text-success"></i>
+        Live APMC Mandi Rates (ताज़ा मंडी भाव)
+      </h3>
+      <p class="text-muted mb-0">Daily updated commodity prices across mandis in India</p>
+    </div>
+
+    <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" (click)="fetchRates()">
+      <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> Sync Latest Rates
+    </button>
+  </div>
+
+  <!-- Filters & Search Bar Card -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0" placeholder="Search crop or mandi (e.g. Wheat, Muzaffarpur)..." [(ngModel)]="searchQuery">
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+          <select class="form-select border-start-0 ps-0" [(ngModel)]="selectedState" (change)="fetchRates()">
+            @for (st of statesList; track st) {
+              <option [value]="st">{{ st }} State Mandis</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-3 text-end">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold w-100 text-truncate">
+          <i class="bi bi-broadcast me-1"></i> {{ filteredRates.length }} Commodities Found
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rates Table / Grid View -->
+  @if (isLoading) {
+    <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+      <div class="spinner-border text-success mb-2" role="status"></div>
+      <p class="text-muted fw-semibold mb-0">Connecting to Mandi API & Fetching Live Commodity Prices...</p>
+    </div>
+  } @else {
+    <div class="row g-3">
+      @for (rate of filteredRates; track rate.commodity) {
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white hover-elevate h-100 border-start border-4 border-success">
+            <div class="d-flex align-items-start justify-content-between mb-3">
+              <div class="d-flex align-items-center gap-3">
+                <span class="fs-1 p-2 bg-light rounded-circle shadow-sm" style="line-height: 1;">{{ rate.icon }}</span>
+                <div>
+                  <h5 class="fw-bold text-dark mb-0">{{ rate.commodity }}</h5>
+                  <small class="text-muted"><i class="bi bi-building me-1"></i>{{ rate.market }}</small>
+                </div>
+              </div>
+              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small fw-bold">
+                {{ rate.change }}
+              </span>
+            </div>
+
+            <div class="bg-light p-3 rounded-3 mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted">Modal Price (मंडी दर)</small>
+                <strong class="text-success fs-4">{{ rate.modalPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+              </div>
+              <div class="progress mb-2" style="height: 6px;">
+                <div class="progress-bar bg-success" style="width: 75%;"></div>
+              </div>
+              <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
+                <span>Min: {{ rate.minPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                <span>Max: {{ rate.maxPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center text-muted small mt-auto pt-2 border-top">
+              <span><i class="bi bi-clock me-1"></i>Today's Rate</span>
+              <span class="fw-bold text-dark">Per {{ rate.unit }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

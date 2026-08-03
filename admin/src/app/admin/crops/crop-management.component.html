@@ -1,0 +1,65 @@
+<div class="crop-page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1"><i class="bi bi-tree-fill text-warning me-2"></i>Crop Listings Control</h3>
+      <p class="text-secondary small mb-0">Inspect and monitor all crop listings uploaded by registered farmers</p>
+    </div>
+    <button (click)="loadCrops()" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+  </div>
+
+  <div class="card bg-white border p-3 mb-4 rounded-4 shadow-sm">
+    <div class="input-group">
+      <span class="input-group-text bg-light border-end-0 text-warning"><i class="bi bi-search"></i></span>
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="filterCrops()" class="form-control bg-light border-start-0 text-dark" placeholder="Filter crops by name, location or farmer...">
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-warning" role="status"></div>
+    <p class="text-secondary mt-2">Loading crop listings...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="table-responsive rounded-4 border bg-white shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Crop Details</th>
+          <th>Farmer Name</th>
+          <th>Quantity & Price</th>
+          <th>Location</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let crop of filteredCrops">
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img [src]="crop.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=300&q=80'" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+              <div>
+                <span class="fw-bold text-dark d-block">{{ crop.cropName || 'Wheat Grade A' }}</span>
+                <span class="text-secondary small">{{ crop.variety || 'Standard Variety' }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="fw-semibold text-dark">{{ crop.farmer?.name || 'Rajesh Kumar' }}</span>
+            <span class="text-secondary small d-block">{{ crop.farmer?.mobile || '9876543210' }}</span>
+          </td>
+          <td>
+            <span class="fw-bold text-success">{{ crop.quantity || '100' }} Quintal</span>
+            <span class="text-secondary small d-block">₹{{ crop.expectedPrice || 2500 }}/Qtl</span>
+          </td>
+          <td>
+            <span class="badge bg-light border text-dark">{{ crop.location || 'Khalilabad' }}</span>
+          </td>
+          <td>
+            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1">Active</span>
+          </td>
+        </tr>
+        <tr *ngIf="filteredCrops.length === 0">
+          <td colspan="5" class="text-center text-secondary py-4">No crops match your search criteria.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

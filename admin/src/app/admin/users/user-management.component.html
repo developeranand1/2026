@@ -1,0 +1,66 @@
+<div class="user-page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1"><i class="bi bi-people-fill text-info me-2"></i>Farmers & Buyers Directory</h3>
+      <p class="text-secondary small mb-0">View registered agricultural sellers and mill buyers</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="d-flex gap-2 mb-4 border-bottom pb-3">
+    <button (click)="activeTab = 'farmers'" class="btn btn-sm rounded-pill px-4 fw-bold" [class.btn-success]="activeTab === 'farmers'" [class.btn-outline-secondary]="activeTab !== 'farmers'">
+      <i class="bi bi-person-fill me-1"></i>Farmers Directory ({{ demoFarmers.length }})
+    </button>
+    <button (click)="activeTab = 'buyers'" class="btn btn-sm rounded-pill px-4 fw-bold" [class.btn-info]="activeTab === 'buyers'" [class.btn-outline-secondary]="activeTab !== 'buyers'">
+      <i class="bi bi-building-check me-1"></i>Buyers & Millers ({{ demoBuyers.length }})
+    </button>
+  </div>
+
+  <!-- Farmers Table -->
+  <div *ngIf="activeTab === 'farmers'" class="table-responsive rounded-4 border bg-white shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Farmer Name</th>
+          <th>Mobile Number</th>
+          <th>Location</th>
+          <th>Crops Listed</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of demoFarmers">
+          <td><span class="fw-bold text-dark">{{ f.name }}</span></td>
+          <td><span class="text-success font-monospace">{{ f.mobile }}</span></td>
+          <td class="text-secondary">{{ f.location }}</td>
+          <td><span class="badge bg-success bg-opacity-10 text-success">{{ f.cropsCount }} Crops</span></td>
+          <td><span class="badge bg-success border border-success">{{ f.status }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Buyers Table -->
+  <div *ngIf="activeTab === 'buyers'" class="table-responsive rounded-4 border bg-white shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Company / Mill Name</th>
+          <th>Contact Person</th>
+          <th>Mobile</th>
+          <th>GST Number</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of demoBuyers">
+          <td><span class="fw-bold text-dark">{{ b.name }}</span></td>
+          <td class="text-secondary">{{ b.contactPerson }}</td>
+          <td><span class="text-info font-monospace">{{ b.mobile }}</span></td>
+          <td><code>{{ b.gst }}</code></td>
+          <td><span class="badge bg-info text-white">{{ b.status }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

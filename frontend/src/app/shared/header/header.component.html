@@ -1,0 +1,111 @@
+<div class="topbar">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span>
+            <i class="bi bi-truck me-1"></i>
+            Fast delivery available in selected cities
+        </span>
+
+        <div class="d-none d-md-flex gap-3">
+            <span>
+                <i class="bi bi-telephone me-1"></i>
+                +91 98765 43210
+            </span>
+
+            <span>
+                <i class="bi bi-envelope me-1"></i>
+                supportgaonbazar.com
+            </span>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg bg-white sticky-top border-bottom">
+    <div class="container">
+
+        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+            <span class="logo-icon">
+                <i class="bi bi-flower1"></i>
+            </span>
+
+            <span class="logo-text">
+                <strong>Gaon<span>Bazar</span></strong>
+                <small>Your Trusted Farming Marketplace</small>
+            </span>
+        </a>
+
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
+            aria-label="Open navigation menu">
+
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="mainNavbar" class="collapse navbar-collapse">
+            <ul class="navbar-nav mx-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/">
+                        Home
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/farmer-journey">
+                        Farmer Demo
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/buyer-journey">
+                        Buyer Demo
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/farmer-journey">
+                        Become a Farmer Partner
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+
+                <button class="header-icon" type="button" aria-label="Search">
+
+                    <i class="bi bi-search"></i>
+                </button>
+
+                <button class="header-icon position-relative" type="button" aria-label="Shopping cart">
+
+                    <i class="bi bi-cart3"></i>
+
+                    <span class="cart-count">
+                        2
+                    </span>
+                </button>
+
+                @if (!isLoggedIn) {
+                  <a class="btn btn-outline-success btn-sm rounded-pill px-3" routerLink="/login" [queryParams]="{mode: 'login'}">
+                      Login
+                  </a>
+                  <a class="btn btn-success btn-sm rounded-pill px-3" routerLink="/login" [queryParams]="{mode: 'register'}">
+                      Register
+                  </a>
+                } @else {
+                  <span class="text-success fw-semibold me-2 d-none d-md-inline">👋 नमस्ते, {{ userName }}</span>
+                  <a class="btn btn-outline-success btn-sm rounded-pill px-3" 
+                     [routerLink]="userRole === 'farmer' ? '/farmer-journey' : '/buyer-journey'" 
+                     [queryParams]="{step: userRole === 'farmer' ? 10 : 8}">
+                      Dashboard
+                  </a>
+                  <button class="btn btn-danger btn-sm rounded-pill px-3 ms-1" (click)="logout()">
+                      Logout
+                  </button>
+                }
+
+            </div>
+        </div>
+
+    </div>
+</nav>

@@ -1,0 +1,344 @@
+<section class="page-hero">
+    <div class="hero-pattern"></div>
+
+    <div class="container position-relative">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="page-badge">
+                    <i class="bi bi-flower1"></i>
+                    About GaonBazar
+                </span>
+
+                <h1>
+                    Connecting Farmers,
+                    <span>Markets and Families</span>
+                </h1>
+
+                <p>
+                    GaonBazar is a digital agriculture marketplace designed to
+                    connect farmers, sellers, buyers, transport partners, and local
+                    communities through one trusted platform.
+                </p>
+
+                <a routerLink="/contact" class="btn btn-warning rounded-pill px-4">
+                    Contact Us
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="hero-visual">
+                    <span class="main-icon">👨🏽‍🌾</span>
+
+                    <div class="floating-card card-one">
+                        <i class="bi bi-patch-check-fill"></i>
+                        Verified Farmers
+                    </div>
+
+                    <div class="floating-card card-two">
+                        <i class="bi bi-basket2-fill"></i>
+                        Fresh Products
+                    </div>
+
+                    <div class="floating-card card-three">
+                        <i class="bi bi-cash-coin"></i>
+                        Fair Pricing
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="story-visual">
+                    <div class="farm-scene">
+                        <span class="sun"></span>
+                        <span class="cloud cloud-one">☁</span>
+                        <span class="cloud cloud-two">☁</span>
+                        <span class="farmer">👨🏽‍🌾</span>
+                        <span class="crop crop-one">🌾</span>
+                        <span class="crop crop-two">🥬</span>
+                        <span class="crop crop-three">🥕</span>
+                        <div class="ground"></div>
+                    </div>
+
+                    <div class="experience-card">
+                        <strong>Growing Together</strong>
+                        <span>Farmers, sellers and buyers</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="section-heading">
+                    <span>Our Story</span>
+
+                    <h2>
+                        Building a Better Digital Marketplace for Agriculture
+                    </h2>
+
+                    <p>
+                        Many farmers still depend on limited local markets and
+                        traditional selling methods. Buyers also find it difficult to
+                        discover fresh and trusted agricultural products directly from
+                        verified sources.
+                    </p>
+
+                    <p>
+                        GaonBazar aims to solve this problem by creating a simple digital
+                        marketplace where farmers can list crops, sellers can manage
+                        products, and buyers can purchase fresh produce with confidence.
+                    </p>
+                </div>
+
+                <div class="story-points">
+                    <div class="story-point">
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <div>
+                            <h3>Direct Farmer Access</h3>
+
+                            <p>
+                                Buyers can discover products directly from verified farmers
+                                and local sellers.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="story-point">
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <div>
+                            <h3>Digital Business Tools</h3>
+
+                            <p>
+                                Farmers and sellers can manage products, inventory, orders,
+                                and earnings.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="story-point">
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <div>
+                            <h3>Reliable Marketplace Experience</h3>
+
+                            <p>
+                                Secure payments, order tracking, customer support, and
+                                transparent processes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mission-section section-soft">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <article class="mission-card h-100">
+                    <div class="mission-icon">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+
+                    <span>Our Mission</span>
+
+                    <h2>
+                        Make Agricultural Commerce Simple and Fair
+                    </h2>
+
+                    <p>
+                        Our mission is to help farmers reach more buyers, improve market
+                        access, reduce unnecessary barriers, and build a transparent
+                        digital ecosystem for agricultural trade.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-lg-6">
+                <article class="mission-card h-100">
+                    <div class="mission-icon">
+                        <i class="bi bi-eye"></i>
+                    </div>
+
+                    <span>Our Vision</span>
+
+                    <h2>
+                        A Connected and Empowered Rural Economy
+                    </h2>
+
+                    <p>
+                        We want to create a future where every farmer can use technology,
+                        access wider markets, manage business digitally, and grow with
+                        confidence.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section values-section">
+    <div class="container">
+        <div class="section-heading text-center mx-auto">
+            <span>Our Core Values</span>
+
+            <h2>
+                Principles That Guide GaonBazar
+            </h2>
+
+            <p>
+                We are building the platform around trust, fairness, responsibility,
+                and long-term value.
+            </p>
+        </div>
+
+        <div class="row g-3 mt-3">
+            @for (value of values; track value.title) {
+            <div class="col-sm-6 col-lg-3">
+                <article class="value-card h-100">
+                    <div class="value-icon">
+                        <i class="bi {{ value.icon }}"></i>
+                    </div>
+
+                    <h3>
+                        {{ value.title }}
+                    </h3>
+
+                    <p>
+                        {{ value.description }}
+                    </p>
+                </article>
+            </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4 text-center">
+            @for (stat of stats; track stat.label) {
+            <div class="col-6 col-lg-3">
+                <article class="stat-item">
+                    <strong>
+                        {{ stat.value }}
+                    </strong>
+
+                    <span>
+                        {{ stat.label }}
+                    </span>
+                </article>
+            </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section team-section">
+    <div class="container">
+        <div class="section-heading text-center mx-auto">
+            <span>Our Ecosystem</span>
+
+            <h2>
+                One Platform for Every Marketplace Partner
+            </h2>
+
+            <p>
+                GaonBazar supports the complete agriculture marketplace ecosystem.
+            </p>
+        </div>
+
+        <div class="row g-3 mt-3">
+            <div class="col-md-6 col-lg-3">
+                <article class="partner-card h-100">
+                    <div class="partner-icon">
+                        👨🏽‍🌾
+                    </div>
+
+                    <h3>Farmers</h3>
+
+                    <p>
+                        List crops, manage stock, receive orders, and track earnings.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <article class="partner-card h-100">
+                    <div class="partner-icon">
+                        🛒
+                    </div>
+
+                    <h3>Buyers</h3>
+
+                    <p>
+                        Search products, place orders, make payments, and track delivery.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <article class="partner-card h-100">
+                    <div class="partner-icon">
+                        🏪
+                    </div>
+
+                    <h3>Sellers</h3>
+
+                    <p>
+                        Manage products, inventory, orders, sales, and settlements.
+                    </p>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <article class="partner-card h-100">
+                    <div class="partner-icon">
+                        🚚
+                    </div>
+
+                    <h3>Transport Partners</h3>
+
+                    <p>
+                        Accept assignments, manage delivery routes, and update status.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about-cta">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span>Join the GaonBazar Community</span>
+
+                <h2>
+                    Grow Your Business with a Trusted Agriculture Marketplace
+                </h2>
+
+                <p>
+                    Register as a farmer, seller, buyer, or transport partner and become
+                    part of a connected digital agriculture ecosystem.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <a href="#" class="btn btn-warning rounded-pill px-4">
+                    Create Your Account
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

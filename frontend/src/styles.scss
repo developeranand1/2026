@@ -1,0 +1,24 @@
+:root {
+    --gb-green-dark: #0d3d20;
+    --gb-green: #198754;
+    --gb-green-light: #e5f4e9;
+    --gb-yellow: #f2c94c;
+    --gb-text: #183322;
+    --gb-muted: #6e7c71;
+    --gb-background: #f6f9f5;
+    --gb-white: #ffffff;
+    --gb-border: #dfe8e1;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--gb-white);
+    color: var(--gb-text);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+}
