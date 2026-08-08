@@ -3,8 +3,8 @@
     overflow: hidden;
     padding: 65px 0;
     background: linear-gradient(120deg,
-            var(--gb-green-dark),
-            var(--gb-green));
+            var(--gb-green-dark, #1b4332),
+            var(--gb-green, #2d6a4f));
     color: white;
 }
 
@@ -22,81 +22,87 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 12px;
+    padding: 7px 14px;
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 30px;
     background: rgba(255, 255, 255, 0.08);
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .policy-hero h1 {
-    margin: 14px 0 8px;
-    font-size: clamp(35px, 5vw, 55px);
-    font-weight: 600;
+    margin: 14px 0 10px;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
 }
 
 .policy-hero>.container>p {
-    max-width: 650px;
+    max-width: 680px;
     margin: 0;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
     line-height: 1.7;
 }
 
 .updated-date {
     margin-top: 14px;
-    color: rgba(255, 255, 255, 0.65);
-    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
 }
 
 .policy-section {
-    padding: 60px 0;
-    background: var(--gb-background);
+    padding: 55px 0;
+    background: var(--gb-background, #f8f9fa);
 }
 
 .policy-sidebar {
     position: sticky;
     top: 95px;
-    padding: 20px;
-    border: 1px solid var(--gb-border);
-    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid var(--gb-border, #e9ecef);
+    border-radius: 16px;
     background: white;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
 }
 
 .policy-sidebar h3 {
     margin-bottom: 14px;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
+    color: #212529;
 }
 
 .policy-sidebar nav {
     display: grid;
-    gap: 4px;
+    gap: 6px;
 }
 
 .policy-sidebar a {
-    padding: 8px 10px;
-    border-radius: 7px;
-    color: var(--gb-muted);
-    font-size: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: var(--gb-muted, #495057);
+    font-size: 13px;
+    font-weight: 500;
     text-decoration: none;
+    transition: all 0.2s ease;
 }
 
 .policy-sidebar a:hover {
-    background: var(--gb-green-light);
-    color: var(--gb-green);
+    background: #e8f5e9;
+    color: #2d6a4f;
 }
 
 .policy-content {
-    padding: 30px;
-    border: 1px solid var(--gb-border);
-    border-radius: 16px;
+    padding: 36px;
+    border: 1px solid var(--gb-border, #e9ecef);
+    border-radius: 18px;
     background: white;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
 }
 
 .policy-content section {
-    padding-top: 15px;
-    margin-bottom: 32px;
+    padding-top: 10px;
+    margin-bottom: 34px;
     scroll-margin-top: 100px;
 }
 
@@ -105,77 +111,89 @@
 }
 
 .policy-content h2 {
-    margin-bottom: 12px;
-    color: var(--gb-text);
-    font-size: 19px;
-    font-weight: 600;
+    margin-bottom: 14px;
+    color: #1b4332;
+    font-size: 21px;
+    font-weight: 700;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 8px;
 }
 
 .policy-content h3 {
-    margin: 18px 0 8px;
-    color: var(--gb-text);
-    font-size: 13px;
+    margin: 20px 0 10px;
+    color: #212529;
+    font-size: 16px;
     font-weight: 600;
 }
 
 .policy-content p,
 .policy-content li {
-    color: var(--gb-muted);
-    font-size: 11px;
+    color: #495057;
+    font-size: 14px;
     line-height: 1.8;
 }
 
 .policy-content ul,
 .policy-content ol {
-    padding-left: 20px;
+    padding-left: 22px;
 }
 
 .policy-content li {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .intro-box,
 .warning-box {
     display: flex;
-    gap: 11px;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 11px;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    border-radius: 14px;
 }
 
 .intro-box {
-    background: var(--gb-green-light);
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
 }
 
 .warning-box {
-    margin-top: 15px;
+    margin-top: 18px;
     background: #fff7dd;
+    border: 1px solid #ffe082;
 }
 
 .intro-box i {
-    color: var(--gb-green);
+    color: #2d6a4f;
+    margin-top: 2px;
 }
 
 .warning-box i {
     color: #c58700;
+    margin-top: 2px;
 }
 
 .intro-box p,
 .warning-box p {
     margin: 0;
+    color: #1b4332;
+    font-size: 14px;
+    line-height: 1.65;
 }
 
 .contact-box {
-    padding: 16px;
-    border-radius: 11px;
-    background: var(--gb-background);
+    padding: 20px;
+    border-radius: 14px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
 }
 
 .contact-box p {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 0 0 8px;
+    gap: 10px;
+    margin: 0 0 10px;
+    font-size: 14px;
 }
 
 .contact-box p:last-child {
@@ -183,44 +201,63 @@
 }
 
 .contact-box i {
-    color: var(--gb-green);
+    color: #2d6a4f;
+    font-size: 16px;
 }
 
 .legal-note {
-    padding: 16px;
-    margin-top: 28px;
-    border-left: 4px solid var(--gb-yellow);
-    border-radius: 8px;
+    padding: 18px 20px;
+    margin-top: 32px;
+    border-left: 4px solid #ffb703;
+    border-radius: 10px;
     background: #fffaf0;
-    color: var(--gb-muted);
-    font-size: 10px;
+    color: #495057;
+    font-size: 13px;
     line-height: 1.7;
 }
 
 .legal-note strong {
-    color: var(--gb-text);
+    color: #212529;
 }
 
 @media (max-width: 991px) {
     .policy-sidebar {
-        position: static;
+        display: none !important;
     }
 }
 
 @media (max-width: 767px) {
     .policy-hero {
-        padding: 50px 0;
+        padding: 45px 0;
     }
 
     .policy-hero h1 {
-        font-size: 34px;
+        font-size: 28px;
+    }
+
+    .policy-hero>.container>p {
+        font-size: 14px;
     }
 
     .policy-section {
-        padding: 45px 0;
+        padding: 35px 0;
     }
 
     .policy-content {
         padding: 20px;
+    }
+
+    .policy-content h2 {
+        font-size: 18px;
+    }
+
+    .policy-content h3 {
+        font-size: 15px;
+    }
+
+    .policy-content p,
+    .policy-content li {
+        font-size: 13px;
+        line-height: 1.7;
     }
 }

@@ -1,202 +1,167 @@
-<section class="mandi-rates-section py-5">
+<section class="mandi-rates-section py-4 py-md-5">
     <div class="container">
-        
-        <div class="row align-items-end g-3 mb-4">
-            <div class="col-md-8">
-                <div class="section-title-box">
-                    <span class="mandi-badge">
-                        <i class="bi bi-graph-up-arrow"></i>
-                        Live Mandi Prices
-                    </span>
-                    <h2 class="mandi-title">Mandi Bhav (Daily Rates)</h2>
-                    <p class="mandi-subtitle text-muted mb-0">
-                        <i class="bi bi-geo-alt-fill text-danger"></i> {{ locationStatus }}
-                    </p>
-                </div>
+
+        <!-- Title & Location Bar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <span class="mandi-badge mb-2 d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-broadcast pulse-icon text-success"></i>
+                    Live APMC Market Feeds
+                </span>
+                <h2 class="mandi-title fw-bold text-dark mb-1">Mandi Bhav (Daily Commodity Rates)</h2>
+                <p class="mandi-subtitle text-muted mb-0">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ locationStatus }}
+                </p>
             </div>
-            <div class="col-md-4 text-md-end text-start">
-                <div class="d-inline-flex flex-column gap-1">
-                    <span class="badge date-badge">
-                        <i class="bi bi-calendar3"></i> Date: {{ ratesDate || 'Today' }}
-                    </span>
-                    <span class="badge source-badge">
-                        <i class="bi bi-info-circle"></i> Source: {{ ratesSource === 'live_scraped' ? 'Live AGMARKNET Scraper' : 'Stored Fallback Rates' }}
-                    </span>
-                </div>
-            </div>
-        </div>
 
-        <!-- Filter Controls -->
-        <div class="card filter-card shadow-sm border-0 mb-4">
-            <div class="card-body">
-                <form class="row g-3" (submit)="$event.preventDefault(); fetchMandiRates()">
-                    <div class="col-lg-3 col-md-6">
-                        <label for="stateFilter" class="form-label text-success font-weight-bold">State</label>
-                        <select id="stateFilter" name="selectedState" [(ngModel)]="selectedState" (change)="fetchMandiRates()" class="form-select">
-                            <option *ngFor="let s of statesList" [value]="s">{{ s }}</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-lg-3 col-md-6">
-                        <label for="districtFilter" class="form-label text-success font-weight-bold">District</label>
-                        <input id="districtFilter" name="selectedDistrict" type="text" [(ngModel)]="selectedDistrict" placeholder="Enter district (e.g. Gorakhpur)" (keyup.enter)="fetchMandiRates()" class="form-control" />
-                    </div>
-
-                    <div class="col-lg-3 col-md-6">
-                        <label for="commodityFilter" class="form-label text-success font-weight-bold">Commodity</label>
-                        <select id="commodityFilter" name="selectedCommodity" [(ngModel)]="selectedCommodity" (change)="fetchMandiRates()" class="form-select">
-                            <option value="">All Commodities</option>
-                            <option *ngFor="let c of commoditiesList" [value]="c">{{ c }}</option>
-                        </select>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6 d-flex align-items-end">
-                        <button type="submit" class="btn btn-search w-100 py-2">
-                            <i class="bi bi-search"></i> Search Mandi Rates
-                        </button>
-                    </div>
-                </form>
+            <!-- Header Controls & Auto-Slide Indicator -->
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold shadow-sm" (click)="requestLocationAndFetchRates()" [disabled]="isLocating">
+                    <i class="bi bi-crosshair me-1 text-danger" [class.spin]="isLocating"></i> Auto-Detect Location
+                </button>
+                <span class="badge date-badge bg-dark text-white rounded-pill px-3 py-2">
+                    <i class="bi bi-calendar3 me-1 text-warning"></i> Date: {{ ratesDate || 'Today' }}
+                </span>
             </div>
         </div>
 
-        <!-- Loading spinner -->
-        <div *ngIf="loadingRates" class="text-center py-5">
-            <div class="spinner-border text-success" role="status">
+        <!-- Loading Spinner -->
+        <div *ngIf="loadingRates" class="text-center py-5 bg-white rounded-4 shadow-sm border">
+            <div class="spinner-border text-success mb-2" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-2 text-muted">Fetching latest mandi bhav from AGMARKNET...</p>
+            <p class="mt-2 text-muted fw-semibold mb-0">Fetching live mandi rates for {{ selectedState }} {{ selectedDistrict ? '(' + selectedDistrict + ')' : '' }}...</p>
         </div>
 
-        <!-- Rates Display -->
-        <div *ngIf="!loadingRates" class="row g-4">
-            
-            <!-- Mandi Rates List Column -->
-            <div class="col-lg-7 col-12">
-                <div class="card rates-list-card border-0 shadow-sm">
-                    <div class="card-header bg-success text-white py-3">
-                        <h5 class="mb-0 font-weight-bold"><i class="bi bi-shop"></i> Mandi Rates in {{ selectedDistrict || 'this state' }}</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div *ngIf="mandiRates.length === 0" class="text-center py-5">
-                            <i class="bi bi-exclamation-triangle text-warning display-4 d-block mb-2"></i>
-                            <p class="text-muted">No Mandi rates found. Try selecting another state or typing a different district.</p>
-                        </div>
-                        
-                        <div class="list-group list-group-flush" *ngIf="mandiRates.length > 0">
-                            <div *ngFor="let rate of mandiRates" 
-                                 class="list-group-item list-group-item-action p-3 rate-item" 
-                                 [class.active]="selectedMandiRateForFarmers === rate"
-                                 (click)="selectMandiRate(rate)"
-                                 style="cursor: pointer;">
-                                <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 fw-bold rate-crop-name">
-                                        <i class="bi bi-flower1"></i> {{ rate.commodity }}
-                                    </h6>
-                                    <span class="fw-bold rate-modal-price">
-                                        Modal: ₹{{ rate.modal_price }}/Qtl
-                                    </span>
-                                </div>
-                                <div class="d-flex w-100 justify-content-between align-items-center mt-2">
-                                    <small class="rate-market text-muted">
-                                        <i class="bi bi-geo-alt"></i> {{ rate.market }} ({{ rate.district }}, {{ rate.state }})
-                                    </small>
-                                    <small class="rate-min-max text-muted">
-                                        Min: ₹{{ rate.min_price }} | Max: ₹{{ rate.max_price }}
-                                    </small>
-                                </div>
-                                <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
-                                    <span class="badge variety-badge">
-                                        Variety: {{ rate.variety }}
-                                    </span>
-                                    <span class="arrival-date text-muted small">
-                                        <i class="bi bi-clock"></i> Arrival: {{ rate.arrival_date }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- CONTINUOUS SLIDING CAROUSEL DISPLAY -->
+        <div *ngIf="!loadingRates">
+
+            <div *ngIf="mandiRates.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm border">
+                <i class="bi bi-exclamation-triangle text-warning display-4 d-block mb-2"></i>
+                <h5 class="fw-bold text-dark mb-1">No Mandi Rates Found</h5>
+                <p class="text-muted small mb-0">Try refreshing location or checking back during morning auction hours.</p>
             </div>
 
-            <!-- Farmer Listings Column (kisan ke details) -->
-            <div class="col-lg-5 col-12">
-                <div class="card farmers-list-card border-0 shadow-sm">
-                    <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-people-fill"></i> Farmers on GaonBazar</h5>
-                        <span class="badge bg-dark text-white" *ngIf="selectedMandiRateForFarmers">
-                            {{ selectedMandiRateForFarmers.commodity }}
+            <div *ngIf="mandiRates.length > 0" class="carousel-wrapper position-relative" (mouseenter)="pauseSlide()" (mouseleave)="resumeSlide()">
+
+                <!-- Carousel Controls Top Bar -->
+                <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-arrow-repeat text-success pulse-icon" [class.spin]="!isPaused"></i>
+                            {{ isPaused ? 'Paused on Hover' : 'Live Continuous 1 by 1 Loop' }}
                         </span>
+                        <small class="text-muted d-none d-sm-inline">Card {{ activeSlideIndex + 1 }} of {{ mandiRates.length }}</small>
                     </div>
-                    <div class="card-body">
-                        <div *ngIf="!selectedMandiRateForFarmers" class="text-center py-5 text-muted">
-                            <i class="bi bi-arrow-left-circle display-4 mb-2 d-block"></i>
-                            Select a Mandi rate card to view contact details of farmers selling this crop.
-                        </div>
 
-                        <div *ngIf="selectedMandiRateForFarmers">
-                            <h6 class="text-muted mb-3 font-weight-bold">
-                                Direct Buying Options for <strong>{{ selectedMandiRateForFarmers.commodity }}</strong>:
-                            </h6>
-                            
-                            <div *ngIf="filteredFarmers.length === 0" class="text-center py-4">
-                                <p class="text-muted">No registered farmers found for this crop in this district yet.</p>
-                                <a routerLink="/farmer-journey" class="btn btn-sm btn-outline-success">
-                                    <i class="bi bi-plus-circle"></i> Register as a Farmer
-                                </a>
-                            </div>
+                    <!-- Slide Prev / Next Arrow Buttons -->
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-light btn-carousel-arrow rounded-circle border shadow-sm" (click)="prevSlide()" title="Previous Card">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button type="button" class="btn btn-light btn-carousel-arrow rounded-circle border shadow-sm" (click)="nextSlide()" title="Next Card">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
 
-                            <div class="row g-3" *ngIf="filteredFarmers.length > 0">
-                                <div class="col-12" *ngFor="let kisan of filteredFarmers">
-                                    <div class="card farmer-card border-light shadow-sm">
-                                        <div class="card-body p-3">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <div>
-                                                    <h6 class="mb-0 fw-bold text-success">
-                                                        <i class="bi bi-person-badge-fill"></i> {{ kisan.farmerName }}
-                                                    </h6>
-                                                    <small class="text-muted">
-                                                        <i class="bi bi-geo-alt-fill text-danger"></i> {{ kisan.location }}
-                                                    </small>
-                                                </div>
-                                                <span class="badge grade-badge">
-                                                    {{ kisan.grade || 'Grade A' }}
-                                                </span>
-                                            </div>
-                                            
-                                            <div class="d-flex justify-content-between align-items-center my-3 price-info-box p-2 rounded">
-                                                <div>
-                                                    <span class="text-muted small d-block">Selling Price</span>
-                                                    <strong class="text-primary h5 mb-0">₹{{ kisan.expectedPrice }}/{{ kisan.unit || 'Qtl' }}</strong>
-                                                </div>
-                                                <div class="text-end">
-                                                    <span class="text-muted small d-block">Quantity Available</span>
-                                                    <strong class="text-dark">{{ kisan.quantity }} {{ kisan.unit || 'Qtl' }}</strong>
-                                                </div>
-                                            </div>
+                <!-- CAROUSEL TRACK -->
+                <div class="carousel-container overflow-hidden rounded-4 py-2 px-1">
+                    <div class="carousel-track d-flex transition-transform" [style.transform]="'translateX(-' + (activeSlideIndex * 100) + '%)'">
 
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <a href="tel:{{ kisan.mobile }}" class="btn btn-sm btn-outline-success w-100">
-                                                        <i class="bi bi-telephone-fill"></i> Call Farmer
-                                                    </a>
-                                                </div>
-                                                <div class="col-6">
-                                                    <a href="https://wa.me/{{ kisan.mobile }}?text=Hello%20{{ kisan.farmerName }},%20I%20saw%20your%20listing%20for%20{{ kisan.cropName }}%20on%20GaonBazar" 
-                                                       target="_blank" 
-                                                       class="btn btn-sm btn-success w-100 btn-whatsapp">
-                                                        <i class="bi bi-whatsapp"></i> WhatsApp
-                                                    </a>
-                                                </div>
+                        @for (rate of mandiRates; track rate.commodity; let idx = $index) {
+                        <div class="carousel-slide flex-shrink-0 px-2">
+                            <div class="card premium-mandi-card border-0 shadow-sm rounded-4 bg-white h-100 d-flex flex-column justify-content-between p-3.5 transition-hover">
+
+                                <div>
+                                    <!-- Header: Avatar + Title + Trend Pill -->
+                                    <div class="d-flex align-items-start justify-content-between mb-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="crop-avatar-circle shadow-sm" [class]="rate.badgeClass">
+                                                <i class="bi {{ rate.icon || 'bi-flower1' }} fs-4"></i>
                                             </div>
+                                            <div>
+                                                <h5 class="fw-bold text-dark mb-0 font-crop-name">{{ rate.commodity }}</h5>
+                                                <small class="text-muted font-market-sub">
+                                                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>{{ rate.market }}
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <span class="badge rounded-pill px-2.5 py-1.5 small fw-bold shadow-2xs"
+                                            [class.bg-success-subtle]="rate.isUp" [class.text-success]="rate.isUp"
+                                            [class.bg-danger-subtle]="!rate.isUp" [class.text-danger]="!rate.isUp">
+                                            <i class="bi me-1" [class.bi-arrow-up-right-circle-fill]="rate.isUp" [class.bi-arrow-down-right-circle-fill]="!rate.isUp"></i>
+                                            {{ rate.change }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Price Highlight Box -->
+                                    <div class="price-gradient-box p-3 rounded-3 mb-3 border">
+                                        <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                            <span class="text-muted small fw-semibold">Modal Mandi Rate</span>
+                                            <strong class="text-success fs-3 fw-bold font-price-number">₹{{ rate.modal_price }}/Qtl</strong>
+                                        </div>
+
+                                        <!-- Progress Bar -->
+                                        <div class="progress mb-2 rounded-pill" style="height: 6px; background-color: rgba(25, 135, 84, 0.15);">
+                                            <div class="progress-bar bg-success rounded-pill" style="width: 75%;"></div>
+                                        </div>
+
+                                        <!-- Min / Max Labels -->
+                                        <div class="d-flex justify-content-between text-muted font-min-max">
+                                            <span class="badge bg-white text-secondary border px-2 py-1">Min: ₹{{ rate.min_price }}</span>
+                                            <span class="badge bg-white text-secondary border px-2 py-1">Max: ₹{{ rate.max_price }}</span>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Card Footer & CTA Button -->
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center text-muted small pt-2 mb-3 border-top">
+                                        <span class="badge bg-light text-secondary border fw-normal px-2.5 py-1">
+                                            <i class="bi bi-patch-check-fill text-success me-1"></i> Variety: {{ rate.variety || 'Standard' }}
+                                        </span>
+                                        <span class="small text-muted">
+                                            <i class="bi bi-clock-history me-1 text-success"></i>Arrival: {{ rate.arrival_date || 'Today' }}
+                                        </span>
+                                    </div>
+
+                                    <a routerLink="/mandi-rates" class="btn btn-outline-success rounded-pill w-100 fw-bold btn-sm py-2 d-flex align-items-center justify-content-center gap-1">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        <span>View Full Mandi Rate Details</span>
+                                    </a>
+                                </div>
+
                             </div>
                         </div>
+                        }
+
                     </div>
                 </div>
+
+                <!-- Slide Dots Indicator Row -->
+                <div class="d-flex align-items-center justify-content-center gap-1.5 mt-3">
+                    @for (rate of mandiRates; track rate.commodity; let idx = $index) {
+                    <button type="button" class="carousel-dot border-0 transition-all"
+                        [class.active]="idx === activeSlideIndex"
+                        (click)="goToSlide(idx)"
+                        [title]="'Slide to ' + rate.commodity">
+                    </button>
+                    }
+                </div>
+
+            </div>
+
+            <!-- View All Rates Link Button -->
+            <div class="text-center mt-4 pt-3">
+                <a routerLink="/mandi-rates" class="btn btn-success rounded-pill px-4 py-2.5 fw-bold shadow-sm fs-6 d-inline-flex align-items-center gap-2">
+                    <span>Explore All Mandi Rates & Crop Intelligence</span>
+                    <i class="bi bi-arrow-right-circle-fill"></i>
+                </a>
             </div>
 
         </div>
+
     </div>
 </section>

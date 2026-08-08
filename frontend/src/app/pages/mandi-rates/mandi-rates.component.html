@@ -1,0 +1,323 @@
+<section class="mandi-hero">
+    <div class="hero-pattern"></div>
+
+    <div class="container position-relative text-center">
+        <span class="page-label">
+            <i class="bi bi-broadcast"></i>
+            Live APMC Market Rates
+        </span>
+
+        <h1>Mandi Bhav & Crop Price Intelligence</h1>
+
+        <p>
+            Explore daily commodity prices across government Mandis in India.
+            Real-time modal rates, price ranges, harvesting seasons, and market insights.
+        </p>
+
+        <div class="mandi-search">
+            <i class="bi bi-search"></i>
+
+            <input type="search" placeholder="Search crop or mandi (e.g. Wheat, Muzaffarpur, Onion)..." [(ngModel)]="searchQuery">
+            
+            @if (searchQuery) {
+            <button type="button" class="btn-clear" (click)="searchQuery = ''">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Filter & Category Section -->
+<section class="filter-section">
+    <div class="container">
+
+        <!-- Location & Date Status Bar -->
+        <div class="status-bar-card card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+            <div class="row align-items-center g-3">
+                <div class="col-md-7">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                        <div>
+                            <strong class="d-block text-dark font-sm">{{ locationStatus }}</strong>
+                            <small class="text-muted">Live APMC Mandi feeds loaded automatically</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 text-md-end">
+                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 me-2" (click)="autoDetectLocation()" [disabled]="isLocating">
+                        <i class="bi bi-crosshair me-1" [class.spin]="isLocating"></i> Auto-Detect My District
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm rounded-pill px-3" (click)="fetchMandiRates()">
+                        <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> Sync Rates
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <label class="form-label text-success fw-bold small">Select Mandi State</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-success"></i></span>
+                        <select class="form-select border-start-0 ps-0" [(ngModel)]="selectedState" (change)="fetchMandiRates()">
+                            @for (st of statesList; track st) {
+                            <option [value]="st">{{ st }} State Mandis</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label text-success fw-bold small">Filter District (Optional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Enter district (e.g. Muzaffarpur)..." [(ngModel)]="selectedDistrict" (keyup.enter)="fetchMandiRates()">
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-end pt-md-4">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold w-100 text-truncate">
+                        <i class="bi bi-check-circle-fill me-1"></i> {{ filteredCrops.length }} Crop Rates Live
+                    </span>
+                </div>
+            </div>
+
+            <!-- Category Chips -->
+            <div class="category-scroll-bar d-flex gap-2 overflow-auto pt-3 mt-3 border-top">
+                @for (cat of categoryList; track cat.value) {
+                <button type="button" class="btn btn-sm rounded-pill text-nowrap px-3 transition-all"
+                    [class.btn-success]="selectedCategory === cat.value"
+                    [class.btn-outline-secondary]="selectedCategory !== cat.value"
+                    (click)="setCategory(cat.value)">
+                    <i class="bi {{ cat.icon }} me-1"></i> {{ cat.label }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+            <div class="spinner-border text-success mb-2" role="status"></div>
+            <p class="text-muted fw-semibold mb-0">Connecting to Mandi API & Loading Crop Bhav for {{ selectedState }}...</p>
+        </div>
+        } @else if (filteredCrops.length === 0) {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+            <i class="bi bi-search text-muted display-4 d-block mb-2"></i>
+            <h5 class="fw-bold text-dark mb-1">No Mandi Rates Found</h5>
+            <p class="text-muted small mb-3">Try clearing search filters or selecting another state.</p>
+            <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-4" (click)="searchQuery = ''; selectedCategory = 'All'">
+                Reset Filters
+            </button>
+        </div>
+        } @else {
+
+        <!-- Crop Mandi Rate Cards Grid -->
+        <div class="row g-4">
+            @for (crop of filteredCrops; track crop.id) {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card crop-mandi-card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 transition-hover">
+
+                    <!-- Crop Image Banner -->
+                    <div class="crop-img-container position-relative">
+                        <img [src]="crop.image" [alt]="crop.commodity" class="card-img-top crop-card-img" />
+                        <div class="crop-img-overlay"></div>
+
+                        <!-- State & District Badge -->
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-dark-75 text-white backdrop-blur rounded-pill px-3 py-1 small">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ crop.market }}
+                        </span>
+
+                        <!-- Price Trend Badge -->
+                        <span class="position-absolute top-0 end-0 m-3 badge rounded-pill px-2 py-1 small fw-bold"
+                            [class.bg-success]="crop.isUp" [class.bg-danger]="!crop.isUp">
+                            {{ crop.change }}
+                        </span>
+
+                        <div class="position-absolute bottom-0 start-0 p-3 text-white">
+                            <h4 class="fw-bold mb-0 text-shadow">{{ crop.commodity }}</h4>
+                            <small class="text-white-75">{{ crop.hindiName }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
+
+                        <div>
+                            <!-- Modal Price Box -->
+                            <div class="price-summary-box p-3 rounded-3 mb-3 bg-light border">
+                                <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                    <span class="text-muted small">Modal Mandi Price</span>
+                                    <strong class="text-success fs-3">{{ crop.modalPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+                                </div>
+                                <div class="progress mb-2" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 75%;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
+                                    <span>Min: {{ crop.minPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                                    <span>Max: {{ crop.maxPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+                                </div>
+                            </div>
+
+                            <p class="crop-desc-preview text-muted small mb-3">
+                                {{ crop.description }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center text-muted small pt-2 mb-3 border-top">
+                                <span><i class="bi bi-calendar3 me-1 text-success"></i>Arrival: {{ crop.arrivalDate }}</span>
+                                <span class="fw-bold text-dark">Per {{ crop.unit }}</span>
+                            </div>
+
+                            <button type="button" class="btn btn-outline-success rounded-pill w-100 fw-bold btn-sm" (click)="openCropModal(crop)">
+                                <i class="bi bi-info-circle me-1"></i> View Full Details & Market Insights
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+    </div>
+</section>
+
+<!-- FAQ & Knowledge Section -->
+<section class="mandi-faq-section py-5 bg-white border-top mt-5">
+    <div class="container">
+        <div class="text-center max-w-700 mx-auto mb-4">
+            <span class="page-label bg-success-subtle text-success border border-success-subtle mb-2">
+                <i class="bi bi-question-circle"></i> Mandi Knowledge Center
+            </span>
+            <h2 class="fw-bold text-dark">Frequently Asked Mandi Trade Questions</h2>
+            <p class="text-muted small">Understand modal pricing, AGMARKNET auctions, and direct crop trade terms.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="accordion" id="mandiFaqAccordion">
+                    @for (faq of mandiFaqs; track faq.question; let idx = $index) {
+                    <div class="accordion-item border rounded-3 mb-2 overflow-hidden shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold text-dark" [class.collapsed]="idx !== 0" type="button"
+                                data-bs-toggle="collapse" [attr.data-bs-target]="'#mandiFaq' + idx"
+                                [attr.aria-expanded]="idx === 0" [attr.aria-controls]="'mandiFaq' + idx">
+                                <i class="bi bi-lightbulb text-success me-2"></i> {{ faq.question }}
+                            </button>
+                        </h2>
+
+                        <div [id]="'mandiFaq' + idx" class="accordion-collapse collapse" [class.show]="idx === 0" data-bs-parent="#mandiFaqAccordion">
+                            <div class="accordion-body text-muted small leading-relaxed bg-white">
+                                {{ faq.answer }}
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CROP DETAIL MODAL -->
+@if (showDetailModal && activeCropDetail) {
+<div class="modal-backdrop fade show" (click)="closeModal()"></div>
+<div class="modal d-block fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+
+            <div class="modal-header bg-success text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="crop-avatar-lg bg-white text-success rounded-circle">
+                        <i class="bi {{ activeCropDetail.icon }} fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">{{ activeCropDetail.commodity }}</h4>
+                        <small class="text-white-75">{{ activeCropDetail.hindiName }} | {{ activeCropDetail.market }}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" (click)="closeModal()" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+
+                <!-- Crop Banner & Price Summary -->
+                <div class="row g-3 mb-4 align-items-center">
+                    <div class="col-md-5">
+                        <img [src]="activeCropDetail.image" [alt]="activeCropDetail.commodity" class="img-fluid rounded-3 shadow-sm crop-modal-img" />
+                    </div>
+                    <div class="col-md-7">
+                        <div class="bg-success-subtle p-3 rounded-3 border border-success-subtle mb-3">
+                            <span class="text-success small d-block font-semibold">Today's Modal Rate</span>
+                            <strong class="text-success display-6 fw-bold">{{ activeCropDetail.modalPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+                            <small class="text-muted d-block">Per {{ activeCropDetail.unit }}</small>
+                        </div>
+
+                        <div class="row g-2 text-center">
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded-2 border">
+                                    <small class="text-muted d-block">Min Price</small>
+                                    <strong class="text-dark">{{ activeCropDetail.minPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded-2 border">
+                                    <small class="text-muted d-block">Max Price</small>
+                                    <strong class="text-dark">{{ activeCropDetail.maxPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Information Grid -->
+                <div class="bg-light p-3 rounded-3 mb-4 border">
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-square-fill text-success me-1"></i> Crop Specification</h6>
+                    <p class="text-muted small mb-3">{{ activeCropDetail.description }}</p>
+
+                    <div class="row g-2 text-muted small">
+                        <div class="col-6 col-sm-3">
+                            <span>Harvest Season:</span>
+                            <strong class="d-block text-dark">{{ activeCropDetail.season }}</strong>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <span>Variety Grade:</span>
+                            <strong class="d-block text-dark">{{ activeCropDetail.variety }}</strong>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <span>Mandi Arrival:</span>
+                            <strong class="d-block text-dark">{{ activeCropDetail.arrivalDate }}</strong>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <span>Price Trend:</span>
+                            <span class="badge rounded-pill px-2 py-1" [class.bg-success]="activeCropDetail.isUp" [class.bg-danger]="!activeCropDetail.isUp">
+                                {{ activeCropDetail.change }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Intelligence Tips -->
+                <div class="alert alert-warning border-warning rounded-3 mb-0 small">
+                    <i class="bi bi-graph-up text-warning-dark fs-5 me-2 align-middle"></i>
+                    <strong>Market Intelligence Tip:</strong> {{ activeCropDetail.marketTips }}
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" (click)="closeModal()">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+}

@@ -54,7 +54,7 @@
 
         @if (filteredCategories.length > 0) {
 
-        @for (category of filteredCategories; track category.title) {
+        @for (category of filteredCategories; track category.title; let catIdx = $index) {
         <section class="faq-group">
 
             <div class="faq-group-heading">
@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div class="accordion" [id]="'accordion-' + $index">
+            <div class="accordion" [id]="'accordion-' + catIdx">
 
                 @for (item of category.items; track item.id) {
                 <div class="accordion-item">
@@ -87,7 +87,7 @@
                     </h2>
 
                     <div [id]="item.id" class="accordion-collapse collapse" [class.show]="$first"
-                        [attr.data-bs-parent]="'#accordion-' + $parent.$index">
+                        [attr.data-bs-parent]="'#accordion-' + catIdx">
                         <div class="accordion-body">
                             {{ item.answer }}
                         </div>
@@ -138,7 +138,7 @@
             </div>
 
             <div class="col-lg-4 text-lg-end">
-                <a href="/contact" class="btn btn-warning rounded-pill px-4">
+                <a routerLink="/contact" class="btn btn-warning rounded-pill px-4">
                     Contact Support
                     <i class="bi bi-arrow-right ms-1"></i>
                 </a>

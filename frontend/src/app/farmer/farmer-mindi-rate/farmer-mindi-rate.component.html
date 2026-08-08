@@ -1,93 +1,283 @@
-<div class="farmer-mandi-rate-view animate-fade-in">
+<div class="farmer-mandi-rate-view animate-fade-in pb-5">
+
   <!-- Header Bar -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3 mb-md-4">
     <div>
-      <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+      <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-semibold mb-2">
+        <i class="bi bi-broadcast me-1 pulse-icon"></i> Live Govt Mandi Feed
+      </span>
+      <h2 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2 font-mobile-title">
         <i class="bi bi-graph-up-arrow text-success"></i>
-        Live APMC Mandi Rates (ताज़ा मंडी भाव)
-      </h3>
-      <p class="text-muted mb-0">Daily updated commodity prices across mandis in India</p>
+        Live Mandi Rates for {{ selectedState }} {{ selectedDistrict ? '(' + selectedDistrict + ')' : '' }}
+      </h2>
+      <p class="text-muted mb-0 small">Real-time daily commodity prices fetched live from government APMC mandis</p>
     </div>
 
-    <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" (click)="fetchRates()">
-      <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> Sync Latest Rates
-    </button>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <!-- Auto Detect Location Button -->
+      <button type="button" class="btn btn-outline-success rounded-pill px-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-1" (click)="autoDetectLocation()" [disabled]="isLocating">
+        <i class="bi bi-geo-alt-fill text-danger" [class.spin]="isLocating"></i>
+        <span>{{ isLocating ? 'Detecting Location...' : 'Auto-Detect Location' }}</span>
+      </button>
+
+      <!-- Sync Button -->
+      <button type="button" class="btn btn-success rounded-pill px-3 px-md-4 fw-bold shadow-sm d-inline-flex align-items-center justify-content-center" (click)="fetchRates()">
+        <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> Sync Live Rates
+      </button>
+
+      <!-- View Mode Toggle -->
+      <div class="btn-group rounded-pill p-1 bg-light border ms-auto ms-md-0" role="group">
+        <button type="button" class="btn btn-sm rounded-circle px-2" [class.btn-success]="viewMode === 'grid'" [class.btn-light]="viewMode !== 'grid'" (click)="toggleView('grid')" title="Grid View">
+          <i class="bi bi-grid-fill"></i>
+        </button>
+        <button type="button" class="btn btn-sm rounded-circle px-2" [class.btn-success]="viewMode === 'list'" [class.btn-light]="viewMode !== 'list'" (click)="toggleView('list')" title="List View">
+          <i class="bi bi-list-ul"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Filters & Search Bar Card -->
-  <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
-    <div class="row g-3 align-items-center">
-      <div class="col-md-5">
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-3 mb-md-4">
+    <div class="row g-2 g-md-3 align-items-center">
+      <div class="col-12 col-md-5">
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-          <input type="text" class="form-control border-start-0 ps-0" placeholder="Search crop or mandi (e.g. Wheat, Muzaffarpur)..." [(ngModel)]="searchQuery">
+          <input type="text" class="form-control border-start-0 ps-0"
+            placeholder="Search crop or mandi (e.g. Wheat, Muzaffarpur)..." [(ngModel)]="searchQuery">
+          @if (searchQuery) {
+          <button class="btn btn-light border border-start-0 text-muted" type="button" (click)="searchQuery = ''">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          }
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-7 col-md-4">
         <div class="input-group">
-          <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-success"></i></span>
           <select class="form-select border-start-0 ps-0" [(ngModel)]="selectedState" (change)="fetchRates()">
             @for (st of statesList; track st) {
-              <option [value]="st">{{ st }} State Mandis</option>
+            <option [value]="st">{{ st }} Mandis</option>
             }
           </select>
         </div>
       </div>
 
-      <div class="col-md-3 text-end">
-        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold w-100 text-truncate">
-          <i class="bi bi-broadcast me-1"></i> {{ filteredRates.length }} Commodities Found
+      <div class="col-5 col-md-3 text-end">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 px-md-3 py-2 fw-bold w-100 text-truncate">
+          <i class="bi bi-check-circle-fill me-1"></i> {{ filteredRates.length }} Live Prices
         </span>
       </div>
     </div>
+
+    <!-- Category Chips horizontal scroll for mobile -->
+    <div class="category-scroll-bar d-flex gap-2 overflow-auto pt-3 mt-2 border-top">
+      @for (cat of categoryList; track cat.value) {
+      <button type="button" class="btn btn-sm rounded-pill text-nowrap px-3 transition-all"
+        [class.btn-success]="selectedCategory === cat.value"
+        [class.btn-outline-secondary]="selectedCategory !== cat.value"
+        (click)="setCategory(cat.value)">
+        <i class="bi {{ cat.icon }} me-1"></i> {{ cat.label }}
+      </button>
+      }
+    </div>
   </div>
 
-  <!-- Rates Table / Grid View -->
+  <!-- Loading State -->
   @if (isLoading) {
-    <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
-      <div class="spinner-border text-success mb-2" role="status"></div>
-      <p class="text-muted fw-semibold mb-0">Connecting to Mandi API & Fetching Live Commodity Prices...</p>
-    </div>
+  <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+    <div class="spinner-border text-success mb-2" role="status"></div>
+    <p class="text-muted fw-semibold mb-0">Connecting to Mandi API & Fetching Live Prices for {{ selectedState }}...</p>
+  </div>
+  } @else if (filteredRates.length === 0) {
+  <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+    <i class="bi bi-search text-muted fs-1 d-block mb-2"></i>
+    <h5 class="fw-bold text-dark mb-1">No Live Mandi Rates Found</h5>
+    <p class="text-muted small mb-3">Try clearing search filters or selecting a different state.</p>
+    <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-4" (click)="searchQuery = ''; selectedCategory = 'All'">
+      Reset Search
+    </button>
+  </div>
   } @else {
-    <div class="row g-3">
-      @for (rate of filteredRates; track rate.commodity) {
-        <div class="col-12 col-md-6 col-xl-4">
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white hover-elevate h-100 border-start border-4 border-success">
-            <div class="d-flex align-items-start justify-content-between mb-3">
-              <div class="d-flex align-items-center gap-3">
-                <span class="fs-1 p-2 bg-light rounded-circle shadow-sm" style="line-height: 1;">{{ rate.icon }}</span>
-                <div>
-                  <h5 class="fw-bold text-dark mb-0">{{ rate.commodity }}</h5>
-                  <small class="text-muted"><i class="bi bi-building me-1"></i>{{ rate.market }}</small>
-                </div>
-              </div>
-              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small fw-bold">
-                {{ rate.change }}
-              </span>
-            </div>
 
-            <div class="bg-light p-3 rounded-3 mb-2">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <small class="text-muted">Modal Price (मंडी दर)</small>
-                <strong class="text-success fs-4">{{ rate.modalPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+  <!-- GRID VIEW -->
+  @if (viewMode === 'grid') {
+  <div class="row g-3">
+    @for (rate of filteredRates; track rate.commodity) {
+    <div class="col-12 col-sm-6 col-xl-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white hover-elevate h-100 position-relative border-start border-4 border-success d-flex flex-column justify-content-between">
+
+        <div>
+          <div class="d-flex align-items-start justify-content-between mb-2 pb-1">
+            <div class="d-flex align-items-center gap-3">
+              <div class="crop-icon-avatar bg-success-subtle text-success rounded-circle shadow-sm">
+                <i class="bi {{ rate.icon }} fs-4"></i>
               </div>
-              <div class="progress mb-2" style="height: 6px;">
-                <div class="progress-bar bg-success" style="width: 75%;"></div>
-              </div>
-              <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
-                <span>Min: {{ rate.minPrice | currency:'INR':'symbol':'1.0-0' }}</span>
-                <span>Max: {{ rate.maxPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+              <div>
+                <h5 class="fw-bold text-dark mb-0 font-crop-name">{{ rate.commodity }}</h5>
+                <small class="text-muted d-block"><i class="bi bi-building me-1 text-secondary"></i>{{ rate.market }}</small>
               </div>
             </div>
+            <span class="badge rounded-pill px-2 py-1 small fw-bold"
+              [class.bg-success-subtle]="rate.isUp" [class.text-success]="rate.isUp"
+              [class.bg-danger-subtle]="!rate.isUp" [class.text-danger]="!rate.isUp">
+              <i class="bi" [class.bi-arrow-up-right]="rate.isUp" [class.bi-arrow-down-right]="!rate.isUp"></i>
+              {{ rate.change }}
+            </span>
+          </div>
 
-            <div class="d-flex justify-content-between align-items-center text-muted small mt-auto pt-2 border-top">
-              <span><i class="bi bi-clock me-1"></i>Today's Rate</span>
-              <span class="fw-bold text-dark">Per {{ rate.unit }}</span>
+          <div class="price-box p-3 rounded-3 mb-3">
+            <div class="d-flex justify-content-between align-items-baseline mb-1">
+              <span class="text-muted small">Modal Mandi Rate</span>
+              <strong class="text-success fs-3 font-price-value">{{ rate.modalPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+            </div>
+            <div class="progress mb-2" style="height: 6px;">
+              <div class="progress-bar bg-success" style="width: 75%;"></div>
+            </div>
+            <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
+              <span>Min: {{ rate.minPrice | currency:'INR':'symbol':'1.0-0' }}</span>
+              <span>Max: {{ rate.maxPrice | currency:'INR':'symbol':'1.0-0' }}</span>
             </div>
           </div>
         </div>
+
+        <div>
+          <div class="d-flex justify-content-between align-items-center text-muted small pb-2 mb-2 border-bottom">
+            <span class="small-badge-text"><i class="bi bi-calendar3 me-1 text-success"></i>Arrival: {{ rate.arrivalDate }}</span>
+            <span class="fw-bold text-dark small-badge-text">Per {{ rate.unit }}</span>
+          </div>
+
+          <button type="button" class="btn btn-outline-success btn-sm rounded-pill w-100 fw-semibold" (click)="openDetailModal(rate)">
+            <i class="bi bi-info-circle me-1"></i> View Mandi Rate Details
+          </button>
+        </div>
+
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- LIST VIEW (Mobile Phone View) -->
+  @if (viewMode === 'list') {
+  <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+    <div class="list-group list-group-flush">
+      @for (rate of filteredRates; track rate.commodity) {
+      <div class="list-group-item p-3 hover-bg-light transition-all border-bottom" (click)="openDetailModal(rate)" style="cursor: pointer;">
+        <div class="d-flex align-items-center justify-content-between gap-2">
+
+          <div class="d-flex align-items-center gap-3">
+            <div class="crop-icon-avatar bg-success-subtle text-success rounded-circle flex-shrink-0">
+              <i class="bi {{ rate.icon }} fs-4"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">{{ rate.commodity }}</h6>
+              <small class="text-muted"><i class="bi bi-building me-1"></i>{{ rate.market }}</small>
+            </div>
+          </div>
+
+          <div class="text-end">
+            <div class="fw-bold text-success fs-5">{{ rate.modalPrice | currency:'INR':'symbol':'1.0-0' }}</div>
+            <div class="d-flex align-items-center justify-content-end gap-1">
+              <span class="badge rounded-pill px-2 py-1 text-nowrap"
+                [class.bg-success-subtle]="rate.isUp" [class.text-success]="rate.isUp"
+                [class.bg-danger-subtle]="!rate.isUp" [class.text-danger]="!rate.isUp"
+                style="font-size: 10px;">
+                {{ rate.change }}
+              </span>
+              <small class="text-muted d-none d-sm-inline" style="font-size: 10px;">/ {{ rate.unit }}</small>
+            </div>
+          </div>
+
+        </div>
+      </div>
       }
     </div>
+  </div>
   }
+
+  }
+
+  <!-- DETAIL MANDI RATE MODAL -->
+  @if (showModal && selectedRateDetail) {
+  <div class="modal-backdrop fade show" (click)="closeModal()"></div>
+  <div class="modal d-block fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+
+        <div class="modal-header border-bottom-0 pb-0">
+          <div class="d-flex align-items-center gap-3">
+            <div class="crop-icon-avatar bg-success-subtle text-success rounded-circle">
+              <i class="bi {{ selectedRateDetail.icon }} fs-3"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold text-dark mb-0">{{ selectedRateDetail.commodity }}</h4>
+              <span class="text-muted small"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ selectedRateDetail.market }} ({{ selectedRateDetail.state }})</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+
+          <!-- Price Summary Box -->
+          <div class="row g-3 mb-4 text-center">
+            <div class="col-4">
+              <div class="bg-light p-3 rounded-3">
+                <small class="text-muted d-block mb-1">Minimum Rate</small>
+                <strong class="text-dark fs-5">{{ selectedRateDetail.minPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="bg-success-subtle border border-success-subtle p-3 rounded-3">
+                <small class="text-success d-block mb-1 fw-semibold">Modal Mandi Price</small>
+                <strong class="text-success fs-4">{{ selectedRateDetail.modalPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="bg-light p-3 rounded-3">
+                <small class="text-muted d-block mb-1">Maximum Rate</small>
+                <strong class="text-dark fs-5">{{ selectedRateDetail.maxPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Commodity Metadata -->
+          <div class="row g-3 mb-3 p-3 bg-light rounded-3">
+            <div class="col-6 col-sm-3">
+              <span class="text-muted d-block small">Variety Grade:</span>
+              <strong class="text-dark">{{ selectedRateDetail.variety }}</strong>
+            </div>
+            <div class="col-6 col-sm-3">
+              <span class="text-muted d-block small">Unit of Measurement:</span>
+              <strong class="text-dark">Per {{ selectedRateDetail.unit }}</strong>
+            </div>
+            <div class="col-6 col-sm-3">
+              <span class="text-muted d-block small">Arrival Date:</span>
+              <strong class="text-dark">{{ selectedRateDetail.arrivalDate }}</strong>
+            </div>
+            <div class="col-6 col-sm-3">
+              <span class="text-muted d-block small">Price Trend:</span>
+              <span class="badge rounded-pill px-2 py-1" [class.bg-success-subtle]="selectedRateDetail.isUp" [class.text-success]="selectedRateDetail.isUp" [class.bg-danger-subtle]="!selectedRateDetail.isUp" [class.text-danger]="!selectedRateDetail.isUp">
+                {{ selectedRateDetail.change }}
+              </span>
+            </div>
+          </div>
+
+          <div class="p-3 bg-success-subtle rounded-3 text-success small border border-success-subtle">
+            <i class="bi bi-shield-check me-1 fs-5"></i> <strong>Live APMC Feed:</strong> Prices are verified daily from official mandi market arrivals.
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" (click)="closeModal()">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  }
+
 </div>

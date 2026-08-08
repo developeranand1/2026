@@ -1,9 +1,36 @@
+.farmer-mandi-rate-view {
+  min-height: 80vh;
+}
+
 .hover-elevate {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 12px 24px rgba(15, 67, 34, 0.12) !important;
+  }
+}
+
+.crop-icon-avatar {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.price-box {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.category-scroll-bar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -11,7 +38,52 @@
   animation: spinAnim 1s linear infinite;
 }
 
+.pulse-icon {
+  animation: pulseOpacity 1.5s infinite;
+}
+
 @keyframes spinAnim {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+.hover-bg-light:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Mobile Responsive Fine-Tuning */
+@media (max-width: 575px) {
+  .font-mobile-title {
+    font-size: 20px;
+  }
+
+  .crop-icon-avatar {
+    width: 40px;
+    height: 40px;
+
+    i {
+      font-size: 1.1rem !important;
+    }
+  }
+
+  .font-crop-name {
+    font-size: 15px;
+  }
+
+  .font-price-value {
+    font-size: 1.25rem !important;
+  }
+
+  .small-badge-text {
+    font-size: 10px;
+  }
 }

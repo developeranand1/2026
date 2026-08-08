@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 interface FaqItem {
   id: string;
@@ -16,6 +17,7 @@ interface FaqCategory {
 @Component({
   selector: 'app-faq',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './faq.component.html',
   styleUrl: './faq.component.scss'
 })
@@ -149,7 +151,6 @@ export class FaqComponent {
       ]
     }
   ];
-  $parent: any;
 
   get filteredCategories(): FaqCategory[] {
     const query = this.searchText.trim().toLowerCase();

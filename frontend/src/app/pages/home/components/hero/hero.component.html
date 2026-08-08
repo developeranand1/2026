@@ -1,94 +1,188 @@
-<section id="home" class="hero-section">
+<section id="home" class="hero-section" (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()">
     <div class="hero-pattern"></div>
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
 
-    <div class="container position-relative">
-        <div class="row align-items-center g-4 py-5">
-
-            <div class="col-lg-7">
-                <span class="hero-badge">
-                    <i class="bi bi-patch-check-fill"></i>
-                    India's Trusted Digital Agriculture Marketplace
-                </span>
-
-                <h1 class="hero-title">
-                    Freshness from the Farm,
-                    <span>Delivered to Your Doorstep</span>
-                </h1>
-
-                <p class="hero-description">
-                    Buy fresh vegetables, fruits, grains, pulses, and other
-                    agricultural products directly from trusted local farmers.
-                </p>
-
-                <div class="search-box">
-                    <i class="bi bi-search"></i>
-
-                    <input #searchInput type="search" placeholder="Search products, crops, or categories"
-                        (keyup.enter)="searchProduct(searchInput.value)">
-
-                    <button type="button" (click)="searchProduct(searchInput.value)">
-                        Search
-                    </button>
-                </div>
-
-                <div class="hero-actions">
-                    <a routerLink="/buyer-journey" class="btn btn-warning rounded-pill px-4">
-                        Shop Now
-                        <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-
-                    <a routerLink="/farmer-journey" class="btn btn-light rounded-pill px-4">
-                        Join as a Farmer
-                    </a>
-                </div>
-
-                <div class="row g-3 hero-stats">
-                    <div class="col-4">
-                        <strong>2,500+</strong>
-                        <span>Farmers</span>
-                    </div>
-
-                    <div class="col-4">
-                        <strong>8,000+</strong>
-                        <span>Products</span>
-                    </div>
-
-                    <div class="col-4">
-                        <strong>50+</strong>
-                        <span>Cities</span>
-                    </div>
-                </div>
+    <!-- Live Mandi Rate Top Ticker Bar -->
+    <div class="mandi-ticker-bar">
+        <div class="container d-flex align-items-center justify-content-between text-nowrap overflow-hidden">
+            <div class="ticker-label me-3">
+                <span class="pulse-dot"></span>
+                <strong>LIVE MANDI RATES</strong>
             </div>
 
-            <div class="col-lg-5">
-                <div class="farm-visual">
-                    <div class="sun"></div>
+            <div class="ticker-items d-flex align-items-center gap-3 gap-md-4 overflow-auto py-1">
+                <span><i class="bi bi-flower1 text-warning me-1"></i> Wheat: <strong>₹2,275/qtl</strong> <small class="text-success">▲ +2.4%</small></span>
+                <span><i class="bi bi-tag-fill text-warning me-1"></i> Onion: <strong>₹1,850/qtl</strong> <small class="text-success">▲ +1.8%</small></span>
+                <span><i class="bi bi-box-seam text-warning me-1"></i> Potato: <strong>₹1,420/qtl</strong> <small class="text-danger">▼ -0.5%</small></span>
+                <span><i class="bi bi-basket2 text-warning me-1"></i> Tomato: <strong>₹2,100/qtl</strong> <small class="text-success">▲ +3.1%</small></span>
+                <span><i class="bi bi-tree text-warning me-1"></i> Maize: <strong>₹1,950/qtl</strong> <small class="text-success">▲ +0.9%</small></span>
+            </div>
 
-                    <div class="cloud cloud-one">
-                        ☁
-                    </div>
+            <a routerLink="/farmer/mandi-rates" class="ticker-link d-none d-lg-inline-flex ms-3">
+                View All Rates <i class="bi bi-chevron-right ms-1"></i>
+            </a>
+        </div>
+    </div>
 
-                    <div class="cloud cloud-two">
-                        ☁
-                    </div>
+    <!-- Main Hero Carousel -->
+    <div class="container position-relative py-3 py-md-4 py-lg-5">
+        <div class="row align-items-center g-3 g-md-4 g-lg-5">
 
-                    <div class="farmer-card">
-                        <span class="farmer-icon">
-                            👨🏽‍🌾
-                        </span>
+            <!-- Left Text Content -->
+            <div class="col-lg-7">
+                @for (slide of slides; track slide.id; let i = $index) {
+                @if (i === activeSlideIndex) {
+                <div class="slide-text-wrapper animate-fade-in">
 
-                        <div>
-                            <small>Direct from Farmers</small>
-                            <h3>Fresh and Trusted</h3>
-                            <p>Farm freshness with village trust</p>
+                    <span class="hero-badge">
+                        <i class="bi {{ slide.badgeIcon }} text-warning"></i>
+                        {{ slide.badgeText }}
+                    </span>
+
+                    <h1 class="hero-title">
+                        {{ slide.titlePrefix }}
+                        <span class="highlight-text">{{ slide.titleHighlight }}</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        {{ slide.description }}
+                    </p>
+
+                    <!-- Search Input & Quick Tags -->
+                    <div class="search-box-wrapper mt-3 mt-md-4">
+                        <div class="search-box">
+                            <i class="bi bi-search search-icon"></i>
+
+                            <input #searchInput type="search" placeholder="Search crops, fresh veggies, fruits, seeds..."
+                                (keyup.enter)="searchProduct(searchInput.value)">
+
+                            <button type="button" class="btn-search" (click)="searchProduct(searchInput.value)">
+                                <span>Search</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <div class="quick-tags d-flex flex-wrap align-items-center gap-2 mt-2 pt-1">
+                            <small class="text-white-50 me-1 d-none d-sm-inline">Popular:</small>
+                            @for (tag of quickTags; track tag.label) {
+                            <button type="button" class="tag-chip d-inline-flex align-items-center gap-1" (click)="applyTag(tag.query)">
+                                <i class="bi {{ tag.icon }} text-warning"></i>
+                                {{ tag.label }}
+                            </button>
+                            }
                         </div>
                     </div>
 
-                    <div class="crop crop-one">🌾</div>
-                    <div class="crop crop-two">🌱</div>
-                    <div class="crop crop-three">🥕</div>
+                    <!-- Action Buttons -->
+                    <div class="hero-actions mt-3 mt-md-4 d-flex flex-wrap align-items-center gap-2 gap-sm-3">
+                        <a [routerLink]="slide.primaryCtaLink" class="btn btn-warning btn-lg rounded-pill px-4 shadow-sm hero-primary-btn w-xs-100">
+                            {{ slide.primaryCtaText }}
+                            <i class="bi bi-arrow-right-short fs-5 ms-1"></i>
+                        </a>
 
-                    <div class="field"></div>
+                        <a [routerLink]="slide.secondaryCtaLink" class="btn btn-outline-light btn-lg rounded-pill px-4 hero-secondary-btn w-xs-100">
+                            <i class="bi bi-person-plus me-2"></i>
+                            {{ slide.secondaryCtaText }}
+                        </a>
+                    </div>
+
+                </div>
+                }
+                }
+
+                <!-- Stats Grid -->
+                <div class="row g-2 g-sm-3 hero-stats mt-3 mt-md-4 pt-3 border-top border-white-10">
+                    <div class="col-6 col-sm-3">
+                        <div class="stat-item text-center text-sm-start">
+                            <strong class="stat-number">2,500+</strong>
+                            <span class="stat-label">Verified Farmers</span>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <div class="stat-item text-center text-sm-start">
+                            <strong class="stat-number">8,000+</strong>
+                            <span class="stat-label">Agri Listings</span>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <div class="stat-item text-center text-sm-start">
+                            <strong class="stat-number">50+</strong>
+                            <span class="stat-label">Mandi Hubs</span>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <div class="stat-item text-center text-sm-start">
+                            <strong class="stat-number">99.4%</strong>
+                            <span class="stat-label">On-Time Delivery</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Visual Image Slider -->
+            <div class="col-lg-5">
+                <div class="hero-visual-card position-relative">
+
+                    @for (slide of slides; track slide.id; let i = $index) {
+                    @if (i === activeSlideIndex) {
+                    <div class="visual-slide-content animate-zoom-in position-relative">
+                        <img [src]="slide.image" [alt]="slide.altText" class="img-fluid hero-main-img shadow-lg" />
+                        <div class="img-overlay-gradient"></div>
+
+                        <!-- Floating Glassmorphic Pill 1: Mandi Price -->
+                        <div class="floating-glass-pill pill-mandi animate-bounce-slow">
+                            <i class="bi {{ slide.mandiIcon }} text-warning me-2 fs-6"></i>
+                            <span>{{ slide.mandiRatePill }}</span>
+                        </div>
+
+                        <!-- Floating Glassmorphic Badge 2: Direct Farmer -->
+                        <div class="floating-glass-pill pill-farmer">
+                            <div class="badge-avatar me-2">
+                                <i class="bi bi-person-badge-fill text-warning"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-white font-sm">100% Direct Trade</strong>
+                                <small class="text-white-50">Zero Middlemen Fee</small>
+                            </div>
+                        </div>
+
+                        <!-- Floating Glassmorphic Badge 3: Fresh Guarantee -->
+                        <div class="floating-glass-pill pill-fresh">
+                            <i class="bi bi-shield-check text-success fs-5 me-2"></i>
+                            <div>
+                                <strong class="d-block text-white font-sm">Quality Verified</strong>
+                                <small class="text-white-50">Farm Fresh Guarantee</small>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    }
+
+                    <!-- Slider Controls -->
+                    <div class="carousel-controls-wrapper d-flex align-items-center justify-content-between mt-3 px-2">
+                        <div class="carousel-dots d-flex align-items-center gap-2">
+                            @for (slide of slides; track slide.id; let i = $index) {
+                            <button type="button" class="dot-btn" [class.active]="i === activeSlideIndex"
+                                [attr.aria-label]="'Go to slide ' + (i + 1)" (click)="setSlide(i)">
+                            </button>
+                            }
+                        </div>
+
+                        <div class="carousel-arrows d-flex gap-2">
+                            <button type="button" class="arrow-btn" aria-label="Previous Slide" (click)="prevSlide()">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button type="button" class="arrow-btn" aria-label="Next Slide" (click)="nextSlide()">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -96,28 +190,37 @@
     </div>
 </section>
 
-<section class="trust-section">
+<!-- Trust Banner Section -->
+<section class="trust-bar">
     <div class="container">
-        <div class="row g-3 text-center">
+        <div class="row g-2 g-md-3 py-2 py-md-3 align-items-center text-center">
 
-            <div class="col-6 col-lg-3">
-                <i class="bi bi-shield-check"></i>
-                <span>Secure Shopping</span>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-shield-lock-fill trust-icon text-success me-1 me-md-2"></i>
+                    <span><strong>Escrow Secured</strong> Payments</span>
+                </div>
             </div>
 
-            <div class="col-6 col-lg-3">
-                <i class="bi bi-truck"></i>
-                <span>Fast Delivery</span>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-truck-flatbed trust-icon text-warning me-1 me-md-2"></i>
+                    <span><strong>Fast Logistics</strong> Doorstep Delivery</span>
+                </div>
             </div>
 
-            <div class="col-6 col-lg-3">
-                <i class="bi bi-arrow-repeat"></i>
-                <span>Easy Returns</span>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-check-circle-fill trust-icon text-info me-1 me-md-2"></i>
+                    <span><strong>Direct Harvest</strong> Fair Pricing</span>
+                </div>
             </div>
 
-            <div class="col-6 col-lg-3">
-                <i class="bi bi-headset"></i>
-                <span>Customer Support</span>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-headset trust-icon text-primary me-1 me-md-2"></i>
+                    <span><strong>24/7 Support</strong> Dedicated Help</span>
+                </div>
             </div>
 
         </div>

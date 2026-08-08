@@ -1,0 +1,195 @@
+.mandi-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 65px 0 85px;
+    background: linear-gradient(120deg,
+            var(--gb-green-dark, #1b4332),
+            var(--gb-green, #2d6a4f));
+    color: white;
+}
+
+.hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    background-image: radial-gradient(circle,
+            white 1px,
+            transparent 1px);
+    background-size: 24px 24px;
+}
+
+.page-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.mandi-hero h1 {
+    margin: 14px 0 10px;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+}
+
+.mandi-hero p {
+    max-width: 680px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.mandi-search {
+    max-width: 620px;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px auto 0;
+    padding: 0 18px;
+    border-radius: 14px;
+    background: white;
+    color: var(--gb-muted, #6c757d);
+    box-shadow: 0 18px 35px rgba(7, 45, 20, 0.2);
+}
+
+.mandi-search i {
+    font-size: 16px;
+}
+
+.mandi-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    color: var(--gb-text, #212529);
+    font-size: 14px;
+}
+
+.btn-clear {
+    border: 0;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.filter-section {
+    margin-top: -35px;
+    position: relative;
+    z-index: 2;
+}
+
+.category-scroll-bar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.bg-dark-75 {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(8px);
+}
+
+.crop-mandi-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px rgba(15, 67, 34, 0.12) !important;
+
+        .crop-card-img {
+            transform: scale(1.05);
+        }
+    }
+}
+
+.crop-img-container {
+    height: 180px;
+    overflow: hidden;
+}
+
+.crop-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.crop-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 60%);
+}
+
+.text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.crop-desc-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.6;
+}
+
+.crop-avatar-lg {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crop-modal-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.spin {
+    animation: spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.transition-all {
+    transition: all 0.2s ease;
+}
+
+.max-w-700 {
+    max-width: 700px;
+}
+
+@media (max-width: 767px) {
+    .mandi-hero {
+        padding: 45px 0 65px;
+    }
+
+    .mandi-hero h1 {
+        font-size: 30px;
+    }
+
+    .crop-img-container {
+        height: 160px;
+    }
+
+    .crop-modal-img {
+        height: 160px;
+    }
+}

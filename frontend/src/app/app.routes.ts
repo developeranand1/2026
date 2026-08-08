@@ -6,6 +6,8 @@ import { FaqComponent } from './pages/faq/faq.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { TermsComponent } from './pages/terms/terms.component';
 import { RefundPolicyComponent } from './pages/refund-policy/refund-policy.component';
+import { DisclaimerComponent } from './pages/disclaimer/disclaimer.component';
+import { MandiRatesPageComponent } from './pages/mandi-rates/mandi-rates.component';
 
 
 import { FarmerSidebarComponent } from './farmer/farmer-sidebar/farmer-sidebar.component';
@@ -83,6 +85,16 @@ export const routes: Routes = [
         path: 'refund-policy',
         component: RefundPolicyComponent,
         title: 'Refund Policy | GaonBazar'
+    },
+    {
+        path: 'disclaimer',
+        component: DisclaimerComponent,
+        title: 'Disclaimer Policy | GaonBazar'
+    },
+    {
+        path: 'mandi-rates',
+        component: MandiRatesPageComponent,
+        title: 'Live Mandi Rates & Crop Bhav | GaonBazar'
     },
 
     {
