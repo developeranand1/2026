@@ -1,0 +1,124 @@
+<div class="rich-editor-wrapper border rounded-3 overflow-hidden bg-white">
+  <!-- Toolbar Header -->
+  <div class="editor-toolbar bg-light p-2 border-bottom d-flex flex-wrap align-items-center gap-1">
+    <!-- Undo / Redo -->
+    <div class="btn-group btn-group-sm me-1" role="group">
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Undo" (click)="execCmd('undo')">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Redo" (click)="execCmd('redo')">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+
+    <!-- Format Block Dropdown -->
+    <select class="form-select form-select-sm border-secondary-subtle me-1" style="width: 120px;" [ngModel]="selectedFormat" (change)="applyFormatBlock($any($event.target).value)">
+      <option value="p">Paragraph</option>
+      <option value="h1">Heading 1</option>
+      <option value="h2">Heading 2</option>
+      <option value="h3">Heading 3</option>
+      <option value="h4">Heading 4</option>
+    </select>
+
+    <!-- Font Formatting -->
+    <div class="btn-group btn-group-sm me-1" role="group">
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Bold" (click)="execCmd('bold')">
+        <i class="bi bi-type-bold"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Italic" (click)="execCmd('italic')">
+        <i class="bi bi-type-italic"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Underline" (click)="execCmd('underline')">
+        <i class="bi bi-type-underline"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Strikethrough" (click)="execCmd('strikeThrough')">
+        <i class="bi bi-type-strikethrough"></i>
+      </button>
+    </div>
+
+    <!-- Alignment -->
+    <div class="btn-group btn-group-sm me-1" role="group">
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Align Left" (click)="execCmd('justifyLeft')">
+        <i class="bi bi-text-left"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Align Center" (click)="execCmd('justifyCenter')">
+        <i class="bi bi-text-center"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Align Right" (click)="execCmd('justifyRight')">
+        <i class="bi bi-text-right"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Justify" (click)="execCmd('justifyFull')">
+        <i class="bi bi-justify"></i>
+      </button>
+    </div>
+
+    <!-- Lists & Blockquote -->
+    <div class="btn-group btn-group-sm me-1" role="group">
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Bullet List" (click)="execCmd('insertUnorderedList')">
+        <i class="bi bi-list-ul"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Numbered List" (click)="execCmd('insertOrderedList')">
+        <i class="bi bi-list-ol"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Quote" (click)="execCmd('formatBlock', 'blockquote')">
+        <i class="bi bi-quote"></i>
+      </button>
+    </div>
+
+    <!-- Color & Inserts -->
+    <div class="btn-group btn-group-sm me-1 align-items-center" role="group">
+      <label class="btn btn-outline-secondary btn-editor mb-0 cursor-pointer" title="Text Color">
+        <i class="bi bi-palette-fill me-1"></i>
+        <input type="color" class="d-none" [value]="textColor" (change)="changeTextColor($event)">
+      </label>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Insert Link" (click)="insertLink()">
+        <i class="bi bi-link-45deg"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Insert Image" (click)="insertImage()">
+        <i class="bi bi-image"></i>
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Horizontal Line" (click)="execCmd('insertHorizontalRule')">
+        <i class="bi bi-hr"></i>
+      </button>
+    </div>
+
+    <!-- Clear & Source Mode -->
+    <div class="btn-group btn-group-sm ms-auto" role="group">
+      <button type="button" class="btn btn-outline-secondary btn-editor" title="Remove Formatting" (click)="execCmd('removeFormat')">
+        <i class="bi bi-trash3"></i>
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-editor" 
+        [ngClass]="isHtmlMode ? 'btn-success text-white' : 'btn-outline-secondary'" 
+        title="Toggle HTML Source Code View" 
+        (click)="toggleHtmlMode()">
+        <i class="bi bi-code-slash"></i>
+        <span class="fs-8 ms-1 fw-semibold">HTML</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Editor Container -->
+  <div class="editor-content-area position-relative" style="min-height: 200px;">
+    <!-- Visual Contenteditable View -->
+    <div 
+      #editorRef 
+      *ngIf="!isHtmlMode" 
+      class="visual-editor p-3 outline-none" 
+      contenteditable="true" 
+      [attr.data-placeholder]="placeholder"
+      (input)="onEditorInput()" 
+      (blur)="onEditorInput()">
+    </div>
+
+    <!-- Raw HTML Textarea View -->
+    <textarea 
+      *ngIf="isHtmlMode" 
+      class="html-editor p-3 w-100 h-100 font-monospace border-0 bg-dark text-warning fs-7" 
+      style="min-height: 200px; outline: none; resize: vertical;" 
+      placeholder="Edit raw HTML source code..." 
+      [(ngModel)]="value" 
+      (input)="onHtmlTextareaChange()"></textarea>
+  </div>
+</div>

@@ -1,0 +1,504 @@
+<div class="news-admin-container">
+  <!-- Toast Notification -->
+  <div *ngIf="toastMessage" class="toast-floating alert" [ngClass]="'alert-' + toastType" role="alert">
+    <i class="bi" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill me-2' : 'bi-exclamation-triangle-fill me-2'"></i>
+    {{ toastMessage }}
+  </div>
+
+  <!-- VIEW 1: ARTICLES LIST DASHBOARD -->
+  <div *ngIf="viewMode === 'list'">
+    <!-- Page Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+          <i class="bi bi-newspaper text-success fs-3"></i>
+          News & Market Updates
+        </h2>
+        <p class="page-subtitle text-muted mb-0">
+          Create agricultural news, market trends, government schemes, and manage SEO metadata.
+        </p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="openNewsTypeManager()">
+          <i class="bi bi-tags me-1"></i> Manage News Categories
+        </button>
+        <button class="btn btn-success btn-sm rounded-pill px-3 shadow-sm" (click)="openCreateArticlePage()">
+          <i class="bi bi-plus-lg me-1"></i> Create New News Article
+        </button>
+      </div>
+    </div>
+
+    <!-- Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-total" (click)="filterByStatus('All')">
+          <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+            <i class="bi bi-journal-text"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.total }}</span>
+            <span class="stat-label">Total Articles</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-published" (click)="filterByStatus('Published')">
+          <div class="stat-icon-wrapper bg-success-subtle text-success">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.published }}</span>
+            <span class="stat-label">Published</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-draft" (click)="filterByStatus('Draft')">
+          <div class="stat-icon-wrapper bg-warning-subtle text-warning">
+            <i class="bi bi-pencil-square"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.draft }}</span>
+            <span class="stat-label">Drafts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-featured">
+          <div class="stat-icon-wrapper bg-info-subtle text-info">
+            <i class="bi bi-star-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.featured }}</span>
+            <span class="stat-label">Featured Articles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Card Container -->
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+      <!-- Card Toolbar -->
+      <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <!-- Filter Controls -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <div class="status-tabs d-flex flex-wrap gap-1">
+            <button 
+              *ngFor="let tab of ['All', 'Published', 'Draft']"
+              class="btn btn-sm rounded-pill px-3"
+              [ngClass]="selectedStatusFilter === tab ? 'btn-success fw-semibold' : 'btn-light text-secondary'"
+              (click)="filterByStatus(tab)">
+              {{ tab }}
+            </button>
+          </div>
+
+          <!-- NewsType Dropdown Filter -->
+          <select class="form-select form-select-sm rounded-pill border-secondary-subtle" style="width: 180px;" [(ngModel)]="selectedTypeFilter" (change)="loadNews()">
+            <option value="All">All Categories</option>
+            <option *ngFor="let type of newsTypes" [value]="type._id">{{ type.title }}</option>
+          </select>
+        </div>
+
+        <!-- Search Field -->
+        <div class="search-box position-relative" style="min-width: 250px;">
+          <i class="bi bi-search search-icon"></i>
+          <input 
+            type="text" 
+            class="form-control form-control-sm ps-5 pe-4 rounded-pill" 
+            placeholder="Search title, keywords..." 
+            [(ngModel)]="searchTerm" 
+            (keyup.enter)="onSearch()">
+          <button *ngIf="searchTerm" class="btn-clear border-0 bg-transparent text-muted" (click)="searchTerm = ''; onSearch()">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="table-responsive position-relative" style="min-height: 250px;">
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="loading-overlay d-flex flex-column align-items-center justify-content-center">
+          <div class="spinner-border text-success mb-2" role="status"></div>
+          <span class="text-muted fs-7">Loading news articles...</span>
+        </div>
+
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light fs-7 text-uppercase text-secondary">
+            <tr>
+              <th scope="col" style="width: 50px;" class="ps-3">#</th>
+              <th scope="col" style="min-width: 260px;">Article Info</th>
+              <th scope="col" style="width: 140px;">Category</th>
+              <th scope="col" style="width: 100px;">Status</th>
+              <th scope="col" style="width: 90px;">SEO Tags</th>
+              <th scope="col" style="width: 80px;">Views</th>
+              <th scope="col" style="width: 140px;">Published Date</th>
+              <th scope="col" style="width: 110px;" class="text-end pe-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of newsList; let i = index" class="cursor-pointer" (click)="openEditArticlePage(item, $event)">
+              <td class="ps-3 fw-semibold text-muted fs-7">{{ i + 1 }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <img 
+                    [src]="item.image || 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'" 
+                    alt="News Image" 
+                    class="rounded-2 object-fit-cover border" 
+                    style="width: 54px; height: 42px;">
+                  <div class="text-truncate" style="max-width: 280px;">
+                    <div class="fw-bold text-dark text-truncate mb-0" [title]="item.title">
+                      {{ item.title }}
+                    </div>
+                    <div class="fs-8 text-muted text-truncate">
+                      <span *ngIf="item.isFeatured" class="badge bg-warning-subtle text-warning border border-warning-subtle me-1">Featured</span>
+                      /{{ item.slug }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border fs-7">
+                  <i class="bi bi-tag-fill me-1 text-success"></i>
+                  {{ getNewsTypeName(item.newsType) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge rounded-pill px-2.5 py-1.5 fs-7" [ngClass]="item.status === 'Published' ? 'bg-success text-white' : 'bg-warning text-dark'">
+                  {{ item.status }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="item.metaTitle && item.metaDescription" class="badge bg-info-subtle text-info border border-info-subtle fs-7" title="SEO metadata configured">
+                  <i class="bi bi-search me-1"></i>Set
+                </span>
+                <span *ngIf="!item.metaTitle || !item.metaDescription" class="badge bg-light text-muted border fs-7">
+                  None
+                </span>
+              </td>
+              <td class="fs-7 fw-semibold text-secondary">
+                <i class="bi bi-eye me-1"></i>{{ item.views || 0 }}
+              </td>
+              <td class="fs-7 text-muted">
+                <div>{{ item.publishedAt | date:'mediumDate' }}</div>
+                <div class="fs-8 text-secondary">{{ item.publishedAt | date:'shortTime' }}</div>
+              </td>
+              <td class="text-end pe-3" (click)="$event.stopPropagation()">
+                <button class="btn btn-sm btn-light text-primary me-1" title="Edit Article" (click)="openEditArticlePage(item, $event)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-sm btn-light text-danger" title="Delete" (click)="deleteArticle(item, $event)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="!isLoading && newsList.length === 0">
+              <td colspan="8" class="text-center py-5">
+                <div class="empty-box py-4">
+                  <i class="bi bi-journal-x fs-1 text-muted d-block mb-2"></i>
+                  <h5 class="text-dark fw-semibold mb-1">No News Articles Found</h5>
+                  <p class="text-muted fs-7 mb-3">No articles match your selected category or search filter.</p>
+                  <button class="btn btn-success btn-sm rounded-pill px-3" (click)="openCreateArticlePage()">
+                    <i class="bi bi-plus-lg me-1"></i> Create First News Article
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: FULL PAGE ARTICLE EDITOR (CREATE / EDIT) -->
+  <div *ngIf="viewMode === 'form'" class="news-form-container">
+    <!-- Top Navigation & Sticky Action Header -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4 bg-white">
+      <div class="card-body py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" (click)="goToList()" title="Back to All News Articles">
+            <i class="bi bi-arrow-left fs-5"></i>
+          </button>
+          <div>
+            <h3 class="mb-0 fw-bold text-dark fs-4">
+              {{ isEditing ? 'Edit News Article' : 'Create New News Article' }}
+            </h3>
+            <span class="fs-7 text-muted">
+              {{ isEditing ? 'Update published news content, banner, and SEO metadata tags' : 'Publish agricultural news, market trends, and policy updates' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-light btn-sm rounded-pill px-3 text-secondary" (click)="goToList()">
+            Cancel
+          </button>
+          <button class="btn btn-success btn-sm rounded-pill px-4 shadow-sm" [disabled]="isSaving" (click)="saveArticle()">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            <i *ngIf="!isSaving" class="bi bi-check-lg me-1"></i>
+            {{ isEditing ? 'Update News Article' : 'Publish Article' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Content Grid -->
+    <div class="row g-4">
+      <!-- Left / Main Column (col-lg-8) -->
+      <div class="col-lg-8">
+        <!-- Article Basic Info Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-pencil-square text-success"></i> Article Headline & Slug
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <!-- Title -->
+              <div class="col-12">
+                <label for="newsTitle" class="form-label fw-bold text-dark fs-7 mb-1">
+                  Article Title <span class="text-danger">*</span>
+                </label>
+                <input 
+                  id="newsTitle" 
+                  type="text" 
+                  class="form-control form-control-lg fs-6 fw-semibold" 
+                  placeholder="Enter news article title..." 
+                  [(ngModel)]="formTitle" 
+                  (input)="onTitleChange()">
+              </div>
+
+              <!-- Slug -->
+              <div class="col-12">
+                <label for="newsSlug" class="form-label fw-semibold text-dark fs-7 mb-1">URL Slug:</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-light text-muted fs-7">gaonbazar.com/news/</span>
+                  <input id="newsSlug" type="text" class="form-control" placeholder="article-url-slug" [(ngModel)]="formSlug">
+                </div>
+              </div>
+
+              <!-- Short Description -->
+              <div class="col-12">
+                <label for="shortDesc" class="form-label fw-semibold text-dark fs-7 mb-1">Short Excerpt / Summary:</label>
+                <textarea 
+                  id="shortDesc" 
+                  rows="2" 
+                  class="form-control form-control-sm" 
+                  placeholder="Brief 1-2 sentence summary of article for news listing card..." 
+                  [(ngModel)]="formShortDescription"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rich Text Editor Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-file-earmark-rich-fill text-success"></i> Full Article Content (Rich Text Editor) <span class="text-danger">*</span>
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <app-rich-text-editor 
+              [(value)]="formDescription" 
+              placeholder="Write full news content, market updates, detailed policy info...">
+            </app-rich-text-editor>
+          </div>
+        </div>
+
+        <!-- SEO Meta Tags Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-search text-info"></i> Search Engine Optimization (SEO Meta Tags)
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="metaTitle" class="form-label fw-semibold text-dark fs-7 mb-1">Meta Title (SEO):</label>
+                <input id="metaTitle" type="text" class="form-control form-control-sm" placeholder="Title for Google search results..." [(ngModel)]="formMetaTitle">
+              </div>
+
+              <div class="col-md-6">
+                <label for="metaKeywords" class="form-label fw-semibold text-dark fs-7 mb-1">Meta Keywords:</label>
+                <input id="metaKeywords" type="text" class="form-control form-control-sm" placeholder="wheat, mandi rate, agriculture, farmers" [(ngModel)]="formMetaKeywords">
+              </div>
+
+              <div class="col-12">
+                <label for="metaDesc" class="form-label fw-semibold text-dark fs-7 mb-1">Meta Description:</label>
+                <textarea id="metaDesc" rows="3" class="form-control form-control-sm" placeholder="Meta description snippet for search engines..." [(ngModel)]="formMetaDescription"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right / Sidebar Column (col-lg-4) -->
+      <div class="col-lg-4">
+        <!-- Publishing & Status Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-gear-fill text-success"></i> Publishing Settings
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="mb-3">
+              <label for="newsTypeSelect" class="form-label fw-semibold text-dark fs-7 mb-1">
+                News Category <span class="text-danger">*</span>
+              </label>
+              <div class="input-group input-group-sm">
+                <select id="newsTypeSelect" class="form-select form-select-sm" [(ngModel)]="formNewsType">
+                  <option value="" disabled>Select category</option>
+                  <option *ngFor="let type of newsTypes" [value]="type._id">{{ type.title }}</option>
+                </select>
+                <button class="btn btn-outline-success" type="button" (click)="openNewsTypeManager()" title="Manage Categories">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="statusSelect" class="form-label fw-semibold text-dark fs-7 mb-1">Publishing Status:</label>
+              <select id="statusSelect" class="form-select form-select-sm" [(ngModel)]="formStatus">
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+                <option value="Archived">Archived</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="authorInput" class="form-label fw-semibold text-dark fs-7 mb-1">Author Name:</label>
+              <input id="authorInput" type="text" class="form-control form-control-sm" [(ngModel)]="formAuthor">
+            </div>
+
+            <div class="form-check form-switch p-3 bg-light rounded-3 border mt-2">
+              <input id="isFeaturedCheck" class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="formIsFeatured">
+              <label class="form-check-label fw-bold text-dark fs-7" for="isFeaturedCheck">
+                Mark as Featured Article
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Image Banner Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-image-fill text-success"></i> Featured Image Banner
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <!-- Image Box Preview -->
+            <div class="mb-3 position-relative text-center border rounded-3 p-2 bg-light" style="min-height: 160px;">
+              <img 
+                [src]="imagePreview || formImage || 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'" 
+                alt="Banner Preview" 
+                class="w-100 rounded-2 object-fit-cover shadow-sm" 
+                style="height: 160px;">
+              <button *ngIf="imagePreview" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle shadow" (click)="removeImage()" title="Remove Image">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label fw-semibold text-dark fs-7 mb-1">Upload New Image (Cloudinary):</label>
+              <input type="file" accept="image/*" class="form-control form-control-sm" (change)="onFileSelected($event)">
+              <small class="text-muted fs-8 d-block mt-1">Supports JPG, PNG, WEBP (Max 2MB)</small>
+            </div>
+
+            <div *ngIf="imageUploadError" class="text-danger fs-7 mb-2">
+              {{ imageUploadError }}
+            </div>
+
+            <div class="mt-3">
+              <label for="imgUrlInput" class="form-label fw-semibold text-dark fs-7 mb-1">Or Image URL:</label>
+              <input id="imgUrlInput" type="text" class="form-control form-control-sm" placeholder="https://..." [(ngModel)]="formImage" (input)="imagePreview = formImage">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Manage News Types / Categories Modal -->
+<div *ngIf="newsTypeModalOpen" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+  <div class="modal-card bg-white rounded-3 shadow-lg overflow-hidden animate-pop" style="max-width: 600px; width: 95%;">
+    <div class="modal-header-custom p-3 bg-success text-white d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-tags-fill fs-4"></i>
+        <h5 class="modal-title mb-0 text-white fw-bold">Manage News Categories (NewsTypes)</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeNewsTypeManager()"></button>
+    </div>
+
+    <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+      <!-- Add / Edit Type Form -->
+      <div class="card bg-light border-0 p-3 rounded-3 mb-4">
+        <h6 class="fw-bold text-success mb-2">
+          {{ editingTypeId ? 'Edit Category' : 'Add New News Category' }}
+        </h6>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <input 
+              type="text" 
+              class="form-control form-control-sm" 
+              placeholder="Category Title (e.g. Mandi Updates)..." 
+              [(ngModel)]="typeFormTitle">
+          </div>
+          <div class="col-md-6">
+            <input 
+              type="text" 
+              class="form-control form-control-sm" 
+              placeholder="Description (optional)..." 
+              [(ngModel)]="typeFormDescription">
+          </div>
+          <div class="col-12 text-end mt-2">
+            <button *ngIf="editingTypeId" class="btn btn-outline-secondary btn-sm me-2 rounded-pill" (click)="resetTypeForm()">
+              Cancel
+            </button>
+            <button class="btn btn-success btn-sm rounded-pill px-3" (click)="saveNewsType()">
+              {{ editingTypeId ? 'Update Category' : '+ Add Category' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories List -->
+      <h6 class="fw-bold text-dark mb-2">Existing Categories:</h6>
+      <div class="list-group">
+        <div *ngFor="let type of newsTypes" class="list-group-item d-flex align-items-center justify-content-between py-2">
+          <div>
+            <div class="fw-bold text-dark fs-7">{{ type.title }}</div>
+            <small class="text-muted fs-8">/{{ type.slug }} - {{ type.description || 'No description' }}</small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-light text-primary me-1" (click)="editNewsType(type)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="btn btn-sm btn-light text-danger" (click)="deleteNewsType(type)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="newsTypes.length === 0" class="text-center py-3 text-muted fs-7">
+          No news categories created yet. Create one above!
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer bg-light p-3 border-top text-end">
+      <button class="btn btn-secondary btn-sm rounded-pill px-3" (click)="closeNewsTypeManager()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>

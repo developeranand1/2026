@@ -8,6 +8,9 @@ const cropRoutes = require("./routes/crop.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const mandiRateRoutes = require("./routes/mandiRate.routes");
 const categoryRoutes = require("./routes/category.routes");
+const contactRoutes = require("./routes/contact.routes");
+const newsTypeRoutes = require("./routes/newsType.routes");
+const newsRoutes = require("./routes/news.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -36,6 +39,9 @@ app.use("/api/crops", cropRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/mandi-rates", mandiRateRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/news-types", newsTypeRoutes);
+app.use("/api/news", newsRoutes);
 
 app.use(errorMiddleware);
 

@@ -61,61 +61,69 @@
 
 <section class="contact-info-section">
     <div class="container">
-        <div class="row g-3">
+        <div class="row g-2 g-sm-4">
 
-            <div class="col-md-6 col-lg-3">
-                <article class="contact-info-card h-100">
-                    <div class="contact-info-icon">
+            <div class="col-6 col-md-6">
+                <article class="contact-info-card h-100 d-flex flex-column flex-sm-row align-items-center text-center text-sm-start gap-2 gap-sm-3">
+                    <div class="contact-info-icon flex-shrink-0">
                         <i class="bi bi-geo-alt"></i>
                     </div>
 
-                    <h3>Office Address</h3>
+                    <div class="contact-info-content">
+                        <h3>Office Address</h3>
 
-                    <p>
-                        New Delhi, India
-                    </p>
+                        <p>
+                            New Delhi, India
+                        </p>
+                    </div>
                 </article>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <article class="contact-info-card h-100">
-                    <div class="contact-info-icon">
+            <div class="col-6 col-md-6">
+                <article class="contact-info-card h-100 d-flex flex-column flex-sm-row align-items-center text-center text-sm-start gap-2 gap-sm-3">
+                    <div class="contact-info-icon flex-shrink-0">
                         <i class="bi bi-telephone"></i>
                     </div>
 
-                    <h3>Phone Number</h3>
+                    <div class="contact-info-content">
+                        <h3>Phone Number</h3>
 
-                    <a href="tel:+919876543210">
-                        +91 98765 43210
-                    </a>
+                        <a href="tel:+919876543210">
+                            +91 98765 43210
+                        </a>
+                    </div>
                 </article>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <article class="contact-info-card h-100">
-                    <div class="contact-info-icon">
+            <div class="col-6 col-md-6">
+                <article class="contact-info-card h-100 d-flex flex-column flex-sm-row align-items-center text-center text-sm-start gap-2 gap-sm-3">
+                    <div class="contact-info-icon flex-shrink-0">
                         <i class="bi bi-envelope"></i>
                     </div>
 
-                    <h3>Email Address</h3>
+                    <div class="contact-info-content">
+                        <h3>Email Address</h3>
 
-                    <a href="mailto:support@gaonbazar.com">
-                        supportgaonbazar.com
-                    </a>
+                        <a href="mailto:support@gaonbazar.com">
+                            support&#64;gaonbazar.com
+                        </a>
+                    </div>
                 </article>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <article class="contact-info-card h-100">
-                    <div class="contact-info-icon">
+            <div class="col-6 col-md-6">
+                <article class="contact-info-card h-100 d-flex flex-column flex-sm-row align-items-center text-center text-sm-start gap-2 gap-sm-3">
+                    <div class="contact-info-icon flex-shrink-0">
                         <i class="bi bi-clock"></i>
                     </div>
 
-                    <h3>Working Hours</h3>
+                    <div class="contact-info-content">
+                        <h3>Working Hours</h3>
 
-                    <p>
-                        Mon–Sat, 9:00 AM–6:00 PM
-                    </p>
+                        <p>
+                            Mon–Sat, 9:00 AM–6:00 PM
+                        </p>
+                    </div>
                 </article>
             </div>
 
@@ -145,10 +153,18 @@
 
                     @if (isSubmitted) {
                     <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
-                        <i class="bi bi-check-circle-fill"></i>
-
+                        <i class="bi bi-check-circle-fill fs-5 me-1"></i>
                         <span>
-                            Your message has been submitted successfully.
+                            Your message has been submitted successfully. Our support team will get back to you shortly!
+                        </span>
+                    </div>
+                    }
+
+                    @if (errorMessage) {
+                    <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 me-1"></i>
+                        <span>
+                            {{ errorMessage }}
                         </span>
                     </div>
                     }
@@ -272,9 +288,14 @@
                             </div>
 
                             <div class="col-12">
-                                <button type="submit" class="btn btn-success rounded-pill px-4">
-                                    Send Message
-                                    <i class="bi bi-send ms-1"></i>
+                                <button type="submit" class="btn btn-success rounded-pill px-4" [disabled]="isSubmitting">
+                                    @if (isSubmitting) {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Submitting...
+                                    } @else {
+                                        Send Message
+                                        <i class="bi bi-send ms-1"></i>
+                                    }
                                 </button>
                             </div>
 

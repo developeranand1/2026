@@ -6,6 +6,8 @@ import { AdminDashboardComponent } from './admin/dashboard/admin-dashboard.compo
 import { CategoryManagementComponent } from './admin/categories/category-management.component';
 import { CropManagementComponent } from './admin/crops/crop-management.component';
 import { UserManagementComponent } from './admin/users/user-management.component';
+import { ContactManagementComponent } from './admin/contact/contact-management.component';
+import { NewsManagementComponent } from './admin/news/news-management.component';
 
 export const routes: Routes = [
   {
@@ -42,6 +44,22 @@ export const routes: Routes = [
       {
         path: 'users',
         component: UserManagementComponent
+      },
+      {
+        path: 'contact',
+        component: ContactManagementComponent
+      },
+      {
+        path: 'news',
+        component: NewsManagementComponent
+      },
+      {
+        path: 'news/create',
+        component: NewsManagementComponent
+      },
+      {
+        path: 'news/edit/:id',
+        component: NewsManagementComponent
       },
       {
         path: 'mandi-rates',
