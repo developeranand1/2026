@@ -2,22 +2,23 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    addCrop,
+    getAllCrops,
     getMyCrops,
     getCropById,
+    addCrop,
+    updateCropApproval,
     updateCrop,
     deleteCrop
 } = require("../controllers/crop.controller");
 
-const { protect } = require("../middlewares/auth.middleware");
-const authorizeRoles = require("../middlewares/role.middleware");
-
-router.use(protect);
-router.use(authorizeRoles("farmer"));
-
-router.post("/", addCrop);
+// Public / Authenticated endpoints
+router.get("/", getAllCrops);
 router.get("/my-crops", getMyCrops);
 router.get("/:id", getCropById);
+
+// Add, Update, Approval, Delete Endpoints
+router.post("/", addCrop);
+router.patch("/:id/approval", updateCropApproval);
 router.put("/:id", updateCrop);
 router.delete("/:id", deleteCrop);
 

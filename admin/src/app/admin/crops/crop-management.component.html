@@ -1,65 +1,539 @@
-<div class="crop-page-container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h3 class="fw-bold text-dark mb-1"><i class="bi bi-tree-fill text-warning me-2"></i>Crop Listings Control</h3>
-      <p class="text-secondary small mb-0">Inspect and monitor all crop listings uploaded by registered farmers</p>
+<div class="crop-admin-container">
+  <!-- VIEW 1: PRODUCTS DASHBOARD TABLE LISTING -->
+  <div *ngIf="viewMode === 'list'">
+    <!-- Page Header -->
+    <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+      <div>
+        <h2 class="page-title d-flex align-items-center gap-2 mb-1">
+          <i class="bi bi-box-seam-fill text-success fs-3"></i>
+          Crops & Mandi Products Management
+        </h2>
+        <p class="page-subtitle text-muted mb-0 fs-7">
+          Manage crop product listings and buyer purchase demands created by Farmers, Buyers, and Admins.
+        </p>
+      </div>
+      <div>
+        <button (click)="openCreatePage()" class="btn btn-success btn-sm rounded-pill px-4 shadow-sm fw-bold">
+          <i class="bi bi-plus-circle-fill me-1"></i> + Create New Product Listing
+        </button>
+      </div>
     </div>
-    <button (click)="loadCrops()" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
-  </div>
 
-  <div class="card bg-white border p-3 mb-4 rounded-4 shadow-sm">
-    <div class="input-group">
-      <span class="input-group-text bg-light border-end-0 text-warning"><i class="bi bi-search"></i></span>
-      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="filterCrops()" class="form-control bg-light border-start-0 text-dark" placeholder="Filter crops by name, location or farmer...">
+    <!-- Role Filter Tabs & Search Bar Card -->
+    <div class="card bg-white border-0 p-3 mb-4 rounded-4 shadow-sm">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <!-- Role Filters -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <div class="btn-group btn-group-sm rounded-pill p-1 bg-light border">
+            <button 
+              class="btn rounded-pill px-3 py-1 text-nowrap fs-7" 
+              [ngClass]="selectedRoleFilter === 'all' ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+              (click)="filterByRole('all')">
+              All Products
+            </button>
+
+            <button 
+              class="btn rounded-pill px-3 py-1 text-nowrap fs-7" 
+              [ngClass]="selectedRoleFilter === 'farmer' ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+              (click)="filterByRole('farmer')">
+              Farmer Listings 🌾
+            </button>
+
+            <button 
+              class="btn rounded-pill px-3 py-1 text-nowrap fs-7" 
+              [ngClass]="selectedRoleFilter === 'buyer' ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+              (click)="filterByRole('buyer')">
+              Buyer Demands 🏬
+            </button>
+
+            <button 
+              class="btn rounded-pill px-3 py-1 text-nowrap fs-7" 
+              [ngClass]="selectedRoleFilter === 'admin' ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+              (click)="filterByRole('admin')">
+              Admin Listings 🛡️
+            </button>
+          </div>
+
+          <!-- Listing Type Dropdown -->
+          <select class="form-select form-select-sm rounded-pill border-secondary-subtle" style="width: 150px;" [(ngModel)]="selectedTypeFilter" (change)="loadCrops()">
+            <option value="all">All Types (Sell & Buy)</option>
+            <option value="sell">Sell Listings (Farmers)</option>
+            <option value="buy">Purchase Demands (Buyers)</option>
+          </select>
+
+          <!-- Approval Status Dropdown -->
+          <select class="form-select form-select-sm rounded-pill border-secondary-subtle" style="width: 160px;" [(ngModel)]="selectedApprovalFilter" (change)="loadCrops()">
+            <option value="all">All Approvals</option>
+            <option value="approved">Approved ✅</option>
+            <option value="pending">Pending Approval ⏳</option>
+            <option value="rejected">Rejected ❌</option>
+          </select>
+
+          <!-- Category Dropdown -->
+          <select class="form-select form-select-sm rounded-pill border-secondary-subtle" style="width: 160px;" [(ngModel)]="selectedCategoryFilter" (change)="loadCrops()">
+            <option value="all">All Categories</option>
+            <option *ngFor="let cat of categoriesList" [value]="cat.name">{{ cat.name }}</option>
+          </select>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-input-group position-relative" style="min-width: 240px;">
+          <i class="bi bi-search search-icon text-muted"></i>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            (keyup.enter)="onSearch()" 
+            class="form-control form-control-sm ps-5 pe-4 rounded-pill border-secondary-subtle" 
+            placeholder="Search crop, subcategory, location...">
+          <button *ngIf="searchQuery" class="btn-clear border-0 bg-transparent text-muted" (click)="searchQuery = ''; onSearch()">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success mb-2" role="status"></div>
+      <p class="text-muted fs-7">Fetching products database...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && cropsList.length === 0" class="text-center py-5 bg-white rounded-4 border shadow-sm">
+      <i class="bi bi-box-seam fs-1 text-muted d-block mb-2"></i>
+      <h5 class="text-dark fw-bold mb-1">No Product Listings Found</h5>
+      <p class="text-muted fs-7 mb-3">No crops or buyer demands match your current filter criteria.</p>
+      <button (click)="openCreatePage()" class="btn btn-success btn-sm rounded-pill px-4">
+        <i class="bi bi-plus-circle-fill me-1"></i> Create First Listing
+      </button>
+    </div>
+
+    <!-- Crops Table / Cards List -->
+    <div *ngIf="!isLoading && cropsList.length > 0" class="card shadow-sm border-0 rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light fs-7 text-uppercase text-secondary">
+            <tr>
+              <th scope="col" style="width: 40px;" class="ps-3">#</th>
+              <th scope="col" style="min-width: 220px;">Crop / Product</th>
+              <th scope="col" style="width: 130px;">Posted By Role</th>
+              <th scope="col" style="width: 110px;">Type</th>
+              <th scope="col" style="min-width: 160px;">Price & Offer</th>
+              <th scope="col" style="min-width: 170px;">Owner & Location</th>
+              <th scope="col" style="width: 130px;">Admin Approval</th>
+              <th scope="col" style="width: 90px;">Status</th>
+              <th scope="col" style="width: 140px;" class="text-end pe-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let crop of cropsList; let i = index">
+              <td class="ps-3 fw-semibold text-muted fs-7">{{ i + 1 }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <img 
+                    [src]="crop.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80'" 
+                    [alt]="crop.cropName" 
+                    class="rounded-3 border object-fit-cover shadow-sm" 
+                    style="width: 52px; height: 52px;">
+                  <div>
+                    <h6 class="fw-bold text-dark mb-0 fs-6">{{ crop.cropName }}</h6>
+                    <div class="d-flex align-items-center gap-1 flex-wrap mt-0.5">
+                      <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-0.5 fs-8">
+                        {{ crop.category }}
+                      </span>
+                      <span *ngIf="crop.subcategory" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 fs-8">
+                        {{ crop.subcategory }}
+                      </span>
+                      <span *ngIf="crop.variety" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5 fs-8">
+                        {{ crop.variety }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span 
+                  class="badge rounded-pill px-3 py-1.5 fs-7 border"
+                  [ngClass]="{
+                    'bg-success-subtle text-success border-success-subtle': crop.postedByRole === 'farmer',
+                    'bg-info-subtle text-info border-info-subtle': crop.postedByRole === 'buyer',
+                    'bg-dark text-white border-dark': crop.postedByRole === 'admin'
+                  }">
+                  <i class="bi me-1" [ngClass]="{
+                    'bi-person-workspace': crop.postedByRole === 'farmer',
+                    'bi-shop': crop.postedByRole === 'buyer',
+                    'bi-shield-check': crop.postedByRole === 'admin'
+                  }"></i>
+                  {{ crop.postedByRole | uppercase }}
+                </span>
+              </td>
+              <td>
+                <span 
+                  class="badge rounded-pill px-2.5 py-1 fs-7"
+                  [ngClass]="crop.type === 'sell' ? 'bg-success text-white' : 'bg-primary text-white'">
+                  {{ crop.type === 'sell' ? 'FOR SALE 🌾' : 'BUY DEMAND 🏬' }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex align-items-baseline gap-1">
+                  <span class="fw-bold text-dark fs-6">₹{{ crop.expectedPrice | number }}</span>
+                  <span class="fs-8 text-muted">/ {{ crop.priceUnit }}</span>
+                </div>
+
+                <div *ngIf="crop.originalPrice && crop.originalPrice > crop.expectedPrice" class="d-flex align-items-center gap-1.5 mt-0.5">
+                  <del class="text-muted fs-8">₹{{ crop.originalPrice | number }}</del>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle fs-8 px-1.5 py-0.5 rounded">
+                    {{ crop.discountPercentage || 10 }}% OFF
+                  </span>
+                </div>
+
+                <div class="fs-8 text-secondary mt-0.5">Qty: <strong>{{ crop.quantity }} {{ crop.unit }}</strong></div>
+              </td>
+              <td class="fs-7 text-secondary">
+                <div class="fw-semibold text-dark mb-0">{{ crop.postedByName || 'GaonBazar User' }}</div>
+                <div class="fs-8 text-muted" *ngIf="crop.postedByMobile"><i class="bi bi-telephone-fill me-1 text-success"></i>{{ crop.postedByMobile }}</div>
+                <div class="fs-8 text-muted"><i class="bi bi-geo-alt-fill me-1 text-danger"></i>{{ crop.location }}</div>
+              </td>
+              <td>
+                <!-- Approval Status Badges -->
+                <span *ngIf="crop.approvalStatus === 'approved' || crop.isApproved" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fs-7">
+                  <i class="bi bi-check-circle-fill me-1"></i>Approved
+                </span>
+                <span *ngIf="crop.approvalStatus === 'pending' && !crop.isApproved" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fs-7">
+                  <i class="bi bi-clock-history me-1"></i>Pending
+                </span>
+                <span *ngIf="crop.approvalStatus === 'rejected'" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fs-7">
+                  <i class="bi bi-x-circle-fill me-1"></i>Rejected
+                </span>
+              </td>
+              <td>
+                <span 
+                  class="badge rounded-pill px-2 py-0.5 fs-8"
+                  [ngClass]="{
+                    'bg-success text-white': crop.status === 'active',
+                    'bg-warning text-dark': crop.status === 'sold',
+                    'bg-secondary text-white': crop.status === 'inactive'
+                  }">
+                  {{ crop.status | titlecase }}
+                </span>
+              </td>
+              <td class="text-end pe-3">
+                <button 
+                  *ngIf="crop.approvalStatus !== 'approved'" 
+                  class="btn btn-sm btn-success me-1 py-0.5 px-2" 
+                  title="Approve Listing" 
+                  (click)="toggleCropApproval(crop, 'approved', $event)">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+
+                <button 
+                  *ngIf="crop.approvalStatus === 'approved'" 
+                  class="btn btn-sm btn-outline-warning me-1 py-0.5 px-2" 
+                  title="Hold / Unapprove Listing" 
+                  (click)="toggleCropApproval(crop, 'pending', $event)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+
+                <button class="btn btn-sm btn-light text-primary me-1 py-0.5 px-2" title="Edit Listing" (click)="openEditPage(crop)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+
+                <button class="btn btn-sm btn-light text-danger py-0.5 px-2" title="Delete Listing" (click)="deleteCrop(crop)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-warning" role="status"></div>
-    <p class="text-secondary mt-2">Loading crop listings...</p>
-  </div>
+  <!-- VIEW 2: FULL DEDICATED CREATE / EDIT PRODUCT FORM PAGE (NO MODAL BOX) -->
+  <div *ngIf="viewMode === 'create' || viewMode === 'edit'" class="crop-form-container">
+    <!-- Top Sticky Header -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4 bg-white">
+      <div class="card-body py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" (click)="goToList()" title="Back to Products List">
+            <i class="bi bi-arrow-left fs-5"></i>
+          </button>
+          <div>
+            <h3 class="mb-0 fw-bold text-dark fs-4">
+              {{ viewMode === 'create' ? 'Create New Crop Product Listing' : 'Edit Crop Product Listing' }}
+            </h3>
+            <span class="fs-7 text-muted">
+              Add product details, link database categories & subcategories, upload photos, and set pricing with discounts.
+            </span>
+          </div>
+        </div>
 
-  <div *ngIf="!isLoading" class="table-responsive rounded-4 border bg-white shadow-sm">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Crop Details</th>
-          <th>Farmer Name</th>
-          <th>Quantity & Price</th>
-          <th>Location</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let crop of filteredCrops">
-          <td>
-            <div class="d-flex align-items-center gap-3">
-              <img [src]="crop.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=300&q=80'" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
-              <div>
-                <span class="fw-bold text-dark d-block">{{ crop.cropName || 'Wheat Grade A' }}</span>
-                <span class="text-secondary small">{{ crop.variety || 'Standard Variety' }}</span>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" (click)="goToList()">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-success btn-sm rounded-pill px-4 shadow-sm fw-bold" (click)="saveCrop()">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            {{ viewMode === 'create' ? 'Publish Listing' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty Categories Warning Box if 0 Categories in DB -->
+    <div *ngIf="categoriesList.length === 0" class="alert alert-warning border border-warning rounded-3 shadow-sm mb-4 d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-4 text-warning"></i>
+        <div>
+          <h6 class="mb-0 fw-bold text-dark">No Categories Found in Database!</h6>
+          <span class="fs-7 text-secondary">Please create crop categories first in Category Management before listing crops.</span>
+        </div>
+      </div>
+      <a routerLink="/admin/categories" class="btn btn-warning btn-sm fw-bold rounded-pill px-3">
+        + Create Categories
+      </a>
+    </div>
+
+    <!-- Main Content Form Grid -->
+    <div class="row g-4">
+      <!-- Left Column (col-lg-8) -->
+      <div class="col-lg-8">
+        <!-- Card 1: Listing Role & Product Identification -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-info-circle-fill text-success"></i> Listing Type & Product Details
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">Listing Owner Role *</label>
+                <select class="form-select bg-light text-dark fw-semibold" [(ngModel)]="cropForm.postedByRole">
+                  <option value="farmer">Farmer Listing 🌾</option>
+                  <option value="buyer">Buyer Purchasing Demand 🏬</option>
+                  <option value="admin">Admin Featured Listing 🛡️</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">Listing Purpose / Type *</label>
+                <select class="form-select bg-light text-dark fw-semibold" [(ngModel)]="cropForm.type">
+                  <option value="sell">For Sale (Crop Selling)</option>
+                  <option value="buy">Purchase Request (Buyer Requirement)</option>
+                </select>
               </div>
             </div>
-          </td>
-          <td>
-            <span class="fw-semibold text-dark">{{ crop.farmer?.name || 'Rajesh Kumar' }}</span>
-            <span class="text-secondary small d-block">{{ crop.farmer?.mobile || '9876543210' }}</span>
-          </td>
-          <td>
-            <span class="fw-bold text-success">{{ crop.quantity || '100' }} Quintal</span>
-            <span class="text-secondary small d-block">₹{{ crop.expectedPrice || 2500 }}/Qtl</span>
-          </td>
-          <td>
-            <span class="badge bg-light border text-dark">{{ crop.location || 'Khalilabad' }}</span>
-          </td>
-          <td>
-            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1">Active</span>
-          </td>
-        </tr>
-        <tr *ngIf="filteredCrops.length === 0">
-          <td colspan="5" class="text-center text-secondary py-4">No crops match your search criteria.</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">Crop / Product Title *</label>
+                <input type="text" [(ngModel)]="cropForm.cropName" class="form-control bg-light" placeholder="e.g. Sharbati Wheat, Basmati Rice, Kufri Potato">
+              </div>
+
+              <!-- Database Category Selector -->
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">Database Category *</label>
+                <select 
+                  class="form-select bg-light fw-semibold" 
+                  [(ngModel)]="cropForm.category" 
+                  (change)="onCategoryChange(cropForm.category!)">
+                  <option value="" disabled>-- Select Category from DB --</option>
+                  <option *ngFor="let cat of categoriesList" [value]="cat.name">{{ cat.name }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Subcategory & Variety -->
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">Subcategory (From Selected Category):</label>
+                <select class="form-select bg-light" [(ngModel)]="cropForm.subcategory">
+                  <option value="">-- Select Subcategory --</option>
+                  <option *ngFor="let sub of availableSubcategories" [value]="sub.name">{{ sub.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">Variety / Quality Grade:</label>
+                <input type="text" [(ngModel)]="cropForm.variety" class="form-control bg-light" placeholder="e.g. Sharbati, 1121 Basmati, Grade A">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Quantity & Pricing & Discount Specifications -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-currency-rupee text-success"></i> Quantity, Pricing & Discount Offers
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">Original Price / MRP (₹):</label>
+                <input type="number" [(ngModel)]="cropForm.originalPrice" (input)="calculateDiscount()" class="form-control bg-light" placeholder="e.g. 2450">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">Selling / Offer Price (₹) *</label>
+                <input type="number" [(ngModel)]="cropForm.expectedPrice" (input)="calculateDiscount()" class="form-control bg-light fw-bold text-success" placeholder="e.g. 2200">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">Discount (% OFF):</label>
+                <div class="input-group">
+                  <input type="number" [(ngModel)]="cropForm.discountPercentage" (input)="onDiscountPercentageChange()" class="form-control bg-light fw-bold text-danger" placeholder="e.g. 10">
+                  <span class="input-group-text bg-success-subtle text-success fw-bold">% OFF</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">Quantity *</label>
+                <input type="number" [(ngModel)]="cropForm.quantity" class="form-control bg-light">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">Unit *</label>
+                <select class="form-select bg-light" [(ngModel)]="cropForm.unit">
+                  <option value="Qtl">Quintal (Qtl)</option>
+                  <option value="Kg">Kilogram (Kg)</option>
+                  <option value="Ton">Ton</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">Price Per Unit:</label>
+                <input type="text" [(ngModel)]="cropForm.priceUnit" class="form-control bg-light" placeholder="Quintal / Kg / Ton">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Detailed Description & Harvest Specifications (Rich Text Editor) -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-file-earmark-rich-fill text-success"></i> Full Product Description & Specifications
+            </h5>
+          </div>
+          <div class="card-body p-3">
+            <app-rich-text-editor 
+              [(value)]="cropDescription" 
+              placeholder="Write detailed crop specifications, harvest quality, moisture percentage, packaging specs, and delivery terms...">
+            </app-rich-text-editor>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column Sidebar (col-lg-4) -->
+      <div class="col-lg-4">
+        <!-- Card 4: Admin Approval & Moderation Controls -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4 border-start border-success border-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-shield-check text-success fs-5"></i> Admin Approval Status
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <select class="form-select bg-light fw-bold" [(ngModel)]="cropForm.approvalStatus">
+              <option value="approved">Approved ✅ (Visible to Farmers & Buyers)</option>
+              <option value="pending">Pending Review ⏳</option>
+              <option value="rejected">Rejected ❌</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Card 5: Cloudinary Multiple Crop Photos Upload -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-images text-success"></i> Crop Photos Gallery (Cloudinary)
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="mb-3 p-3 bg-light rounded-3 border text-center">
+              <label class="form-label text-dark fw-bold fs-7 mb-2 d-block">
+                <i class="bi bi-cloud-arrow-up-fill text-success me-1"></i> Select Photo(s) to Upload
+              </label>
+              <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple class="form-control form-control-sm mb-2">
+              <div *ngIf="isUploading" class="text-success fs-8 fw-bold my-1">
+                <span class="spinner-border spinner-border-sm me-1"></span> Uploading photo(s) to Cloudinary...
+              </div>
+              <small class="text-muted fs-8 d-block">Upload multiple images (<strong>Max 1MB per image</strong>)</small>
+            </div>
+
+            <!-- Multi-Photo Thumbnail Gallery Preview Grid -->
+            <div *ngIf="cropImagesList.length > 0">
+              <label class="form-label text-dark fw-semibold fs-7 mb-2 d-block">
+                Uploaded Photos Gallery ({{ cropImagesList.length }}):
+              </label>
+              <div class="d-flex flex-wrap gap-2">
+                <div *ngFor="let imgUrl of cropImagesList; let idx = index" class="position-relative rounded-3 overflow-hidden border shadow-sm" style="width: 84px; height: 84px;">
+                  <img [src]="imgUrl" alt="Crop Photo" class="w-100 h-100 object-fit-cover">
+                  
+                  <span *ngIf="idx === 0" class="badge bg-success position-absolute bottom-0 start-0 m-1 fs-8" style="font-size: 0.65rem;">
+                    Main
+                  </span>
+
+                  <button 
+                    type="button" 
+                    class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0 rounded-circle d-flex align-items-center justify-content-center shadow" 
+                    style="width: 22px; height: 22px; margin: 2px;"
+                    (click)="removeImageAtIndex(idx)" 
+                    title="Remove Photo">
+                    <i class="bi bi-x" style="font-size: 14px;"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6: Owner & Location Info -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-person-fill text-success"></i> Owner & Contact Info
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="mb-3">
+              <label class="form-label text-dark fw-semibold fs-7 mb-1">Contact Name:</label>
+              <input type="text" [(ngModel)]="cropForm.postedByName" class="form-control bg-light" placeholder="e.g. Ramesh Kumar">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dark fw-semibold fs-7 mb-1">Mobile Number:</label>
+              <input type="text" [(ngModel)]="cropForm.postedByMobile" class="form-control bg-light" placeholder="10 digit mobile">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dark fw-semibold fs-7 mb-1">Mandi / Location:</label>
+              <input type="text" [(ngModel)]="cropForm.location" class="form-control bg-light" placeholder="e.g. Basti, Uttar Pradesh">
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7: Product Status -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-toggle-on text-success"></i> Availability Status
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <select class="form-select bg-light fw-bold" [(ngModel)]="cropForm.status">
+              <option value="active">Active (Available)</option>
+              <option value="sold">Sold Out</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

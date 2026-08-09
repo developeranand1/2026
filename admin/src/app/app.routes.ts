@@ -42,6 +42,14 @@ export const routes: Routes = [
         component: CropManagementComponent
       },
       {
+        path: 'crops/create',
+        component: CropManagementComponent
+      },
+      {
+        path: 'crops/edit/:id',
+        component: CropManagementComponent
+      },
+      {
         path: 'users',
         component: UserManagementComponent
       },

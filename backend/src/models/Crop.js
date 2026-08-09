@@ -2,24 +2,53 @@ const mongoose = require("mongoose");
 
 const cropSchema = new mongoose.Schema(
     {
-        farmer: {
+        postedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            required: false
+        },
+
+        postedByRole: {
+            type: String,
+            enum: ["farmer", "buyer", "admin"],
+            default: "farmer"
+        },
+
+        postedByName: {
+            type: String,
+            default: "GaonBazar Farmer"
+        },
+
+        postedByMobile: {
+            type: String,
+            default: ""
+        },
+
+        type: {
+            type: String,
+            enum: ["sell", "buy"],
+            default: "sell"
         },
 
         cropName: {
             type: String,
-            required: true,
-            enum: [
-                "Wheat",
-                "Mustard",
-                "Paddy",
-                "Maize",
-                "Pulses",
-                "Vegetables",
-                "Fruits"
-            ]
+            required: [true, "Crop name is required"],
+            trim: true
+        },
+
+        category: {
+            type: String,
+            default: "Food Grains & Cereals"
+        },
+
+        subcategory: {
+            type: String,
+            default: ""
+        },
+
+        variety: {
+            type: String,
+            default: ""
         },
 
         grade: {
@@ -29,7 +58,8 @@ const cropSchema = new mongoose.Schema(
 
         quantity: {
             type: Number,
-            required: true
+            required: true,
+            default: 1
         },
 
         unit: {
@@ -38,9 +68,19 @@ const cropSchema = new mongoose.Schema(
             default: "Qtl"
         },
 
+        originalPrice: {
+            type: Number,
+            default: 0
+        },
+
         expectedPrice: {
             type: Number,
             required: true
+        },
+
+        discountPercentage: {
+            type: Number,
+            default: 0
         },
 
         priceUnit: {
@@ -50,7 +90,23 @@ const cropSchema = new mongoose.Schema(
 
         location: {
             type: String,
-            required: true
+            required: true,
+            default: "Uttar Pradesh"
+        },
+
+        description: {
+            type: String,
+            default: ""
+        },
+
+        image: {
+            type: String,
+            default: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80"
+        },
+
+        images: {
+            type: [String],
+            default: []
         },
 
         photo: {
@@ -62,6 +118,17 @@ const cropSchema = new mongoose.Schema(
             type: String,
             enum: ["active", "sold", "inactive"],
             default: "active"
+        },
+
+        isApproved: {
+            type: Boolean,
+            default: true
+        },
+
+        approvalStatus: {
+            type: String,
+            enum: ["approved", "pending", "rejected"],
+            default: "approved"
         }
     },
     { timestamps: true }
