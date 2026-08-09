@@ -78,10 +78,21 @@ export class CategoryManagementComponent implements OnInit {
     );
   }
 
-  // Cloudinary File Upload Event
+  // Cloudinary File Upload Event with 1MB Size Limit Check
   onFileSelected(event: any, target: 'category' | 'subcategory'): void {
     const file = event.target.files[0];
     if (!file) return;
+
+    // Validate size (1MB max limit)
+    if (file.size > 1 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'File Too Large',
+        text: 'Selected image size exceeds 1MB limit. Please upload an image smaller than 1MB.',
+        confirmButtonColor: '#198754'
+      });
+      return;
+    }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -97,7 +108,13 @@ export class CategoryManagementComponent implements OnInit {
             } else {
               this.subcategoryForm.image = res.url;
             }
-            Swal.fire('Cloudinary Upload Success', 'Image uploaded to Cloudinary!', 'success');
+            Swal.fire({
+              icon: 'success',
+              title: 'Uploaded to Cloudinary!',
+              text: 'Image uploaded successfully.',
+              timer: 2000,
+              showConfirmButton: false
+            });
           }
         },
         error: (err) => {
@@ -106,6 +123,14 @@ export class CategoryManagementComponent implements OnInit {
         }
       });
     };
+  }
+
+  removeImage(target: 'category' | 'subcategory'): void {
+    if (target === 'category') {
+      this.categoryForm.image = '';
+    } else {
+      this.subcategoryForm.image = '';
+    }
   }
 
   selectPresetImage(url: string, target: 'category' | 'subcategory'): void {
@@ -122,7 +147,7 @@ export class CategoryManagementComponent implements OnInit {
     this.categoryForm = {
       name: '',
       description: '',
-      image: this.presetImages[0].url,
+      image: '',
       icon: 'bi-tag-fill',
       isActive: true,
       displayOrder: this.categories.length + 1

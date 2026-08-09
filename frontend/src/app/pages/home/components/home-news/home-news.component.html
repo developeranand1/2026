@@ -1,0 +1,83 @@
+<section class="home-news-section py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+            <div>
+                <span class="section-badge badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fs-7 mb-2 d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-newspaper"></i> News & Market Insights
+                </span>
+                <h2 class="section-title text-dark fw-bold mb-1">
+                    Latest Agricultural News & Bhav Updates
+                </h2>
+                <p class="section-subtitle text-muted fs-6 mb-0">
+                    Stay updated with government schemes, Mandi trends, and farming innovations.
+                </p>
+            </div>
+
+            <a routerLink="/news" class="btn btn-outline-success rounded-pill px-4 btn-sm fw-semibold shadow-sm">
+                View All Articles <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-success mb-2" role="status"></div>
+            <p class="text-muted fs-7">Loading latest news articles...</p>
+        </div>
+
+        <!-- News Cards Grid -->
+        <div *ngIf="!isLoading && newsList.length > 0" class="row g-4">
+            <div *ngFor="let item of newsList" class="col-md-6 col-lg-4">
+                <article class="home-news-card bg-white rounded-4 overflow-hidden border shadow-sm h-100 d-flex flex-column hover-lift">
+                    <!-- Thumbnail Box -->
+                    <div class="card-image-box position-relative overflow-hidden" style="height: 200px;">
+                        <img 
+                            [src]="item.image || 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'" 
+                            [alt]="item.title" 
+                            class="w-100 h-100 object-fit-cover card-img-top">
+                        <span class="badge bg-success text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 fs-7 shadow-sm">
+                            {{ getNewsTypeName(item.newsType) }}
+                        </span>
+                        <span *ngIf="item.isFeatured" class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 rounded-pill px-2.5 py-1 fs-7 shadow-sm">
+                            <i class="bi bi-star-fill me-1"></i> Featured
+                        </span>
+                    </div>
+
+                    <!-- Card Content Body -->
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                        <div class="news-meta fs-7 text-muted mb-2 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-calendar3 me-1 text-success"></i>{{ item.publishedAt | date:'mediumDate' }}</span>
+                            <span><i class="bi bi-eye me-1 text-success"></i>{{ item.views || 0 }} views</span>
+                        </div>
+
+                        <h3 class="card-title text-dark fw-bold fs-5 mb-2 line-clamp-2">
+                            <a [routerLink]="['/news', item.slug]" class="text-dark text-decoration-none hover-green">
+                                {{ item.title }}
+                            </a>
+                        </h3>
+
+                        <!-- Excerpt only -->
+                        <p *ngIf="item.shortDescription" class="card-text text-secondary fs-7 line-clamp-2 mb-4">
+                            {{ item.shortDescription }}
+                        </p>
+
+                        <!-- Read Link -->
+                        <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                            <span class="fs-8 text-muted">
+                                <i class="bi bi-person-circle me-1"></i>{{ item.author }}
+                            </span>
+                            <a [routerLink]="['/news', item.slug]" class="read-more-link text-success fw-bold text-decoration-none fs-7 d-inline-flex align-items-center gap-1">
+                                Read Story <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- Empty Fallback -->
+        <div *ngIf="!isLoading && newsList.length === 0" class="text-center py-4 text-muted fs-6">
+            No news articles published yet. Check back soon!
+        </div>
+    </div>
+</section>

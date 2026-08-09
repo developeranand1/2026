@@ -9,7 +9,7 @@ router.get("/", categoryController.getCategories);
 router.post("/upload-image", categoryController.uploadCloudinaryImage);
 
 // Admin operations
-router.post("/seed", categoryController.seedCategories);
+router.delete("/clear-all", categoryController.clearAllCategories);
 router.post("/", categoryController.createCategory);
 router.put("/:id", categoryController.updateCategory);
 router.delete("/:id", categoryController.deleteCategory);

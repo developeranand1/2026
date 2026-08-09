@@ -46,6 +46,10 @@ export const routes: Routes = [
         component: UserManagementComponent
       },
       {
+        path: 'users/view/:id',
+        component: UserManagementComponent
+      },
+      {
         path: 'contact',
         component: ContactManagementComponent
       },

@@ -11,6 +11,7 @@ const categoryRoutes = require("./routes/category.routes");
 const contactRoutes = require("./routes/contact.routes");
 const newsTypeRoutes = require("./routes/newsType.routes");
 const newsRoutes = require("./routes/news.routes");
+const userRoutes = require("./routes/user.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -42,6 +43,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/news-types", newsTypeRoutes);
 app.use("/api/news", newsRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(errorMiddleware);
 

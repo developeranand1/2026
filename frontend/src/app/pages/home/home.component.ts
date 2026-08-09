@@ -7,6 +7,7 @@ import { BenefitsComponent } from './components/benefits/benefits.component';
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
 import { FarmerCtaComponent } from './components/farmer-cta/farmer-cta.component';
 import { NewsletterComponent } from './components/newsletter/newsletter.component';
+import { HomeNewsComponent } from './components/home-news/home-news.component';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,7 @@ import { NewsletterComponent } from './components/newsletter/newsletter.componen
     CategoriesComponent,
     ProductsComponent,
     MandiRatesComponent,
+    HomeNewsComponent,
     BenefitsComponent,
     TestimonialsComponent,
     FarmerCtaComponent,

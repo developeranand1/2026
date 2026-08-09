@@ -1,66 +1,495 @@
-<div class="user-page-container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h3 class="fw-bold text-dark mb-1"><i class="bi bi-people-fill text-info me-2"></i>Farmers & Buyers Directory</h3>
-      <p class="text-secondary small mb-0">View registered agricultural sellers and mill buyers</p>
+<div class="users-admin-container">
+  <!-- VIEW 1: USERS DASHBOARD TABLE LISTING -->
+  <div *ngIf="viewMode === 'list'">
+    <!-- Page Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+          <i class="bi bi-people-fill text-success fs-3"></i>
+          Farmers & Buyers Management
+        </h2>
+        <p class="page-subtitle text-muted mb-0">
+          View registered farmers, agro traders, buyers, verify accounts, and manage profile information.
+        </p>
+      </div>
+    </div>
+
+    <!-- Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-total" (click)="filterByRole('all')">
+          <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.totalUsers }}</span>
+            <span class="stat-label">Total Accounts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-farmers" (click)="filterByRole('farmer')">
+          <div class="stat-icon-wrapper bg-success-subtle text-success">
+            <i class="bi bi-person-workspace"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.farmersCount }}</span>
+            <span class="stat-label">Farmers 🌾</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-buyers" (click)="filterByRole('buyer')">
+          <div class="stat-icon-wrapper bg-info-subtle text-info">
+            <i class="bi bi-shop"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.buyersCount }}</span>
+            <span class="stat-label">Buyers & Traders 🏬</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-verified" (click)="filterByStatus('all')">
+          <div class="stat-icon-wrapper bg-warning-subtle text-warning">
+            <i class="bi bi-patch-check-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.verifiedCount }}</span>
+            <span class="stat-label">Verified Accounts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table Container Card -->
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+      <!-- Card Toolbar -->
+      <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <!-- Role Filter Pills -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <div class="role-tabs d-flex flex-wrap gap-1">
+            <button 
+              class="btn btn-sm rounded-pill px-3"
+              [ngClass]="selectedRoleFilter === 'all' ? 'btn-success fw-semibold' : 'btn-light text-secondary'"
+              (click)="filterByRole('all')">
+              All Users
+            </button>
+            <button 
+              class="btn btn-sm rounded-pill px-3"
+              [ngClass]="selectedRoleFilter === 'farmer' ? 'btn-success fw-semibold' : 'btn-light text-secondary'"
+              (click)="filterByRole('farmer')">
+              Farmers 🌾
+            </button>
+            <button 
+              class="btn btn-sm rounded-pill px-3"
+              [ngClass]="selectedRoleFilter === 'buyer' ? 'btn-success fw-semibold' : 'btn-light text-secondary'"
+              (click)="filterByRole('buyer')">
+              Buyers 🏬
+            </button>
+          </div>
+
+          <!-- Status Filter Dropdown -->
+          <select class="form-select form-select-sm rounded-pill border-secondary-subtle ms-1" style="width: 150px;" [(ngModel)]="selectedStatusFilter" (change)="loadUsers()">
+            <option value="all">All Statuses</option>
+            <option value="active">Active Only</option>
+            <option value="blocked">Blocked Only</option>
+          </select>
+        </div>
+
+        <!-- Search Input -->
+        <div class="search-box position-relative" style="min-width: 260px;">
+          <i class="bi bi-search search-icon"></i>
+          <input 
+            type="text" 
+            class="form-control form-control-sm ps-5 pe-4 rounded-pill" 
+            placeholder="Search name, mobile, email..." 
+            [(ngModel)]="searchTerm" 
+            (keyup.enter)="onSearch()">
+          <button *ngIf="searchTerm" class="btn-clear border-0 bg-transparent text-muted" (click)="searchTerm = ''; onSearch()">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="table-responsive position-relative" style="min-height: 250px;">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay d-flex flex-column align-items-center justify-content-center">
+          <div class="spinner-border text-success mb-2" role="status"></div>
+          <span class="text-muted fs-7">Loading users data...</span>
+        </div>
+
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light fs-7 text-uppercase text-secondary">
+            <tr>
+              <th scope="col" style="width: 50px;" class="ps-3">#</th>
+              <th scope="col" style="min-width: 240px;">User Details</th>
+              <th scope="col" style="width: 120px;">Role</th>
+              <th scope="col" style="min-width: 200px;">Location / Business</th>
+              <th scope="col" style="width: 130px;">Verification</th>
+              <th scope="col" style="width: 110px;">Status</th>
+              <th scope="col" style="width: 130px;">Registered</th>
+              <th scope="col" style="width: 130px;" class="text-end pe-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of usersList; let i = index" class="cursor-pointer" (click)="openUserDetailPage(user, $event)">
+              <td class="ps-3 fw-semibold text-muted fs-7">{{ i + 1 }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div 
+                    class="user-avatar-circle rounded-circle text-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                    [ngClass]="{
+                      'bg-success': user.role === 'farmer',
+                      'bg-info': user.role === 'buyer',
+                      'bg-dark': user.role === 'admin'
+                    }"
+                    style="width: 42px; height: 42px; font-size: 1.1rem;">
+                    {{ user.name.charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark mb-0">{{ user.name }}</div>
+                    <div class="fs-8 text-muted">
+                      <i class="bi bi-telephone-fill me-1 text-success"></i>{{ user.mobile }}
+                      <span *ngIf="user.email" class="ms-1">• {{ user.email }}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span 
+                  class="badge rounded-pill px-3 py-1.5 fs-7 border"
+                  [ngClass]="{
+                    'bg-success-subtle text-success border-success-subtle': user.role === 'farmer',
+                    'bg-info-subtle text-info border-info-subtle': user.role === 'buyer',
+                    'bg-dark text-white border-dark': user.role === 'admin'
+                  }">
+                  <i class="bi" [ngClass]="{
+                    'bi-person-workspace me-1': user.role === 'farmer',
+                    'bi-shop me-1': user.role === 'buyer',
+                    'bi-shield-check me-1': user.role === 'admin'
+                  }"></i>
+                  {{ user.role | titlecase }}
+                </span>
+              </td>
+              <td class="fs-7 text-secondary">
+                <div *ngIf="user.role === 'buyer' && user.buyerProfile?.companyName" class="fw-semibold text-dark">
+                  <i class="bi bi-building me-1 text-info"></i>{{ user.buyerProfile?.companyName }}
+                </div>
+                <div class="text-truncate" style="max-width: 220px;">
+                  <i class="bi bi-geo-alt-fill me-1 text-danger"></i>{{ getLocationString(user) }}
+                </div>
+              </td>
+              <td>
+                <span *ngIf="user.isVerified" class="badge bg-success text-white rounded-pill px-2.5 py-1 fs-7">
+                  <i class="bi bi-patch-check-fill me-1"></i>Verified
+                </span>
+                <span *ngIf="!user.isVerified" class="badge bg-light text-muted border rounded-pill px-2.5 py-1 fs-7">
+                  <i class="bi bi-clock-history me-1"></i>Unverified
+                </span>
+              </td>
+              <td>
+                <span class="badge rounded-pill px-2.5 py-1 fs-7" [ngClass]="user.status === 'active' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger text-white'">
+                  {{ user.status | titlecase }}
+                </span>
+              </td>
+              <td class="fs-7 text-muted">
+                <div>{{ user.createdAt | date:'mediumDate' }}</div>
+              </td>
+              <td class="text-end pe-3" (click)="$event.stopPropagation()">
+                <button class="btn btn-sm btn-light text-primary me-1" title="View Full Profile Page" (click)="openUserDetailPage(user, $event)">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button 
+                  class="btn btn-sm me-1" 
+                  [ngClass]="user.status === 'active' ? 'btn-light text-danger' : 'btn-light text-success'" 
+                  [title]="user.status === 'active' ? 'Block Account' : 'Activate Account'" 
+                  (click)="toggleUserStatus(user, $event)">
+                  <i class="bi" [ngClass]="user.status === 'active' ? 'bi-slash-circle' : 'bi-check-circle'"></i>
+                </button>
+                <button class="btn btn-sm btn-light text-danger" title="Delete User" (click)="deleteUser(user, $event)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="!isLoading && usersList.length === 0">
+              <td colspan="8" class="text-center py-5">
+                <div class="empty-box py-4">
+                  <i class="bi bi-people fs-1 text-muted d-block mb-2"></i>
+                  <h5 class="text-dark fw-semibold mb-1">No Users Found</h5>
+                  <p class="text-muted fs-7 mb-0">No registered farmers or buyers match your selected filters.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="d-flex gap-2 mb-4 border-bottom pb-3">
-    <button (click)="activeTab = 'farmers'" class="btn btn-sm rounded-pill px-4 fw-bold" [class.btn-success]="activeTab === 'farmers'" [class.btn-outline-secondary]="activeTab !== 'farmers'">
-      <i class="bi bi-person-fill me-1"></i>Farmers Directory ({{ demoFarmers.length }})
-    </button>
-    <button (click)="activeTab = 'buyers'" class="btn btn-sm rounded-pill px-4 fw-bold" [class.btn-info]="activeTab === 'buyers'" [class.btn-outline-secondary]="activeTab !== 'buyers'">
-      <i class="bi bi-building-check me-1"></i>Buyers & Millers ({{ demoBuyers.length }})
-    </button>
-  </div>
+  <!-- VIEW 2: FULL PAGE USER DETAILS PROFILE (NO MODAL BOX) -->
+  <div *ngIf="viewMode === 'view' && selectedUser" class="user-view-container">
+    <!-- Top Sticky Action Header -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4 bg-white">
+      <div class="card-body py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" (click)="goToList()" title="Back to Users List">
+            <i class="bi bi-arrow-left fs-5"></i>
+          </button>
+          <div>
+            <h3 class="mb-0 fw-bold text-dark fs-4 d-flex align-items-center gap-2">
+              {{ selectedUser.name }}
+              <span 
+                class="badge rounded-pill px-3 py-1 fs-7 border"
+                [ngClass]="{
+                  'bg-success-subtle text-success border-success-subtle': selectedUser.role === 'farmer',
+                  'bg-info-subtle text-info border-info-subtle': selectedUser.role === 'buyer',
+                  'bg-dark text-white border-dark': selectedUser.role === 'admin'
+                }">
+                {{ selectedUser.role | uppercase }}
+              </span>
+              <span *ngIf="selectedUser.isVerified" class="badge bg-warning text-dark fs-7 rounded-pill">
+                <i class="bi bi-patch-check-fill me-1"></i>Verified
+              </span>
+            </h3>
+            <span class="fs-7 text-muted">
+              Mobile: {{ selectedUser.mobile }} • Joined {{ selectedUser.createdAt | date:'mediumDate' }}
+            </span>
+          </div>
+        </div>
 
-  <!-- Farmers Table -->
-  <div *ngIf="activeTab === 'farmers'" class="table-responsive rounded-4 border bg-white shadow-sm">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Farmer Name</th>
-          <th>Mobile Number</th>
-          <th>Location</th>
-          <th>Crops Listed</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let f of demoFarmers">
-          <td><span class="fw-bold text-dark">{{ f.name }}</span></td>
-          <td><span class="text-success font-monospace">{{ f.mobile }}</span></td>
-          <td class="text-secondary">{{ f.location }}</td>
-          <td><span class="badge bg-success bg-opacity-10 text-success">{{ f.cropsCount }} Crops</span></td>
-          <td><span class="badge bg-success border border-success">{{ f.status }}</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <div class="d-flex align-items-center gap-2">
+          <button 
+            class="btn btn-sm rounded-pill px-3" 
+            [ngClass]="selectedUser.isVerified ? 'btn-outline-secondary' : 'btn-success'"
+            (click)="toggleUserVerification(selectedUser)">
+            <i class="bi bi-patch-check me-1"></i>
+            {{ selectedUser.isVerified ? 'Mark Unverified' : 'Verify Account' }}
+          </button>
 
-  <!-- Buyers Table -->
-  <div *ngIf="activeTab === 'buyers'" class="table-responsive rounded-4 border bg-white shadow-sm">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Company / Mill Name</th>
-          <th>Contact Person</th>
-          <th>Mobile</th>
-          <th>GST Number</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let b of demoBuyers">
-          <td><span class="fw-bold text-dark">{{ b.name }}</span></td>
-          <td class="text-secondary">{{ b.contactPerson }}</td>
-          <td><span class="text-info font-monospace">{{ b.mobile }}</span></td>
-          <td><code>{{ b.gst }}</code></td>
-          <td><span class="badge bg-info text-white">{{ b.status }}</span></td>
-        </tr>
-      </tbody>
-    </table>
+          <button 
+            class="btn btn-sm rounded-pill px-3" 
+            [ngClass]="selectedUser.status === 'active' ? 'btn-outline-danger' : 'btn-success'"
+            (click)="toggleUserStatus(selectedUser)">
+            <i class="bi me-1" [ngClass]="selectedUser.status === 'active' ? 'bi-slash-circle' : 'bi-check-circle'"></i>
+            {{ selectedUser.status === 'active' ? 'Block Account' : 'Activate Account' }}
+          </button>
+
+          <button class="btn btn-danger btn-sm rounded-pill px-3" (click)="deleteUser(selectedUser)">
+            <i class="bi bi-trash me-1"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row g-4">
+      <!-- Left Column (col-lg-8) -->
+      <div class="col-lg-8">
+        <!-- Account Overview Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-person-lines-fill text-success"></i> Account Profile & Credentials
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-4 mb-4 pb-3 border-bottom">
+              <div 
+                class="user-avatar-huge rounded-circle text-white d-flex align-items-center justify-content-center fw-bold shadow"
+                [ngClass]="{
+                  'bg-success': selectedUser.role === 'farmer',
+                  'bg-info': selectedUser.role === 'buyer',
+                  'bg-dark': selectedUser.role === 'admin'
+                }"
+                style="width: 72px; height: 72px; font-size: 2rem;">
+                {{ selectedUser.name.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <h4 class="fw-bold text-dark mb-1">{{ selectedUser.name }}</h4>
+                <div class="fs-7 text-secondary">
+                  <span class="me-3"><i class="bi bi-telephone-fill me-1 text-success"></i>{{ selectedUser.mobile }}</span>
+                  <span *ngIf="selectedUser.email"><i class="bi bi-envelope-fill me-1 text-primary"></i>{{ selectedUser.email }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light border">
+                  <span class="text-muted fs-8 d-block mb-1">Account Role:</span>
+                  <span class="fw-bold text-dark fs-6">{{ selectedUser.role | uppercase }}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light border">
+                  <span class="text-muted fs-8 d-block mb-1">Current Status:</span>
+                  <span class="badge rounded-pill px-3 py-1.5 fs-7" [ngClass]="selectedUser.status === 'active' ? 'bg-success text-white' : 'bg-danger text-white'">
+                    {{ selectedUser.status | uppercase }}
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light border">
+                  <span class="text-muted fs-8 d-block mb-1">Verification Badge:</span>
+                  <span *ngIf="selectedUser.isVerified" class="badge bg-success text-white rounded-pill px-3 py-1.5 fs-7">
+                    <i class="bi bi-patch-check-fill me-1"></i>Verified Account
+                  </span>
+                  <span *ngIf="!selectedUser.isVerified" class="badge bg-secondary text-white rounded-pill px-3 py-1.5 fs-7">
+                    Unverified Account
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3 rounded-3 bg-light border">
+                  <span class="text-muted fs-8 d-block mb-1">Registered Date:</span>
+                  <span class="fw-bold text-dark fs-6">{{ selectedUser.createdAt | date:'medium' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Farmer Specific Profile Card -->
+        <div *ngIf="selectedUser.role === 'farmer'" class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-success mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-geo-alt-fill"></i> Farmer Farm Location & Bank Account Details
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-dark mb-3">Village & Location:</h6>
+            <div class="row g-3 fs-7 mb-4">
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">Village / Gram:</span>
+                <span class="fw-semibold text-dark">{{ selectedUser.farmerProfile?.location?.village || 'Not specified' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">City / Tehsil:</span>
+                <span class="fw-semibold text-dark">{{ selectedUser.farmerProfile?.location?.city || 'Not specified' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">District:</span>
+                <span class="fw-semibold text-dark">{{ selectedUser.farmerProfile?.location?.district || 'Not specified' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">State & Pincode:</span>
+                <span class="fw-semibold text-dark">
+                  {{ selectedUser.farmerProfile?.location?.state || 'Uttar Pradesh' }}
+                  <span *ngIf="selectedUser.farmerProfile?.location?.pincode">({{ selectedUser.farmerProfile?.location?.pincode }})</span>
+                </span>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <h6 class="fw-bold text-dark mb-3">Bank Details:</h6>
+            <div class="row g-3 fs-7">
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">Account Holder Name:</span>
+                <span class="fw-bold text-dark">{{ selectedUser.farmerProfile?.bankDetails?.accountHolderName || 'Not added' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">Bank Name:</span>
+                <span class="fw-bold text-dark">{{ selectedUser.farmerProfile?.bankDetails?.bankName || 'Not added' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">Account Number:</span>
+                <span class="fw-bold text-dark font-monospace">{{ selectedUser.farmerProfile?.bankDetails?.accountNumber || 'Not added' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">IFSC Code:</span>
+                <span class="fw-bold text-dark font-monospace">{{ selectedUser.farmerProfile?.bankDetails?.ifscCode || 'Not added' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buyer Specific Profile Card -->
+        <div *ngIf="selectedUser.role === 'buyer'" class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-info mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-building"></i> Buyer Company & GST Verification
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3 fs-7">
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">Company / Trader Name:</span>
+                <span class="fw-bold text-dark fs-6">{{ selectedUser.buyerProfile?.companyName || 'Individual Buyer' }}</span>
+              </div>
+              <div class="col-md-6">
+                <span class="text-muted d-block fs-8">GSTIN Number:</span>
+                <span class="badge bg-light text-dark border fs-7 font-monospace">{{ selectedUser.buyerProfile?.gstNumber || 'Not provided' }}</span>
+              </div>
+              <div class="col-12 mt-3">
+                <span class="text-muted d-block fs-8">Full Business Address:</span>
+                <span class="fw-semibold text-dark fs-6">{{ getLocationString(selectedUser) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column Sidebar (col-lg-4) -->
+      <div class="col-lg-4">
+        <!-- Quick Control Panel Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-shield-lock-fill text-success"></i> Account Controls
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-grid gap-2">
+              <button 
+                class="btn rounded-pill fw-semibold py-2" 
+                [ngClass]="selectedUser.isVerified ? 'btn-outline-secondary' : 'btn-success'"
+                (click)="toggleUserVerification(selectedUser)">
+                <i class="bi bi-patch-check me-1"></i>
+                {{ selectedUser.isVerified ? 'Mark as Unverified' : 'Verify Account' }}
+              </button>
+
+              <button 
+                class="btn rounded-pill fw-semibold py-2" 
+                [ngClass]="selectedUser.status === 'active' ? 'btn-outline-danger' : 'btn-success'"
+                (click)="toggleUserStatus(selectedUser)">
+                <i class="bi me-1" [ngClass]="selectedUser.status === 'active' ? 'bi-slash-circle' : 'bi-check-circle'"></i>
+                {{ selectedUser.status === 'active' ? 'Block Account' : 'Activate Account' }}
+              </button>
+
+              <button class="btn btn-outline-danger rounded-pill fw-semibold py-2" (click)="deleteUser(selectedUser)">
+                <i class="bi bi-trash me-1"></i> Delete User Account
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit & System Info Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2 fs-6">
+              <i class="bi bi-info-circle-fill text-info"></i> System Information
+            </h5>
+          </div>
+          <div class="card-body p-4 fs-7">
+            <div class="mb-3">
+              <span class="text-muted d-block fs-8">User ID:</span>
+              <span class="font-monospace text-dark fs-8 border bg-light p-1 rounded d-inline-block">{{ selectedUser._id }}</span>
+            </div>
+            <div class="mb-3">
+              <span class="text-muted d-block fs-8">Joined Date:</span>
+              <span class="fw-semibold text-dark">{{ selectedUser.createdAt | date:'medium' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
