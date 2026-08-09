@@ -1,0 +1,317 @@
+<div class="farmer-products-view animate-fade-in">
+  <!-- Page Header & Action Bar -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="p-2 bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center">
+            <i class="bi bi-box-seam-fill fs-4"></i>
+          </span>
+          <div>
+            <h4 class="fw-bold text-dark mb-0">My Crop Produce Listings 🌾</h4>
+            <span class="text-muted fs-8">Manage farm produce listed for sale on GaonBazar Marketplace</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" (click)="openCreateModal()">
+        <i class="bi bi-plus-circle-fill fs-6"></i> + List New Crop Produce
+      </button>
+    </div>
+
+    <!-- Filter Tabs Bar -->
+    <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+      <button 
+        type="button" 
+        class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold transition-all"
+        [class.btn-success]="selectedFilter === 'all'"
+        [class.btn-outline-secondary]="selectedFilter !== 'all'"
+        (click)="selectedFilter = 'all'">
+        All Listed Crops ({{ myCropsList.length }})
+      </button>
+
+      <button 
+        type="button" 
+        class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold transition-all"
+        [class.btn-success]="selectedFilter === 'approved'"
+        [class.btn-outline-secondary]="selectedFilter !== 'approved'"
+        (click)="selectedFilter = 'approved'">
+        ✅ Live Approved
+      </button>
+
+      <button 
+        type="button" 
+        class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold transition-all"
+        [class.btn-warning]="selectedFilter === 'pending'"
+        [class.btn-outline-secondary]="selectedFilter !== 'pending'"
+        (click)="selectedFilter = 'pending'">
+        ⏳ Pending Review
+      </button>
+
+      <button 
+        type="button" 
+        class="btn btn-sm rounded-pill px-3.5 py-1.5 fw-bold transition-all"
+        [class.btn-danger]="selectedFilter === 'rejected'"
+        [class.btn-outline-secondary]="selectedFilter !== 'rejected'"
+        (click)="selectedFilter = 'rejected'">
+        ❌ Rejected
+      </button>
+    </div>
+  </div>
+
+  <!-- CROPS PRODUCE GRID -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-success" role="status"></div>
+    <p class="text-muted small mt-2">Loading your crop listings...</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredCrops.length === 0" class="card border-0 shadow-sm rounded-4 bg-white p-5 text-center">
+    <i class="bi bi-box-seam fs-1 text-success opacity-50 mb-3 d-block"></i>
+    <h5 class="fw-bold text-dark mb-1">No Crop Listings Found</h5>
+    <p class="text-muted small mb-4">List your harvested crop produce to connect directly with wholesale buyers!</p>
+    <div>
+      <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm" (click)="openCreateModal()">
+        + List Crop Produce Now
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && filteredCrops.length > 0" class="row g-3">
+    <div *ngFor="let item of filteredCrops" class="col-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100 position-relative hover-elevate cursor-pointer" (click)="viewCropDetails(item)">
+        <!-- Thumbnail Header -->
+        <div class="position-relative" style="height: 180px;">
+          <img [src]="item.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80'" alt="Crop" class="w-100 h-100 object-fit-cover">
+          
+          <!-- Discount Badge overlay -->
+          <span *ngIf="item.discountPercentage && item.discountPercentage > 0" class="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+            {{ item.discountPercentage }}% OFF
+          </span>
+
+          <!-- Approval Badge overlay -->
+          <span *ngIf="item.approvalStatus === 'approved' || item.isApproved" class="position-absolute top-0 end-0 m-3 badge bg-success text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+            ✅ Approved
+          </span>
+          <span *ngIf="item.approvalStatus === 'pending' && !item.isApproved" class="position-absolute top-0 end-0 m-3 badge bg-warning text-dark rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+            ⏳ Pending Review
+          </span>
+          <span *ngIf="item.approvalStatus === 'rejected'" class="position-absolute top-0 end-0 m-3 badge bg-danger text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+            ❌ Rejected
+          </span>
+        </div>
+
+        <div class="card-body p-3.5 d-flex flex-column">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 fs-8">{{ item.category }}</span>
+            <span *ngIf="item.variety" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5 fs-8">{{ item.variety }}</span>
+          </div>
+
+          <h6 class="fw-bold text-dark mb-2 text-truncate">{{ item.cropName }}</h6>
+
+          <div class="bg-light rounded-3 p-2.5 mb-3">
+            <div class="d-flex align-items-baseline justify-content-between">
+              <div>
+                <span class="fs-8 text-muted d-block">Selling Price</span>
+                <strong class="text-success fs-5">₹{{ item.expectedPrice | number }}</strong> <span class="fs-8 text-muted">/ {{ item.priceUnit || 'Qtl' }}</span>
+              </div>
+              <div class="text-end">
+                <span *ngIf="item.originalPrice && item.originalPrice > item.expectedPrice" class="text-muted text-decoration-line-through fs-8 d-block">₹{{ item.originalPrice | number }}</span>
+                <span class="fw-bold text-dark fs-7">{{ item.quantity }} {{ item.unit }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-auto pt-2 border-top">
+            <button type="button" class="btn btn-outline-success btn-sm w-100 rounded-pill fw-bold fs-8" (click)="viewCropDetails(item); $event.stopPropagation()">
+              <i class="bi bi-eye-fill me-1"></i> View Full Specifications Page
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- FARMER CREATE CROP LISTING MODAL -->
+<div *ngIf="showCreateModal" class="modal-backdrop fade show"></div>
+<div *ngIf="showCreateModal" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+            <!-- Modal Header -->
+            <div class="modal-header bg-success text-white py-3 px-4">
+                <h5 class="modal-title fw-bold d-flex align-items-center gap-2 fs-5">
+                    <i class="bi bi-flower1"></i>
+                    List Crop Product For Sale (Farmer 🌾)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeCreateModal()"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body p-4" style="max-height: 80vh; overflow-y: auto;">
+                <div class="row g-3">
+                    <!-- Contact Person Info -->
+                    <div class="col-md-6">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Your Full Name <span class="text-danger">*</span></label>
+                        <input type="text" [(ngModel)]="formName" class="form-control" placeholder="e.g. Ramesh Kumar">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Mobile Number (WhatsApp/Call) <span class="text-danger">*</span></label>
+                        <input type="text" [(ngModel)]="formMobile" class="form-control" placeholder="e.g. 9876543210">
+                    </div>
+
+                    <!-- Crop Title & Category -->
+                    <div class="col-md-6">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Crop / Commodity Name <span class="text-danger">*</span></label>
+                        <input type="text" [(ngModel)]="formTitle" class="form-control" placeholder="e.g. Sharbati Wheat, Basmati Paddy, Yellow Maize">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Category <span class="text-danger">*</span></label>
+                        <select 
+                            class="form-select fw-semibold" 
+                            [ngModel]="isCustomCategory ? 'NEW_CUSTOM_CATEGORY' : formCategory" 
+                            (ngModelChange)="onCategoryChange($event)">
+                            <option value="" disabled>-- Select Category --</option>
+                            <option *ngFor="let cat of dbCategories" [value]="cat.name">{{ cat.name }}</option>
+                            <option value="NEW_CUSTOM_CATEGORY" class="fw-bold text-success">+ Add New Category (Custom)...</option>
+                        </select>
+
+                        <div *ngIf="isCustomCategory" class="mt-2">
+                            <input 
+                                type="text" 
+                                [(ngModel)]="formCategory" 
+                                class="form-control form-control-sm border-success bg-white fw-bold text-success" 
+                                placeholder="Enter new category name...">
+                        </div>
+                    </div>
+
+                    <!-- Subcategory & Variety -->
+                    <div class="col-md-6">
+                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Subcategory:</label>
+                        <select 
+                            class="form-select" 
+                            [ngModel]="isCustomSubcategory ? 'NEW_CUSTOM_SUBCATEGORY' : formSubcategory" 
+                            (ngModelChange)="onSubcategoryChange($event)">
+                            <option value="">-- Select Subcategory --</option>
+                            <option *ngFor="let sub of availableSubcategories" [value]="sub.name">{{ sub.name }}</option>
+                            <option value="NEW_CUSTOM_SUBCATEGORY" class="fw-bold text-success">+ Add New Subcategory (Custom)...</option>
+                        </select>
+
+                        <div *ngIf="isCustomSubcategory" class="mt-2">
+                            <input 
+                                type="text" 
+                                [(ngModel)]="formSubcategory" 
+                                class="form-control form-control-sm border-success bg-white fw-semibold" 
+                                placeholder="Enter new subcategory name...">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Variety / Grade:</label>
+                        <input type="text" [(ngModel)]="formVariety" class="form-control" placeholder="e.g. Sharbati, 1121, Grade A">
+                    </div>
+
+                    <!-- Quantity & Pricing -->
+                    <div class="col-md-4">
+                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Quantity <span class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="formQuantity" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Unit <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="formUnit">
+                            <option value="Qtl">Quintal (Qtl)</option>
+                            <option value="Kg">Kilogram (Kg)</option>
+                            <option value="Ton">Ton</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Location / Mandi <span class="text-danger">*</span></label>
+                        <input type="text" [(ngModel)]="formLocation" class="form-control" placeholder="e.g. Muzaffarpur, Bihar">
+                    </div>
+
+                    <!-- Price & Discount -->
+                    <div class="col-md-4">
+                        <label class="form-label text-dark fs-7 mb-1">Original Price (₹):</label>
+                        <input type="number" [(ngModel)]="formOriginalPrice" (input)="calculateDiscount()" class="form-control" placeholder="2400">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Selling / Offer Price (₹) <span class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="formSellingPrice" (input)="calculateDiscount()" class="form-control fw-bold text-success" placeholder="2160">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label text-dark fs-7 mb-1">Discount (% OFF):</label>
+                        <div class="input-group">
+                            <input type="number" [(ngModel)]="formDiscount" (input)="onDiscountChange()" class="form-control fw-bold text-danger">
+                            <span class="input-group-text bg-success-subtle text-success fs-8 fw-bold">% OFF</span>
+                        </div>
+                    </div>
+
+                    <!-- Cloudinary Multi-Image Upload (Max 1MB per image) -->
+                    <div class="col-12">
+                        <label class="form-label text-dark fw-bold fs-7 mb-1">Crop Photo Gallery (Cloudinary)</label>
+                        <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple class="form-control form-control-sm mb-1">
+                        <small class="text-muted fs-8 d-block mb-2">Upload crop photos (<strong>Max 1MB per image</strong>)</small>
+
+                        <div *ngIf="isUploading" class="text-success fs-8 fw-bold mb-2">
+                            <span class="spinner-border spinner-border-sm me-1"></span> Uploading photo to Cloudinary...
+                        </div>
+
+                        <!-- Gallery Thumbnails Preview -->
+                        <div *ngIf="formImages.length > 0" class="d-flex flex-wrap gap-2">
+                            <div *ngFor="let img of formImages; let idx = index" class="position-relative rounded-3 overflow-hidden border shadow-sm" style="width: 75px; height: 75px;">
+                                <img [src]="img" class="w-100 h-100 object-fit-cover">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0 rounded-circle" style="width: 20px; height: 20px;" (click)="removeImageAtIndex(idx)">
+                                    <i class="bi bi-x" style="font-size: 12px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rich Text Description Specifications -->
+                    <div class="col-12">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                          <label class="form-label text-dark fw-bold fs-7 mb-0">Full Description & Quality Specifications</label>
+                          
+                          <!-- Formatting Toolbar -->
+                          <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 fw-bold" (click)="applyTextFormat('b')" title="Bold"><b>B</b></button>
+                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 fst-italic" (click)="applyTextFormat('i')" title="Italic"><i>I</i></button>
+                            <button type="button" class="btn btn-light border btn-sm py-0 px-2" (click)="applyTextFormat('ul')" title="Bullet List">• List</button>
+                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 text-success fw-bold" (click)="applyTextFormat('h')" title="Heading">Header</button>
+                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 text-primary" (click)="applyTextFormat('moisture')" title="Add Moisture Spec">+ Moisture Spec</button>
+                          </div>
+                        </div>
+                        <textarea [(ngModel)]="formDescription" rows="4" class="form-control fs-7" placeholder="Provide harvest moisture content %, packaging type, and delivery availability..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Admin Pending Notice Banner -->
+                <div class="alert alert-warning border border-warning rounded-3 p-3 mt-4 mb-0 d-flex align-items-center gap-2 fs-7">
+                    <i class="bi bi-clock-history fs-4 text-warning"></i>
+                    <div>
+                        <strong class="text-dark">Admin Approval Workflow:</strong>
+                        <span class="d-block text-secondary">Your crop listing will be sent to the Admin team in <strong>Pending Approval ⏳</strong> status. Once verified by Admin, it will be published live.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light py-3 px-4">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeCreateModal()">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold" (click)="submitCropListing()" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
+                    Submit For Admin Approval
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

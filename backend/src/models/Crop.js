@@ -36,6 +36,13 @@ const cropSchema = new mongoose.Schema(
             trim: true
         },
 
+        slug: {
+            type: String,
+            unique: true,
+            sparse: true,
+            index: true
+        },
+
         category: {
             type: String,
             default: "Food Grains & Cereals"
@@ -133,5 +140,17 @@ const cropSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+// Pre-validate middleware to auto-generate unique slug
+cropSchema.pre("validate", function () {
+    if (!this.slug || this.isModified("cropName")) {
+        const baseSlug = (this.cropName || "crop")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "");
+        const shortHash = Math.random().toString(36).substring(2, 7);
+        this.slug = `${baseSlug}-${shortHash}`;
+    }
+});
 
 module.exports = mongoose.model("Crop", cropSchema);

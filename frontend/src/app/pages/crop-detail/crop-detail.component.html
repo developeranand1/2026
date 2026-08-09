@@ -1,0 +1,165 @@
+<div class="crop-detail-container container py-4 animate-fade-in">
+  <!-- Back Button & Breadcrumbs -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <button type="button" class="btn btn-light border rounded-pill px-3 py-1.5 fs-7 fw-semibold" (click)="goBack()">
+      <i class="bi bi-arrow-left me-1"></i> Back To List
+    </button>
+
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+      <ol class="breadcrumb mb-0 fs-8">
+        <li class="breadcrumb-item"><a routerLink="/" class="text-decoration-none text-success">Home</a></li>
+        <li class="breadcrumb-item"><a routerLink="/mandi-rates" class="text-decoration-none text-success">Crop Marketplace</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ cropDetails?.cropName || 'Product Specifications' }}</li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
+    <div class="spinner-border text-success mx-auto mb-2" role="status"></div>
+    <p class="text-muted small mb-0">Loading product details and quality specifications...</p>
+  </div>
+
+  <!-- Not Found State -->
+  <div *ngIf="!isLoading && !cropDetails" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
+    <i class="bi bi-exclamation-triangle fs-1 text-warning mb-2"></i>
+    <h4 class="fw-bold text-dark">Crop Produce Not Found</h4>
+    <p class="text-muted small mb-3">The requested crop listing details are unavailable or may have been deleted.</p>
+    <div>
+      <button type="button" class="btn btn-success rounded-pill px-4" (click)="goBack()">Go Back</button>
+    </div>
+  </div>
+
+  <!-- CROP DETAILS CONTENT -->
+  <div *ngIf="!isLoading && cropDetails" class="row g-4">
+    <!-- Left Column: Photo Gallery Carousel & Specs -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white p-3 p-md-4 mb-4">
+        <!-- Main Large Photo View -->
+        <div class="position-relative rounded-4 overflow-hidden border shadow-sm mb-3 bg-light" style="min-height: 320px; max-height: 450px;">
+          <img [src]="(cropDetails.images && cropDetails.images.length > 0) ? cropDetails.images[activeImageIndex] : (cropDetails.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80')" alt="Crop Image" class="w-100 h-100 object-fit-contain" style="max-height: 450px;">
+          
+          <!-- Discount overlay badge -->
+          <span *ngIf="cropDetails.discountPercentage && cropDetails.discountPercentage > 0" class="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-3 py-1.5 fs-7 shadow-sm fw-bold">
+            {{ cropDetails.discountPercentage }}% OFF
+          </span>
+
+          <!-- Type Overlay Badge -->
+          <span class="position-absolute top-0 end-0 m-3 badge bg-dark text-white rounded-pill px-3 py-1.5 fs-7 shadow-sm fw-bold">
+            {{ cropDetails.type === 'buy' ? '🏬 Buyer Purchasing Demand' : '🌾 Farmer Sale Listing' }}
+          </span>
+        </div>
+
+        <!-- Thumbnails Gallery Row -->
+        <div *ngIf="cropDetails.images && cropDetails.images.length > 1" class="d-flex gap-2 overflow-x-auto pb-2">
+          <img *ngFor="let img of cropDetails.images; let idx = index" [src]="img" class="rounded-3 border cursor-pointer object-fit-cover shadow-xs" [class.border-success]="activeImageIndex === idx" [class.border-3]="activeImageIndex === idx" style="width: 75px; height: 75px;" (click)="setActiveImage(idx)">
+        </div>
+      </div>
+
+      <!-- Description & Full Rich Specifications Card -->
+      <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+        <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+          <i class="bi bi-file-text-fill text-success"></i>
+          Quality Specifications & Delivery Terms
+        </h5>
+
+        <div class="p-3 bg-light rounded-3 border fs-7 text-secondary lh-lg" [innerHTML]="cropDetails.description || 'No detailed specifications added for this produce.'"></div>
+      </div>
+    </div>
+
+    <!-- Right Column: Price Card & Seller Contact Info -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4 position-sticky" style="top: 90px;">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 fs-8">{{ cropDetails.category }}</span>
+          
+          <!-- Live Approval Status Badge -->
+          <span *ngIf="cropDetails.approvalStatus === 'approved' || cropDetails.isApproved" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-8 fw-bold">
+            <i class="bi bi-check-circle-fill me-1"></i>Approved & Live ✅
+          </span>
+          <span *ngIf="cropDetails.approvalStatus === 'pending' && !cropDetails.isApproved" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1 fs-8 fw-bold">
+            <i class="bi bi-clock-history me-1"></i>Pending Admin Review ⏳
+          </span>
+          <span *ngIf="cropDetails.approvalStatus === 'rejected'" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fs-8 fw-bold">
+            <i class="bi bi-x-circle-fill me-1"></i>Admin Rejected ❌
+          </span>
+        </div>
+
+        <h3 class="fw-bold text-dark mb-1">{{ cropDetails.cropName }}</h3>
+        <p class="text-muted fs-8 mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ cropDetails.location }}</p>
+
+        <!-- Pricing Card -->
+        <div class="p-3.5 bg-success-subtle bg-opacity-25 rounded-4 mb-4 border border-success-subtle">
+          <div class="d-flex align-items-baseline justify-content-between">
+            <div>
+              <span class="fs-8 text-muted d-block text-uppercase fw-semibold">Offer Rate</span>
+              <h2 class="fw-bold text-success mb-0">₹{{ cropDetails.expectedPrice | number }} <small class="fs-6 text-muted">/ {{ cropDetails.priceUnit || 'Quintal' }}</small></h2>
+            </div>
+            <div *ngIf="cropDetails.originalPrice && cropDetails.originalPrice > cropDetails.expectedPrice" class="text-end">
+              <span class="fs-8 text-muted d-block">Original Rate</span>
+              <span class="fs-6 text-muted text-decoration-line-through">₹{{ cropDetails.originalPrice | number }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spec Highlights List -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark fs-7 mb-2 text-uppercase">Trade Parameters:</h6>
+          <div class="row g-2">
+            <div class="col-6">
+              <div class="p-2.5 bg-light rounded-3 border">
+                <span class="fs-8 text-muted d-block">Quantity</span>
+                <strong class="text-dark fs-7">{{ cropDetails.quantity }} {{ cropDetails.unit }}</strong>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="p-2.5 bg-light rounded-3 border">
+                <span class="fs-8 text-muted d-block">Variety / Grade</span>
+                <strong class="text-dark fs-7">{{ cropDetails.variety || 'Grade A' }}</strong>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="p-2.5 bg-light rounded-3 border">
+                <span class="fs-8 text-muted d-block">Subcategory</span>
+                <strong class="text-dark fs-7">{{ cropDetails.subcategory || 'Standard' }}</strong>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="p-2.5 bg-light rounded-3 border">
+                <span class="fs-8 text-muted d-block">Posted On</span>
+                <strong class="text-dark fs-7">{{ cropDetails.createdAt | date:'mediumDate' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Trader Card -->
+        <div class="p-3 bg-light rounded-4 border mb-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">{{ cropDetails.postedByName || 'GaonBazar Farmer' }}</h6>
+              <span class="fs-8 text-muted d-block"><i class="bi bi-patch-check-fill text-success me-1"></i>Verified {{ cropDetails.postedByRole === 'buyer' ? 'Wholesale Buyer' : 'Farmer' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Action Buttons -->
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" (click)="contactSeller()">
+            <i class="bi bi-telephone-fill"></i> Contact {{ cropDetails.postedByRole === 'buyer' ? 'Buyer' : 'Farmer' }} Now
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary rounded-pill py-2 fw-semibold fs-7" (click)="goBack()">
+            Return to Crop Marketplace
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

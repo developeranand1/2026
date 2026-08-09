@@ -8,17 +8,20 @@ import { TermsComponent } from './pages/terms/terms.component';
 import { RefundPolicyComponent } from './pages/refund-policy/refund-policy.component';
 import { DisclaimerComponent } from './pages/disclaimer/disclaimer.component';
 import { MandiRatesPageComponent } from './pages/mandi-rates/mandi-rates.component';
-
+import { CropDetailComponent } from './pages/crop-detail/crop-detail.component';
 
 import { FarmerSidebarComponent } from './farmer/farmer-sidebar/farmer-sidebar.component';
 import { FarmerDashboardComponent } from './farmer/farmer-dashboard/farmer-dashboard.component';
+import { FarmerProductComponent } from './farmer/farmer-product/farmer-product.component';
 import { FarmerProfileComponent } from './farmer/farmer-profile/farmer-profile.component';
 import { FarmerMindiRateComponent } from './farmer/farmer-mindi-rate/farmer-mindi-rate.component';
+
 import { BuyerSidebarComponent } from './buyer/buyer-sidebar/buyer-sidebar.component';
 import { BuyerDashboardComponent } from './buyer/buyer-dashboard/buyer-dashboard.component';
+import { BuyerProductComponent } from './buyer/buyer-product/buyer-product.component';
 import { BuyerProfileComponent } from './buyer/buyer-profile/buyer-profile.component';
-import { LoginComponent } from './auth/login/login.component';
 
+import { LoginComponent } from './auth/login/login.component';
 import { NewsListComponent } from './pages/news/news-list.component';
 import { NewsDetailComponent } from './pages/news/news-detail.component';
 
@@ -44,6 +47,11 @@ export const routes: Routes = [
         component: NewsDetailComponent
     },
 
+    {
+        path: 'product/:id',
+        component: CropDetailComponent,
+        title: 'Crop Specifications | GaonBazar'
+    },
 
     {
         path: 'farmer',
@@ -51,6 +59,8 @@ export const routes: Routes = [
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: FarmerDashboardComponent, title: 'Farmer Dashboard | GaonBazar' },
+            { path: 'product', component: FarmerProductComponent, title: 'My Crop Produce | GaonBazar' },
+            { path: 'product/:id', component: CropDetailComponent, title: 'Crop Produce Specifications | GaonBazar' },
             { path: 'profile', component: FarmerProfileComponent, title: 'Farmer Profile | GaonBazar' },
             { path: 'mandi-rates', component: FarmerMindiRateComponent, title: 'Live Mandi Rates | GaonBazar' }
         ]
@@ -61,23 +71,22 @@ export const routes: Routes = [
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: BuyerDashboardComponent, title: 'Buyer Marketplace Dashboard | GaonBazar' },
+            { path: 'product', component: BuyerProductComponent, title: 'My Purchasing Requirements | GaonBazar' },
+            { path: 'product/:id', component: CropDetailComponent, title: 'Purchasing Requirement Specifications | GaonBazar' },
             { path: 'profile', component: BuyerProfileComponent, title: 'Buyer Business Profile | GaonBazar' }
         ]
     },
-
 
     {
         path: 'about',
         component: AboutComponent,
         title: 'About Us | GaonBazar'
     },
-
     {
         path: 'contact',
         component: ContactComponent,
         title: 'Contact Us | GaonBazar'
     },
-
     {
         path: 'faq',
         component: FaqComponent,

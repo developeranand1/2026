@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const Crop = require("../models/Crop");
+const Category = require("../models/Category");
 const FarmerProfile = require("../models/FarmerProfile");
 const BuyerProfile = require("../models/BuyerProfile");
 
@@ -57,12 +59,19 @@ exports.getAllCrops = async (req, res, next) => {
 };
 
 /**
- * Get Crop by ID
+ * Get Crop by ID or Slug
  * GET /api/crops/:id
  */
 exports.getCropById = async (req, res, next) => {
     try {
-        const crop = await Crop.findById(req.params.id);
+        const identifier = req.params.id;
+        let crop = null;
+
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            crop = await Crop.findOne({ $or: [{ _id: identifier }, { slug: identifier }] });
+        } else {
+            crop = await Crop.findOne({ slug: identifier });
+        }
 
         if (!crop) {
             return res.status(404).json({
@@ -106,6 +115,7 @@ exports.addCrop = async (req, res, next) => {
     try {
         let {
             cropName,
+            slug,
             category,
             subcategory,
             variety,
@@ -151,6 +161,38 @@ exports.addCrop = async (req, res, next) => {
             origPrice = salePrice;
         }
 
+        const catName = category ? category.trim() : "Food Grains & Cereals";
+        const subCatName = subcategory ? subcategory.trim() : "";
+
+        // Auto-Register Category / Subcategory into DB if it doesn't exist yet!
+        if (catName && catName !== "CUSTOM_NEW") {
+            const existingCat = await Category.findOne({ name: { $regex: new RegExp(`^${catName}$`, "i") } });
+            if (!existingCat) {
+                await Category.create({
+                    name: catName,
+                    subcategories: subCatName ? [{ name: subCatName }] : []
+                });
+            } else if (subCatName) {
+                if (!Array.isArray(existingCat.subcategories)) {
+                    existingCat.subcategories = [];
+                }
+                const subExists = existingCat.subcategories.some(s => s && s.name && s.name.toLowerCase() === subCatName.toLowerCase());
+                if (!subExists) {
+                    existingCat.subcategories.push({ name: subCatName });
+                    await existingCat.save();
+                }
+            }
+        }
+
+        let customSlug = slug;
+        if (!customSlug) {
+            const baseSlug = (cropName || "crop")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)+/g, "");
+            customSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`;
+        }
+
         const crop = await Crop.create({
             postedBy: userId,
             postedByRole: userRole,
@@ -158,8 +200,9 @@ exports.addCrop = async (req, res, next) => {
             postedByMobile: userMobile,
             type: type || "sell",
             cropName,
-            category: category || "Food Grains & Cereals",
-            subcategory: subcategory || "",
+            slug: customSlug,
+            category: catName,
+            subcategory: subCatName,
             variety: variety || "",
             grade: grade || "Grade A",
             quantity: quantity || 1,
@@ -253,6 +296,28 @@ exports.updateCrop = async (req, res, next) => {
         updateData.originalPrice = origPrice;
         updateData.expectedPrice = salePrice;
         updateData.discountPercentage = discPercent;
+
+        // Auto-Register Category / Subcategory into DB if custom!
+        if (updateData.category) {
+            const catName = updateData.category.trim();
+            const subCatName = updateData.subcategory ? updateData.subcategory.trim() : "";
+            const existingCat = await Category.findOne({ name: { $regex: new RegExp(`^${catName}$`, "i") } });
+            if (!existingCat) {
+                await Category.create({
+                    name: catName,
+                    subcategories: subCatName ? [{ name: subCatName }] : []
+                });
+            } else if (subCatName) {
+                if (!Array.isArray(existingCat.subcategories)) {
+                    existingCat.subcategories = [];
+                }
+                const subExists = existingCat.subcategories.some(s => s && s.name && s.name.toLowerCase() === subCatName.toLowerCase());
+                if (!subExists) {
+                    existingCat.subcategories.push({ name: subCatName });
+                    await existingCat.save();
+                }
+            }
+        }
 
         const crop = await Crop.findByIdAndUpdate(req.params.id, updateData, {
             new: true,

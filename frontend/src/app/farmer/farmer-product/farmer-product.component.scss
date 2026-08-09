@@ -1,0 +1,13 @@
+.farmer-products-view {
+  .hover-elevate {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+
+  .transition-all {
+    transition: all 0.2s ease-in-out;
+  }
+}

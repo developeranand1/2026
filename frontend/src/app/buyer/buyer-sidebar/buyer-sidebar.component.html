@@ -1,6 +1,5 @@
 <div class="buyer-layout-wrapper d-flex flex-column flex-md-row min-vh-100 bg-light">
 
-
   <aside class="buyer-sidebar bg-white border-end shadow-sm d-none d-md-flex flex-column justify-content-between"
     [class.collapsed]="isSidebarCollapsed">
     <div>
@@ -24,7 +23,6 @@
         </button>
       </div>
 
-
       <!-- Navigation Links -->
       <nav class="sidebar-nav p-2 mt-2">
         <ul class="nav nav-pills flex-column gap-1">
@@ -37,27 +35,31 @@
             </a>
           </li>
 
+          <!-- My Purchasing Requirements (Dedicated Route) -->
+          <li class="nav-item">
+            <a routerLink="/buyer/product" routerLinkActive="active-nav"
+              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2.5 rounded-3 hover-light">
+              <i class="bi bi-shop fs-5 text-warning"></i>
+              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">My Purchasing Requirements 🏬</span>
+            </a>
+          </li>
+
           <!-- Profile -->
           <li class="nav-item">
             <a routerLink="/buyer/profile" routerLinkActive="active-nav"
               class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2.5 rounded-3 hover-light">
-              <i class="bi bi-person-lines-fill fs-5 text-warning"></i>
+              <i class="bi bi-person-lines-fill fs-5 text-info"></i>
               <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Buyer Profile (प्रोफ़ाइल)</span>
             </a>
           </li>
         </ul>
       </nav>
     </div>
-
-
-
   </aside>
 
   <!-- MAIN CONTENT AREA -->
   <main class="buyer-main-content flex-grow-1 bg-light d-flex flex-column pb-5 pb-md-0">
-
-
-    <!-- ROUTED SUB-COMPONENT CONTENT (Dashboard / Profile) -->
+    <!-- ROUTED SUB-COMPONENT CONTENT (Dashboard / Product / Profile) -->
     <div class="portal-body-content p-3 p-md-4 flex-grow-1">
       <router-outlet></router-outlet>
     </div>
@@ -66,12 +68,18 @@
   <!-- FIXED BOTTOM FOOTER NAVIGATION FOR MOBILE (Visible on Screens < 768px) -->
   <nav class="mobile-bottom-nav fixed-bottom bg-white border-top shadow-lg d-md-none py-2 px-3">
     <div class="d-flex justify-content-around align-items-center">
-
       <!-- Dashboard Tab -->
       <a routerLink="/buyer/dashboard" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
         <i class="bi bi-grid-1x2-fill fs-5 mb-1"></i>
         <span style="font-size: 11px;" class="fw-semibold">Marketplace</span>
+      </a>
+
+      <!-- My Demands Tab -->
+      <a routerLink="/buyer/product" routerLinkActive="active-mobile-tab"
+        class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
+        <i class="bi bi-shop fs-5 mb-1 text-warning"></i>
+        <span style="font-size: 11px;" class="fw-semibold">My Demands</span>
       </a>
 
       <!-- Profile Tab -->
@@ -88,8 +96,6 @@
         <i class="bi bi-box-arrow-right fs-5 mb-1"></i>
         <span style="font-size: 11px;" class="fw-semibold">Logout</span>
       </button>
-
     </div>
   </nav>
-
 </div>
