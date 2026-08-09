@@ -19,6 +19,9 @@ import { BuyerDashboardComponent } from './buyer/buyer-dashboard/buyer-dashboard
 import { BuyerProfileComponent } from './buyer/buyer-profile/buyer-profile.component';
 import { LoginComponent } from './auth/login/login.component';
 
+import { NewsListComponent } from './pages/news/news-list.component';
+import { NewsDetailComponent } from './pages/news/news-detail.component';
+
 // Route configuration for GaonBazar application
 export const routes: Routes = [
     {
@@ -30,6 +33,15 @@ export const routes: Routes = [
         path: 'login',
         component: LoginComponent,
         title: 'Login & Register | GaonBazar'
+    },
+    {
+        path: 'news',
+        component: NewsListComponent,
+        title: 'News & Agri Market Updates | GaonBazar'
+    },
+    {
+        path: 'news/:slug',
+        component: NewsDetailComponent
     },
 
 

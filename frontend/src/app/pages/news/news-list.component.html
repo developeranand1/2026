@@ -1,0 +1,184 @@
+<!-- Hero Section -->
+<section class="news-hero">
+    <div class="hero-pattern"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="page-badge">
+                    <i class="bi bi-newspaper"></i>
+                    GaonBazar News Desk
+                </span>
+
+                <h1>
+                    Agricultural News & 
+                    <span>Market Updates</span>
+                </h1>
+
+                <p>
+                    Stay informed with the latest Mandi rates, government schemes, agricultural policies, farming technology, and market insights.
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="news-search-box shadow-lg bg-white p-3 rounded-4">
+                    <label class="form-label fw-bold text-dark fs-7 mb-2">Search News & Market Trends</label>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            class="form-control border-end-0 ps-3" 
+                            placeholder="Search PM-Kisan, Mandi rates, wheat..." 
+                            [(ngModel)]="searchTerm"
+                            (keyup.enter)="onSearch()">
+                        <button class="btn btn-success px-4" (click)="onSearch()">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Tabs Section -->
+<section class="news-filter-section py-4 bg-white border-bottom sticky-top" style="z-index: 10;">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <!-- Category Filter Pills -->
+            <div class="filter-tabs d-flex flex-wrap gap-2">
+                <button 
+                    class="btn btn-sm rounded-pill px-3 py-2"
+                    [ngClass]="selectedType === 'All' ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+                    (click)="selectType('All')">
+                    All News
+                </button>
+                <button 
+                    *ngFor="let type of newsTypes"
+                    class="btn btn-sm rounded-pill px-3 py-2"
+                    [ngClass]="selectedType === type._id ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+                    (click)="selectType(type._id)">
+                    {{ type.title }}
+                </button>
+            </div>
+
+            <span class="fs-7 text-muted fw-medium">
+                Showing {{ articles.length }} articles
+            </span>
+        </div>
+    </div>
+</section>
+
+<!-- Main News Content Grid -->
+<section class="news-main-section py-5 bg-light">
+    <div class="container">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-success mb-3" role="status"></div>
+            <p class="text-muted fs-6">Fetching latest agricultural updates...</p>
+        </div>
+
+        <!-- Featured News Article Banner (If Available) -->
+        <div *ngIf="!isLoading && featuredArticle" class="mb-5">
+            <div class="featured-card bg-white rounded-4 overflow-hidden shadow-sm border border-success-subtle hover-lift">
+                <div class="row g-0 align-items-stretch">
+                    <div class="col-lg-7">
+                        <div class="featured-image-wrapper h-100 position-relative">
+                            <img 
+                                [src]="featuredArticle.image || 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'" 
+                                [alt]="featuredArticle.title" 
+                                class="w-100 h-100 object-fit-cover">
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill font-weight-bold shadow-sm">
+                                <i class="bi bi-star-fill me-1"></i> Featured Story
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 d-flex flex-column justify-content-center p-4 p-lg-5">
+                        <div class="mb-2">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-7">
+                                {{ getNewsTypeName(featuredArticle.newsType) }}
+                            </span>
+                            <span class="text-muted fs-7 ms-2">
+                                <i class="bi bi-calendar3 me-1"></i>{{ featuredArticle.publishedAt | date:'mediumDate' }}
+                            </span>
+                        </div>
+
+                        <h2 class="featured-title fw-bold text-dark mb-3">
+                            <a [routerLink]="['/news', featuredArticle.slug]" class="text-dark text-decoration-none hover-green">
+                                {{ featuredArticle.title }}
+                            </a>
+                        </h2>
+
+                        <!-- Short Excerpt only - No long content here -->
+                        <p *ngIf="featuredArticle.shortDescription" class="text-secondary fs-6 mb-4 line-clamp-3">
+                            {{ featuredArticle.shortDescription }}
+                        </p>
+
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
+                            <span class="fs-7 text-muted">
+                                <i class="bi bi-person me-1"></i>{{ featuredArticle.author }}
+                            </span>
+                            <a [routerLink]="['/news', featuredArticle.slug]" class="btn btn-success rounded-pill px-4 btn-sm fw-semibold">
+                                Read Full Story <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Articles Grid (3 Columns Desktop, 2 Tablet, 1 Mobile) -->
+        <div *ngIf="!isLoading && articles.length > 0" class="row g-4">
+            <div *ngFor="let article of articles" class="col-md-6 col-lg-4">
+                <article class="news-card bg-white rounded-4 overflow-hidden shadow-sm border h-100 d-flex flex-column hover-lift">
+                    <!-- Thumbnail Container -->
+                    <div class="card-image-box position-relative overflow-hidden" style="height: 200px;">
+                        <img 
+                            [src]="article.image || 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=800&q=80'" 
+                            [alt]="article.title" 
+                            class="w-100 h-100 object-fit-cover card-img-top">
+                        <span class="badge bg-success text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 fs-7 shadow-sm">
+                            {{ getNewsTypeName(article.newsType) }}
+                        </span>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                        <div class="news-meta fs-7 text-muted mb-2 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ article.publishedAt | date:'mediumDate' }}</span>
+                            <span><i class="bi bi-eye me-1"></i>{{ article.views || 0 }} views</span>
+                        </div>
+
+                        <h3 class="card-title text-dark fw-bold fs-5 mb-2 line-clamp-2">
+                            <a [routerLink]="['/news', article.slug]" class="text-dark text-decoration-none hover-green">
+                                {{ article.title }}
+                            </a>
+                        </h3>
+
+                        <!-- Short Excerpt ONLY (No long description) -->
+                        <p *ngIf="article.shortDescription" class="card-text text-secondary fs-7 line-clamp-2 mb-4">
+                            {{ article.shortDescription }}
+                        </p>
+
+                        <!-- Read More Link -->
+                        <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                            <span class="fs-8 text-muted">
+                                <i class="bi bi-person-circle me-1"></i>{{ article.author }}
+                            </span>
+                            <a [routerLink]="['/news', article.slug]" class="read-more-link text-success fw-bold text-decoration-none fs-7 d-inline-flex align-items-center gap-1">
+                                Read Article <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && articles.length === 0" class="text-center py-5">
+            <div class="empty-box bg-white p-5 rounded-4 shadow-sm max-w-500 mx-auto">
+                <i class="bi bi-newspaper fs-1 text-muted d-block mb-3"></i>
+                <h4 class="fw-bold text-dark mb-2">No News Articles Found</h4>
+                <p class="text-muted fs-6 mb-0">No articles available for the selected category or search filter.</p>
+            </div>
+        </div>
+    </div>
+</section>

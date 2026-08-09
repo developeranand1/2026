@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const News = require("../models/News");
 const NewsType = require("../models/NewsType");
 const cloudinary = require("../config/cloudinary");
@@ -186,13 +187,15 @@ exports.getNews = async (req, res, next) => {
 exports.getNewsByIdOrSlug = async (req, res, next) => {
     try {
         const { id } = req.params;
-        let news;
+        let query = {};
 
-        if (id.match(/^[0-9a-fA-F]{24}$/)) {
-            news = await News.findById(id).populate("newsType", "title slug");
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            query = { $or: [{ _id: id }, { slug: id }] };
         } else {
-            news = await News.findOne({ slug: id }).populate("newsType", "title slug");
+            query = { slug: id };
         }
+
+        const news = await News.findOne(query).populate("newsType", "title slug");
 
         if (!news) {
             return res.status(404).json({
