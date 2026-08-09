@@ -26,4 +26,14 @@ import { HomeNewsComponent } from './components/home-news/home-news.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {}
+export class HomeComponent {
+  selectedCategoryName = 'all';
+
+  onCategorySelect(catName: string): void {
+    this.selectedCategoryName = catName;
+    const el = document.getElementById('products');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+}

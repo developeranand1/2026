@@ -1,6 +1,6 @@
 <app-hero></app-hero>
-<app-categories></app-categories>
-<app-products></app-products>
+<app-categories (categorySelected)="onCategorySelect($event)"></app-categories>
+<app-products [selectedCategory]="selectedCategoryName"></app-products>
 <app-mandi-rates></app-mandi-rates>
 <app-home-news></app-home-news>
 <app-benefits></app-benefits>

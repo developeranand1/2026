@@ -1,60 +1,67 @@
-import { Component } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
-
-interface Product {
-  name: string;
-  icon: string;
-  price: number;
-  oldPrice: number;
-  unit: string;
-  location: string;
-  rating: number;
-}
+import { Component, OnInit, Input, inject } from '@angular/core';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { MandiRateService } from '../../mandi-rate.service';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe],
+  imports: [CommonModule, CurrencyPipe, DatePipe],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss'
 })
-export class ProductsComponent {
-  products: Product[] = [
-    {
-      name: 'Fresh Tomatoes',
-      icon: '🍅',
-      price: 32,
-      oldPrice: 40,
-      unit: 'kg',
-      location: 'Nashik, Maharashtra',
-      rating: 4.8
-    },
-    {
-      name: 'Organic Wheat',
-      icon: '🌾',
-      price: 42,
-      oldPrice: 48,
-      unit: 'kg',
-      location: 'Sehore, Madhya Pradesh',
-      rating: 4.7
-    },
-    {
-      name: 'Red Onions',
-      icon: '🧅',
-      price: 28,
-      oldPrice: 35,
-      unit: 'kg',
-      location: 'Indore, Madhya Pradesh',
-      rating: 4.6
-    },
-    {
-      name: 'Basmati Rice',
-      icon: '🍚',
-      price: 92,
-      oldPrice: 110,
-      unit: 'kg',
-      location: 'Karnal, Haryana',
-      rating: 4.9
+export class ProductsComponent implements OnInit {
+  private mandiRateService = inject(MandiRateService);
+  private router = inject(Router);
+
+  approvedCrops: any[] = [];
+  isLoading = true;
+  activeFilter = 'all';
+
+  @Input() set selectedCategory(cat: string) {
+    if (cat) {
+      this.activeFilter = cat;
     }
-  ];
+  }
+
+  ngOnInit(): void {
+    this.fetchLiveProducts();
+  }
+
+  fetchLiveProducts(): void {
+    this.isLoading = true;
+    this.mandiRateService.getApprovedCrops().subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res.success && Array.isArray(res.data)) {
+          this.approvedCrops = res.data;
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  get filteredProducts(): any[] {
+    if (this.activeFilter === 'sell') {
+      return this.approvedCrops.filter(c => c.type === 'sell' || c.postedByRole === 'farmer');
+    }
+    if (this.activeFilter === 'buy') {
+      return this.approvedCrops.filter(c => c.type === 'buy' || c.postedByRole === 'buyer');
+    }
+    if (this.activeFilter !== 'all') {
+      return this.approvedCrops.filter(c => c.category === this.activeFilter);
+    }
+    return this.approvedCrops;
+  }
+
+  viewProductDetails(crop: any): void {
+    if (crop) {
+      const targetId = crop.slug || crop._id;
+      if (targetId) {
+        this.router.navigate(['/product', targetId]);
+      }
+    }
+  }
 }

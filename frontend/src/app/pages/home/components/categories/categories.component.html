@@ -1,36 +1,33 @@
-<section id="categories" class="section section-soft">
+<section id="categories" class="section section-soft py-5">
     <div class="container">
-
-        <div class="section-heading text-center mx-auto">
-            <span>Popular Categories</span>
-            <h2>Choose What You Need</h2>
-            <p>
-                Fresh and trusted agriculture products in one place.
+        <div class="section-heading text-center mx-auto mb-4">
+            <span class="badge bg-success-subtle text-success fw-bold px-3 py-1 rounded-pill mb-2">Explore Marketplace</span>
+            <h2 class="fw-bold text-dark">Database Agricultural Categories</h2>
+            <p class="text-muted">
+                Click any category to filter live farmer produce and wholesale buyer requirements.
             </p>
         </div>
 
-        <div class="row g-3 mt-3">
+        <div *ngIf="isLoading" class="text-center py-4">
+            <div class="spinner-border text-success spinner-border-sm me-2"></div>
+            <span class="text-muted small">Loading marketplace categories...</span>
+        </div>
 
-            @for (category of categories; track category.name) {
-            <div class="col-6 col-md-4 col-lg-2">
-                <article class="category-card h-100">
-
-                    <div class="category-icon">
-                        {{ category.icon }}
+        <div *ngIf="!isLoading" class="row g-3">
+            <div *ngFor="let category of categories" class="col-6 col-md-4 col-lg-2">
+                <article class="category-card h-100 p-2.5 rounded-4 bg-white border shadow-sm text-center cursor-pointer hover-elevate overflow-hidden" (click)="selectCategory(category.name)">
+                    <div class="position-relative rounded-3 overflow-hidden mb-2" style="height: 100px;">
+                        <img [src]="category.image" [alt]="category.name" class="w-100 h-100 object-fit-cover">
                     </div>
 
-                    <h3>
+                    <h6 class="fw-bold text-dark mb-1 text-truncate fs-7">
                         {{ category.name }}
-                    </h3>
-
-                    <p>
-                        {{ category.totalProducts }} Products
-                    </p>
-
+                    </h6>
+                    <small class="text-muted fs-8">
+                        {{ category.count }}+ Listings
+                    </small>
                 </article>
             </div>
-            }
-
         </div>
     </div>
 </section>
