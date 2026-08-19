@@ -7,9 +7,15 @@ import { Observable } from 'rxjs';
 })
 export class MandiRateService {
   private http = inject(HttpClient);
-  private backendUrl = 'http://localhost:5000/api/mandi-rates';
-  private cropUrl = 'http://localhost:5000/api/crops';
-  private categoryUrl = 'http://localhost:5000/api/categories';
+
+
+  // private backendUrl = 'http://localhost:5000/api/mandi-rates';
+  // private cropUrl = 'http://localhost:5000/api/crops';
+  // private categoryUrl = 'http://localhost:5000/api/categories';
+
+    private backendUrl = 'https://api.krisimarg.com/api/mandi-rates';
+  private cropUrl = 'https://api.krisimarg.com/api/crops';
+  private categoryUrl = 'https://api.krisimarg.com/api/categories';
 
   /**
    * Performs reverse geocoding via OpenStreetMap Nominatim

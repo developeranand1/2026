@@ -34,8 +34,11 @@ export interface NewsArticle {
 })
 export class FrontendNewsService {
   private http = inject(HttpClient);
-  private newsUrl = 'http://localhost:5000/api/news';
-  private newsTypeUrl = 'http://localhost:5000/api/news-types';
+  // private newsUrl = 'http://localhost:5000/api/news';
+  // private newsTypeUrl = 'http://localhost:5000/api/news-types';
+
+  private newsUrl = 'https://api.krisimarg.com/api/news';
+  private newsTypeUrl = 'https://api.krisimarg.com/api/news-types';
 
   getNewsList(newsType?: string, search?: string, featured?: boolean): Observable<{ success: boolean; count: number; data: NewsArticle[] }> {
     let params = new HttpParams().set('status', 'Published');

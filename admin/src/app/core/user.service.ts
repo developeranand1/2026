@@ -62,7 +62,9 @@ export interface UserStats {
 })
 export class AdminUserService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/users';
+  // private apiUrl = 'http://localhost:5000/api/users';
+  private apiUrl = 'https://api.krisimarg.com/api/users';
+
 
   getUsers(role?: string, status?: string, search?: string): Observable<{ success: boolean; count: number; stats: UserStats; data: UserAccount[] }> {
     let params = new HttpParams();

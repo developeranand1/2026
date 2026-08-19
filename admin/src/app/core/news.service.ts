@@ -49,8 +49,13 @@ export interface NewsApiResponse {
 })
 export class AdminNewsService {
   private http = inject(HttpClient);
-  private newsTypeUrl = 'http://localhost:5000/api/news-types';
-  private newsUrl = 'http://localhost:5000/api/news';
+  // private newsTypeUrl = 'http://localhost:5000/api/news-types';
+  // private newsUrl = 'http://localhost:5000/api/news';
+
+  private newsTypeUrl = 'https://api.krisimarg.com/api/news-types';
+  private newsUrl = 'https://api.krisimarg.com/api/news';
+
+    
 
   // NewsType APIs
   getNewsTypes(activeOnly: boolean = false): Observable<{ success: boolean; count: number; data: NewsType[] }> {

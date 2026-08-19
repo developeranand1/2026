@@ -15,7 +15,9 @@ export interface ContactPayload {
 })
 export class ContactService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/contact';
+  // private apiUrl = 'http://localhost:5000/api/contact';
+  private apiUrl = 'https://api.krisimarg.com/api/contact';
+  
 
   submitContactForm(payload: ContactPayload): Observable<any> {
     return this.http.post<any>(this.apiUrl, payload);

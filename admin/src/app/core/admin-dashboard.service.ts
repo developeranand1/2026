@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class AdminDashboardService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:5000/api';
+  // private baseUrl = 'http://localhost:5000/api';
+private baseUrl = 'https://api.krisimarg.com/api';
 
   getAdminStats(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/dashboard/admin`);

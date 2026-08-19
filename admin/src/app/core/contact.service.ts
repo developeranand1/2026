@@ -34,7 +34,10 @@ export interface ContactApiResponse {
 })
 export class AdminContactService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:5000/api/contact';
+  // private baseUrl = 'http://localhost:5000/api/contact';
+    private baseUrl = 'https://api.krisimarg.com/api/contact';
+
+   
 
   getInquiries(status?: string, search?: string): Observable<ContactApiResponse> {
     let params = new HttpParams();

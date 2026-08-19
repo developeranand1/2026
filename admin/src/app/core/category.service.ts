@@ -32,7 +32,10 @@ export interface Category {
 export class CategoryService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private baseUrl = 'http://localhost:5000/api/categories';
+  // private baseUrl = 'http://localhost:5000/api/categories';
+   private baseUrl = ' https://api.krisimarg.com/api/categories';
+
+ 
 
   // Preset Cloudinary and Unsplash agricultural images (No emojis)
   readonly PRESET_IMAGES = [

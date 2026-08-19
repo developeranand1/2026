@@ -1,6 +1,0 @@
-anand
-
-anand8126
-
-
-mongodb+srv://anand:anand8126@anand.e1lfhwi.mongodb.net/
