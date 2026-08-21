@@ -49,8 +49,8 @@ export class FarmerProductComponent implements OnInit {
   formVariety = '';
   formQuantity = 10;
   formUnit = 'Qtl';
-  formOriginalPrice = 2400;
-  formSellingPrice = 2160;
+  formOriginalPrice = 0;
+  formSellingPrice = 0;
   formDiscount = 10;
   formLocation = '';
   formDescription = '';
@@ -195,10 +195,10 @@ export class FarmerProductComponent implements OnInit {
     }
     this.formTitle = '';
     this.formVariety = '';
-    this.formQuantity = 10;
+    this.formQuantity = 0;
     this.formUnit = 'Qtl';
-    this.formOriginalPrice = 2400;
-    this.formSellingPrice = 2160;
+    this.formOriginalPrice = 0;
+    this.formSellingPrice = 0;
     this.formDiscount = 10;
     this.formLocation = this.farmerUser?.district ? `${this.farmerUser.district}, ${this.farmerUser.state || 'Bihar'}` : 'Bihar';
     this.formDescription = '<b>Grade A Farm Harvest</b>\n• Moisture: Below 12%\n• Direct farm loading & immediate dispatch available.';
@@ -216,16 +216,16 @@ export class FarmerProductComponent implements OnInit {
   }
 
   calculateDiscount(): void {
-    const orig = this.formOriginalPrice || 0;
-    const sale = this.formSellingPrice || 0;
+    const orig = this.formOriginalPrice ;
+    const sale = this.formSellingPrice ;
     if (orig > 0 && sale > 0 && orig > sale) {
       this.formDiscount = Math.round(((orig - sale) / orig) * 100);
     }
   }
 
   onDiscountChange(): void {
-    const orig = this.formOriginalPrice || 0;
-    const disc = this.formDiscount || 0;
+    const orig = this.formOriginalPrice ;
+    const disc = this.formDiscount;
     if (orig > 0 && disc > 0 && disc < 100) {
       this.formSellingPrice = Math.round(orig * (1 - disc / 100));
     }
@@ -342,7 +342,7 @@ export class FarmerProductComponent implements OnInit {
                 <div class="alert alert-warning p-2.5 rounded-3 fs-7 mb-0">
                   <i class="bi bi-clock-history me-1"></i>
                   <strong>Status: Pending Admin Verification</strong><br>
-                  Admin team will review and approve your listing. Once approved by Admin, it will be published live on GaonBazar marketplace!
+                  Admin team will review and approve your listing. Once approved by Admin, it will be published live on KrisiMarg marketplace!
                 </div>
               </div>
             `,

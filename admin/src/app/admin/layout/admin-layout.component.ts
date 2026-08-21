@@ -33,7 +33,7 @@ export class AdminLayoutComponent implements OnInit {
   logout(): void {
     Swal.fire({
       title: 'Sign Out Admin?',
-      text: 'Are you sure you want to log out of GaonBazar Admin Portal?',
+      text: 'Are you sure you want to log out of KrisiMarg Admin Portal?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#2E7D32',

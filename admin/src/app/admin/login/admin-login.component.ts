@@ -88,7 +88,7 @@ export class AdminLoginComponent implements OnInit {
 
           Swal.fire({
             title: 'Welcome Admin!',
-            text: 'Logged into GaonBazar Admin Dashboard successfully.',
+            text: 'Logged into KrisiMarg Admin Dashboard successfully.',
             icon: 'success',
             timer: 1500,
             showConfirmButton: false

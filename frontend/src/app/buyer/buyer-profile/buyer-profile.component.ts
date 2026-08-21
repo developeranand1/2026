@@ -28,7 +28,7 @@ export class BuyerProfileComponent implements OnInit {
     companyName: 'Amit Traders Pvt Ltd',
     businessType: 'Wholesaler / Bulk Buyer',
     mobile: '9876543210',
-    email: 'amit.traders@gaonbazar.com',
+    email: 'amit.traders@KrisiMarg.com',
     gstNumber: '09AAAAA1111A1Z1',
     panNumber: 'ABCDE1234F',
     tradeLicense: 'TRD998877',

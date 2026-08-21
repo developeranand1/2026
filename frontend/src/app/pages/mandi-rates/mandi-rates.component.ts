@@ -305,7 +305,7 @@ export class MandiRatesPageComponent implements OnInit {
     },
     {
       question: 'Can buyers & farmers trade directly using these rates?',
-      answer: 'Yes! GaonBazar uses live APMC mandi rates as transparent benchmark indicators so farmers and commercial buyers can negotiate fair direct deals without middleman cuts.'
+      answer: 'Yes! KrisiMarg uses live APMC mandi rates as transparent benchmark indicators so farmers and commercial buyers can negotiate fair direct deals without middleman cuts.'
     }
   ];
 

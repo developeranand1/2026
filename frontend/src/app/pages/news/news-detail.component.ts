@@ -55,9 +55,9 @@ export class NewsDetailComponent implements OnInit {
           this.safeContent = this.sanitizer.bypassSecurityTrustHtml(this.article.description);
 
           // Update Meta Tags dynamically
-          const metaTitle = this.article.metaTitle || `${this.article.title} | GaonBazar`;
+          const metaTitle = this.article.metaTitle || `${this.article.title} | KrisiMarg`;
           const metaDesc = this.article.metaDescription || this.article.shortDescription || this.article.title;
-          const metaKeys = this.article.metaKeywords || 'gaonbazar, mandi rates, agriculture news, farming updates';
+          const metaKeys = this.article.metaKeywords || 'KrisiMarg, mandi rates, agriculture news, farming updates';
 
           this.titleService.setTitle(metaTitle);
           this.metaService.updateTag({ name: 'description', content: metaDesc });

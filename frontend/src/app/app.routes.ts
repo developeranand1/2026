@@ -25,22 +25,22 @@ import { LoginComponent } from './auth/login/login.component';
 import { NewsListComponent } from './pages/news/news-list.component';
 import { NewsDetailComponent } from './pages/news/news-detail.component';
 
-// Route configuration for GaonBazar application
+// Route configuration for KrisiMarg application
 export const routes: Routes = [
     {
         path: '',
         component: HomeComponent,
-        title: 'GaonBazar | किसान से सीधे खरीदें'
+        title: 'KrisiMarg | किसान से सीधे खरीदें'
     },
     {
         path: 'login',
         component: LoginComponent,
-        title: 'Login & Register | GaonBazar'
+        title: 'Login & Register | KrisiMarg'
     },
     {
         path: 'news',
         component: NewsListComponent,
-        title: 'News & Agri Market Updates | GaonBazar'
+        title: 'News & Agri Market Updates | KrisiMarg'
     },
     {
         path: 'news/:slug',
@@ -50,7 +50,7 @@ export const routes: Routes = [
     {
         path: 'product/:id',
         component: CropDetailComponent,
-        title: 'Crop Specifications | GaonBazar'
+        title: 'Crop Specifications | KrisiMarg'
     },
 
     {
@@ -58,11 +58,11 @@ export const routes: Routes = [
         component: FarmerSidebarComponent,
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-            { path: 'dashboard', component: FarmerDashboardComponent, title: 'Farmer Dashboard | GaonBazar' },
-            { path: 'product', component: FarmerProductComponent, title: 'My Crop Produce | GaonBazar' },
-            { path: 'product/:id', component: CropDetailComponent, title: 'Crop Produce Specifications | GaonBazar' },
-            { path: 'profile', component: FarmerProfileComponent, title: 'Farmer Profile | GaonBazar' },
-            { path: 'mandi-rates', component: FarmerMindiRateComponent, title: 'Live Mandi Rates | GaonBazar' }
+            { path: 'dashboard', component: FarmerDashboardComponent, title: 'Farmer Dashboard | KrisiMarg' },
+            { path: 'product', component: FarmerProductComponent, title: 'My Crop Produce | KrisiMarg' },
+            { path: 'product/:id', component: CropDetailComponent, title: 'Crop Produce Specifications | KrisiMarg' },
+            { path: 'profile', component: FarmerProfileComponent, title: 'Farmer Profile | KrisiMarg' },
+            { path: 'mandi-rates', component: FarmerMindiRateComponent, title: 'Live Mandi Rates | KrisiMarg' }
         ]
     },
     {
@@ -70,52 +70,52 @@ export const routes: Routes = [
         component: BuyerSidebarComponent,
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-            { path: 'dashboard', component: BuyerDashboardComponent, title: 'Buyer Marketplace Dashboard | GaonBazar' },
-            { path: 'product', component: BuyerProductComponent, title: 'My Purchasing Requirements | GaonBazar' },
-            { path: 'product/:id', component: CropDetailComponent, title: 'Purchasing Requirement Specifications | GaonBazar' },
-            { path: 'profile', component: BuyerProfileComponent, title: 'Buyer Business Profile | GaonBazar' }
+            { path: 'dashboard', component: BuyerDashboardComponent, title: 'Buyer Marketplace Dashboard | KrisiMarg' },
+            { path: 'product', component: BuyerProductComponent, title: 'My Purchasing Requirements | KrisiMarg' },
+            { path: 'product/:id', component: CropDetailComponent, title: 'Purchasing Requirement Specifications | KrisiMarg' },
+            { path: 'profile', component: BuyerProfileComponent, title: 'Buyer Business Profile | KrisiMarg' }
         ]
     },
 
     {
         path: 'about',
         component: AboutComponent,
-        title: 'About Us | GaonBazar'
+        title: 'About Us | KrisiMarg'
     },
     {
         path: 'contact',
         component: ContactComponent,
-        title: 'Contact Us | GaonBazar'
+        title: 'Contact Us | KrisiMarg'
     },
     {
         path: 'faq',
         component: FaqComponent,
-        title: 'Frequently Asked Questions | GaonBazar'
+        title: 'Frequently Asked Questions | KrisiMarg'
     },
     {
         path: 'privacy-policy',
         component: PrivacyPolicyComponent,
-        title: 'Privacy Policy | GaonBazar'
+        title: 'Privacy Policy | KrisiMarg'
     },
     {
         path: 'terms',
         component: TermsComponent,
-        title: 'Terms and Conditions | GaonBazar'
+        title: 'Terms and Conditions | KrisiMarg'
     },
     {
         path: 'refund-policy',
         component: RefundPolicyComponent,
-        title: 'Refund Policy | GaonBazar'
+        title: 'Refund Policy | KrisiMarg'
     },
     {
         path: 'disclaimer',
         component: DisclaimerComponent,
-        title: 'Disclaimer Policy | GaonBazar'
+        title: 'Disclaimer Policy | KrisiMarg'
     },
     {
         path: 'mandi-rates',
         component: MandiRatesPageComponent,
-        title: 'Live Mandi Rates & Crop Bhav | GaonBazar'
+        title: 'Live Mandi Rates & Crop Bhav | KrisiMarg'
     },
 
     {

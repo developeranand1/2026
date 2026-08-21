@@ -50,7 +50,7 @@ export class NewsManagementComponent implements OnInit {
   formImage = '';
   formStatus: 'Draft' | 'Published' | 'Archived' = 'Published';
   formIsFeatured = false;
-  formAuthor = 'GaonBazar News Desk';
+  formAuthor = 'KrisiMarg News Desk';
 
   // SEO Meta Fields
   formMetaTitle = '';
@@ -183,7 +183,7 @@ export class NewsManagementComponent implements OnInit {
     this.formImage = '';
     this.formStatus = 'Published';
     this.formIsFeatured = false;
-    this.formAuthor = 'GaonBazar News Desk';
+    this.formAuthor = 'KrisiMarg News Desk';
     this.formMetaTitle = '';
     this.formMetaDescription = '';
     this.formMetaKeywords = '';
@@ -208,7 +208,7 @@ export class NewsManagementComponent implements OnInit {
           this.formImage = article.image || '';
           this.formStatus = article.status;
           this.formIsFeatured = article.isFeatured;
-          this.formAuthor = article.author || 'GaonBazar News Desk';
+          this.formAuthor = article.author || 'KrisiMarg News Desk';
           this.formMetaTitle = article.metaTitle || article.title;
           this.formMetaDescription = article.metaDescription || article.shortDescription || '';
           this.formMetaKeywords = article.metaKeywords || '';

@@ -32,7 +32,7 @@ export class FaqComponent {
       items: [
         {
           id: 'account-1',
-          question: 'How do I create a GaonBazar account?',
+          question: 'How do I create a KrisiMarg account?',
           answer:
             'Select Register, choose your user role, enter the required details, and complete mobile or email verification.'
         },
@@ -84,7 +84,7 @@ export class FaqComponent {
           id: 'payment-1',
           question: 'Which payment methods are supported?',
           answer:
-            'GaonBazar can support UPI, debit cards, credit cards, net banking, and wallets through Razorpay.'
+            'KrisiMarg can support UPI, debit cards, credit cards, net banking, and wallets through Razorpay.'
         },
         {
           id: 'payment-2',

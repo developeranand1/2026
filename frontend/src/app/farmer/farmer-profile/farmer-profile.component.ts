@@ -26,7 +26,7 @@ export class FarmerProfileComponent implements OnInit {
   profileData = {
     name: 'Rajesh Kumar',
     mobile: '9876543210',
-    email: 'rajesh.farmer@gaonbazar.com',
+    email: 'rajesh.farmer@KrisiMarg.com',
     fatherName: 'Suresh Kumar',
     village: 'Bhagwanpur',
     city: 'Muzaffarpur',

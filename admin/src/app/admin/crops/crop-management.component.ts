@@ -55,7 +55,7 @@ export class CropManagementComponent implements OnInit {
 
   cropForm: CropListing = {
     postedByRole: 'admin',
-    postedByName: 'GaonBazar Admin',
+    postedByName: 'KrisiMarg Admin',
     postedByMobile: '9999999999',
     type: 'sell',
     cropName: '',
@@ -344,7 +344,7 @@ export class CropManagementComponent implements OnInit {
     const defaultCategory = this.categoriesList.length > 0 ? this.categoriesList[0].name : '';
     this.cropForm = {
       postedByRole: 'admin',
-      postedByName: 'GaonBazar Admin',
+      postedByName: 'KrisiMarg Admin',
       postedByMobile: '9999999999',
       type: 'sell',
       cropName: '',

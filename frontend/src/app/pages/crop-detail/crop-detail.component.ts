@@ -78,7 +78,7 @@ export class CropDetailComponent implements OnInit {
             <a href="tel:${mobile}" class="btn btn-success rounded-pill fw-bold">
               <i class="bi bi-telephone-fill me-1"></i> Call Seller Now
             </a>
-            <a href="https://wa.me/91${mobile}?text=Hello,%20I%20am%20interested%20in%20your%20crop%20listing%20${encodeURIComponent(cropName)}%20on%20GaonBazar" target="_blank" class="btn btn-outline-success rounded-pill fw-bold">
+            <a href="https://wa.me/91${mobile}?text=Hello,%20I%20am%20interested%20in%20your%20crop%20listing%20${encodeURIComponent(cropName)}%20on%20KrisiMarg" target="_blank" class="btn btn-outline-success rounded-pill fw-bold">
               <i class="bi bi-whatsapp me-1"></i> Chat on WhatsApp
             </a>
           </div>

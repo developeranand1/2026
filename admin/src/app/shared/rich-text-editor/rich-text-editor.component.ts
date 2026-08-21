@@ -103,7 +103,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, OnChanges 
     Swal.fire({
       title: 'Insert Link',
       input: 'url',
-      inputLabel: 'Enter Web URL (e.g. https://gaonbazar.com)',
+      inputLabel: 'Enter Web URL (e.g. https://KrisiMarg.com)',
       inputPlaceholder: 'https://example.com',
       showCancelButton: true,
       confirmButtonColor: '#198754',

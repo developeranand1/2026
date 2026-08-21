@@ -47,10 +47,10 @@ export class BuyerProductComponent implements OnInit {
   formCategory = '';
   formSubcategory = '';
   formVariety = '';
-  formQuantity = 100;
+  formQuantity = 0;
   formUnit = 'Qtl';
-  formOriginalPrice = 2400;
-  formSellingPrice = 2160;
+  formOriginalPrice = 0;
+  formSellingPrice = 0;
   formDiscount = 10;
   formLocation = '';
   formDescription = '';
@@ -195,10 +195,10 @@ export class BuyerProductComponent implements OnInit {
     }
     this.formTitle = '';
     this.formVariety = '';
-    this.formQuantity = 100;
+    this.formQuantity = 0;
     this.formUnit = 'Qtl';
-    this.formOriginalPrice = 2400;
-    this.formSellingPrice = 2160;
+    this.formOriginalPrice = 0;
+    this.formSellingPrice = 0;
     this.formDiscount = 10;
     this.formLocation = 'Uttar Pradesh';
     this.formDescription = '<b>Bulk Purchase Specs</b>\n• Grade A Quality required\n• Moisture below 12%\n• Direct farm pickup with instant RTGS payment.';
@@ -342,7 +342,7 @@ export class BuyerProductComponent implements OnInit {
                 <div class="alert alert-warning p-2.5 rounded-3 fs-7 mb-0">
                   <i class="bi bi-clock-history me-1"></i>
                   <strong>Status: Pending Admin Verification</strong><br>
-                  Admin team will review and approve your requirement. Once approved by Admin, it will be published live on GaonBazar marketplace!
+                  Admin team will review and approve your requirement. Once approved by Admin, it will be published live on KrisiMarg marketplace!
                 </div>
               </div>
             `,
