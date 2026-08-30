@@ -88,16 +88,60 @@ export class BuyerProductComponent implements OnInit {
   }
 
   loadMyBuyerDemands(): void {
+    const userId = this.buyerUser?._id || this.buyerUser?.id;
+    const mobile = this.buyerUser?.mobile;
+    const name = this.buyerUser?.name || this.buyerUser?.companyName;
+
+    if (!userId && !mobile && !name) {
+      this.myDemandsList = [];
+      this.isLoading = false;
+      return;
+    }
     this.isLoading = true;
-    this.mandiRateService.getApprovedCrops('buyer').subscribe({
+    this.mandiRateService.getCropsByUser(userId, mobile, name, 'buyer', 'buy').subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res.success && res.data) {
+        if (res && res.success && Array.isArray(res.data)) {
           this.myDemandsList = res.data;
+        } else {
+          this.myDemandsList = [];
         }
       },
       error: () => {
         this.isLoading = false;
+        this.myDemandsList = [];
+      }
+    });
+  }
+
+  deleteDemandListing(item: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const itemId = item._id || item.id;
+    if (!itemId) return;
+
+    Swal.fire({
+      title: 'Delete Requirement?',
+      text: `Are you sure you want to delete "${item.cropName}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.mandiRateService.deleteCrop(itemId).subscribe({
+          next: (res: any) => {
+            if (res.success) {
+              Swal.fire('Deleted!', 'Your purchasing requirement has been removed.', 'success');
+              this.loadMyBuyerDemands();
+            }
+          },
+          error: (err: any) => {
+            Swal.fire('Error', err.error?.message || 'Failed to delete requirement', 'error');
+          }
+        });
       }
     });
   }
@@ -304,6 +348,7 @@ export class BuyerProductComponent implements OnInit {
     this.calculateDiscount();
 
     const cropData = {
+      postedBy: this.buyerUser?._id || this.buyerUser?.id || undefined,
       postedByRole: 'buyer',
       postedByName: this.formName,
       postedByMobile: this.formMobile,

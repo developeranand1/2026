@@ -1,0 +1,59 @@
+.team-hero {
+    background: linear-gradient(135deg, #0d3d20 0%, #17542e 50%, #1e6b3b 100%);
+
+    .hero-bg-overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(242, 201, 76, 0.15), transparent 50%);
+        pointer-events: none;
+    }
+}
+
+.profile-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .profile-card-header {
+        &.bg-founder {
+            background: linear-gradient(135deg, #134e2c 0%, #198754 100%);
+        }
+
+        &.bg-finance {
+            background: linear-gradient(135deg, #0d233a 0%, #1b4965 100%);
+        }
+
+        .profile-avatar {
+            background: #ffffff;
+            color: #198754;
+        }
+
+        &.bg-finance .profile-avatar {
+            color: #1b4965;
+        }
+    }
+}
+
+.quote-box {
+    position: relative;
+}
+
+.hover-elevate {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(8px);
+}
+
+.letter-spacing-1 {
+    letter-spacing: 1px;
+}

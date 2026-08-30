@@ -11,7 +11,6 @@ const STATE_MAP = {
     "gujarat": "GJ",
     "haryana": "HR",
     "himachal pradesh": "HP",
-    "jammu and kashmir": "JK",
     "jharkhand": "JH",
     "karnataka": "KA",
     "kerala": "KL",
@@ -31,7 +30,14 @@ const STATE_MAP = {
     "uttar pradesh": "UP",
     "uttarakhand": "UK",
     "west bengal": "WB",
-    "delhi": "DL"
+    "delhi": "DL",
+    "jammu and kashmir": "JK",
+    "ladakh": "LA",
+    "chandigarh": "CH",
+    "puducherry": "PY",
+    "andaman and nicobar islands": "AN",
+    "dadra and nagar haveli and daman and diu": "DN",
+    "lakshadweep": "LD"
 };
 
 // Commodity mapper for AGMARKNET

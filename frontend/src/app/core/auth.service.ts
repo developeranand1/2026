@@ -7,8 +7,17 @@ import { Observable, tap } from 'rxjs';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private backendUrl = 'https://api.krisimarg.com/api/auth';
-  // private backendUrl = 'http://localhost:5000/api/auth';
+
+  private getBaseUrl(): string {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:5000/api';
+    }
+    return 'https://api.krisimarg.com/api';
+  }
+
+  private get backendUrl(): string {
+    return `${this.getBaseUrl()}/auth`;
+  }
 
   /**
    * Logs in a user (farmer, buyer, or admin)

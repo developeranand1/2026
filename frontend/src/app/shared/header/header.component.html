@@ -1,123 +1,257 @@
+<!-- Top Announcement & Helpline Bar -->
 <div class="topbar">
     <div class="container d-flex justify-content-between align-items-center">
-        <span>
-            <i class="bi bi-truck me-1"></i>
-            Fast delivery available in selected cities
-        </span>
+        <div class="d-flex align-items-center gap-2 topbar-left">
+            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-0.5" style="font-size: 10px;">LIVE</span>
+            <span class="topbar-text">
+                <i class="bi bi-truck me-1"></i>
+                Direct Farm-to-Buyer Delivery Across India
+            </span>
+        </div>
 
-        <div class="d-none d-md-flex gap-3">
-            <span>
-                <i class="bi bi-telephone me-1"></i>
+        <div class="d-flex align-items-center gap-3 topbar-right">
+            <a href="tel:+919876543210" class="topbar-link text-decoration-none">
+                <i class="bi bi-telephone-fill me-1 text-warning"></i>
                 +91 98765 43210
-            </span>
-
-            <span>
-                <i class="bi bi-envelope me-1"></i>
-                supportKrisiMarg.com
-            </span>
+            </a>
+            <span class="d-none d-md-inline opacity-50">|</span>
+            <a href="mailto:support@krisimarg.com" class="topbar-link text-decoration-none d-none d-md-inline">
+                <i class="bi bi-envelope-fill me-1 text-warning"></i>
+                support&#64;krisimarg.com
+            </a>
         </div>
     </div>
 </div>
 
-<nav class="navbar navbar-expand-lg bg-white sticky-top border-bottom">
+<!-- Main Sticky Navbar -->
+<nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-2">
     <div class="container">
 
-        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
-            <span class="logo-icon">
+        <!-- Brand Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/" (click)="closeMobileMenu()">
+            <span class="logo-icon shadow-sm">
                 <i class="bi bi-flower1"></i>
             </span>
-
             <span class="logo-text">
                 <strong>Krisi<span>Marg</span></strong>
-                <small>Your Trusted Farming Marketplace</small>
+                <small>Digital Krishi Mandi</small>
             </span>
         </a>
 
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
-            data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
-            aria-label="Open navigation menu">
+        <!-- Mobile Right Action Icons (Visible on Mobile only: < 992px) -->
+        <div class="d-flex align-items-center gap-2 d-lg-none">
+            <!-- Mobile Cart Button -->
+            <button class="header-icon position-relative" type="button" aria-label="Shopping cart" routerLink="/mandi-rates" (click)="closeMobileMenu()">
+                <i class="bi bi-cart3"></i>
+                <span class="cart-count">2</span>
+            </button>
 
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <!-- Custom Mobile Hamburger Toggle Button -->
+            <button class="mobile-toggle-btn border-0 shadow-none" type="button" (click)="toggleMobileMenu()" aria-label="Toggle mobile menu" [class.is-active]="isMobileMenuOpen">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
 
-        <div id="mainNavbar" class="collapse navbar-collapse">
+        <!-- Desktop Navigation Center Menu (Hidden on Mobile: >= 992px) -->
+        <div class="collapse navbar-collapse d-none d-lg-flex" id="mainNavbarDesktop">
             <ul class="navbar-nav mx-auto">
-
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                         Home
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/about" routerLinkActive="active">
-                        About Us
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/contact" routerLinkActive="active">
-                        Contact Us
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/faq" routerLinkActive="active">
-                        FAQ
-                    </a>
-                </li>
-
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/mandi-rates" routerLinkActive="active">
-                        Mandi Rates
+                        Mandi Rates <span class="badge bg-success-subtle text-success rounded-pill px-1.5 py-0.5 ms-1" style="font-size: 10px;">Live</span>
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/news" routerLinkActive="active">
                         News & Updates
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/about" routerLinkActive="active">
+                        About Us
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/contact" routerLinkActive="active">
+                        Contact
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/faq" routerLinkActive="active">
+                        FAQ
+                    </a>
+                </li>
             </ul>
 
+            <!-- Desktop Right Action Capsule -->
             <div class="d-flex align-items-center gap-2">
-
-                <button class="header-icon" type="button" aria-label="Search">
-
-                    <i class="bi bi-search"></i>
-                </button>
-
-                <button class="header-icon position-relative" type="button" aria-label="Shopping cart">
-
+                <button class="header-icon position-relative" type="button" aria-label="Shopping cart" routerLink="/mandi-rates">
                     <i class="bi bi-cart3"></i>
-
-                    <span class="cart-count">
-                        2
-                    </span>
+                    <span class="cart-count">2</span>
                 </button>
 
                 @if (!isLoggedIn) {
-                  <a class="btn btn-outline-success btn-sm rounded-pill px-3" routerLink="/login" [queryParams]="{mode: 'login'}">
-                      Login
-                  </a>
-                  <a class="btn btn-success btn-sm rounded-pill px-3" routerLink="/login" [queryParams]="{mode: 'register'}">
-                      Register
-                  </a>
+                    <a class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold" routerLink="/login" [queryParams]="{mode: 'login'}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                    </a>
+                    <a class="btn btn-success btn-sm rounded-pill px-3.5 fw-bold shadow-sm" routerLink="/login" [queryParams]="{mode: 'register'}">
+                        <i class="bi bi-person-plus-fill me-1"></i> Register
+                    </a>
                 } @else {
-                  <span class="text-success fw-semibold me-2 d-none d-md-inline">👋 नमस्ते, {{ userName }}</span>
-                  <a class="btn btn-outline-success btn-sm rounded-pill px-3" 
-                     [routerLink]="userRole === 'farmer' ? '/farmer-journey' : '/buyer-journey'" 
-                     [queryParams]="{step: userRole === 'farmer' ? 10 : 8}">
-                      Dashboard
-                  </a>
-                  <button class="btn btn-danger btn-sm rounded-pill px-3 ms-1" (click)="logout()">
-                      Logout
-                  </button>
+                    <div class="d-flex align-items-center bg-light rounded-pill p-1 ps-3 border shadow-sm">
+                        <span class="text-success fw-bold me-2 small text-truncate" style="max-width: 140px;">
+                            👋 {{ userName }}
+                        </span>
+                        <a class="btn btn-success btn-sm rounded-pill px-3 py-1 fw-bold shadow-sm d-flex align-items-center gap-1"
+                           [routerLink]="userRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard'">
+                            <i class="bi bi-grid-fill"></i>
+                            Dashboard
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm rounded-circle p-1 ms-1 d-flex align-items-center justify-content-center"
+                                style="width: 28px; height: 28px;" (click)="logout()" title="Logout">
+                            <i class="bi bi-power"></i>
+                        </button>
+                    </div>
                 }
-
             </div>
         </div>
 
     </div>
 </nav>
+
+<!-- MOBILE DRAWER & BACKDROP (Rendered for Mobile Screens) -->
+@if (isMobileMenuOpen) {
+    <!-- Backdrop Overlay -->
+    <div class="mobile-drawer-backdrop" (click)="closeMobileMenu()"></div>
+
+    <!-- Mobile Slide Drawer Menu -->
+    <div class="mobile-drawer shadow-lg">
+        <!-- Drawer Header -->
+        <div class="drawer-header d-flex align-items-center justify-content-between p-3 border-bottom bg-light">
+            <div class="d-flex align-items-center gap-2">
+                <span class="logo-icon-sm">
+                    <i class="bi bi-flower1"></i>
+                </span>
+                <div>
+                    <h6 class="fw-bold mb-0 text-success">KrisiMarg Menu</h6>
+                    <small class="text-muted" style="font-size: 11px;">Digital Agriculture Portal</small>
+                </div>
+            </div>
+            <button type="button" class="btn btn-light btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" (click)="closeMobileMenu()" aria-label="Close menu">
+                <i class="bi bi-x-lg fs-6 text-dark"></i>
+            </button>
+        </div>
+
+        <!-- Drawer User Card Area -->
+        <div class="p-3 border-bottom">
+            @if (isLoggedIn) {
+                <div class="user-mobile-card bg-success-subtle p-3 rounded-4 border border-success-subtle mb-2">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <span class="user-avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 44px; height: 44px; font-size: 18px;">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        <div class="overflow-hidden">
+                            <h6 class="fw-bold text-dark mb-0 text-truncate">{{ userName }}</h6>
+                            <span class="badge bg-success text-white rounded-pill px-2 py-0.5 mt-1" style="font-size: 10px;">
+                                @if (userRole === 'farmer') { 🌾 Kisan Partner } @else { 🏬 Verified Buyer }
+                            </span>
+                        </div>
+                    </div>
+                    @if (userMobile) {
+                        <p class="text-muted small mb-2"><i class="bi bi-telephone-fill me-1 text-success"></i>+91 {{ userMobile }}</p>
+                    }
+                    <div class="d-flex gap-2 mt-2">
+                        <a [routerLink]="userRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard'" class="btn btn-success btn-sm w-100 rounded-pill fw-bold shadow-sm" (click)="closeMobileMenu()">
+                            <i class="bi bi-grid-fill me-1"></i> Open Dashboard
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="logout()" title="Logout">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            } @else {
+                <div class="bg-light p-3 rounded-4 border text-center">
+                    <p class="text-muted small mb-2">Login to manage your crops, view orders & live mandi rates.</p>
+                    <div class="d-flex gap-2">
+                        <a routerLink="/login" [queryParams]="{mode: 'login'}" class="btn btn-outline-success btn-sm w-50 rounded-pill fw-semibold" (click)="closeMobileMenu()">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        </a>
+                        <a routerLink="/login" [queryParams]="{mode: 'register'}" class="btn btn-success btn-sm w-50 rounded-pill fw-bold shadow-sm" (click)="closeMobileMenu()">
+                            <i class="bi bi-person-plus-fill me-1"></i> Register
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Drawer Navigation Links -->
+        <div class="drawer-nav p-3">
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/" routerLinkActive="active-mobile-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-success"><i class="bi bi-house-door-fill"></i></span>
+                        <span class="fw-semibold text-dark">Home (होम)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/mandi-rates" routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-primary"><i class="bi bi-graph-up-arrow"></i></span>
+                        <div class="d-flex justify-content-between align-items-center flex-grow-1">
+                            <span class="fw-semibold text-dark">Mandi Rates (मंडी भाव)</span>
+                            <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 10px;">Live</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/news" routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-warning"><i class="bi bi-newspaper"></i></span>
+                        <span class="fw-semibold text-dark">News & Updates (समाचार)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/about" routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-info"><i class="bi bi-info-circle-fill"></i></span>
+                        <span class="fw-semibold text-dark">About Us (हमारे बारे में)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/team" routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-success"><i class="bi bi-people-fill"></i></span>
+                        <span class="fw-semibold text-dark">Leadership & Team (हमारी टीम)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/contact" routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-danger"><i class="bi bi-telephone-fill"></i></span>
+                        <span class="fw-semibold text-dark">Contact Us (संपर्क करें)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/faq" routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                        <span class="mobile-nav-icon bg-light text-secondary"><i class="bi bi-question-circle-fill"></i></span>
+                        <span class="fw-semibold text-dark">FAQ (सवाल-जवाब)</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Drawer Footer Help Strip -->
+        <div class="p-3 mt-auto bg-light border-top">
+            <small class="text-muted fw-bold text-uppercase d-block mb-2" style="font-size: 10px;">Farmer Support & Helpline</small>
+            <div class="d-flex gap-2">
+                <a href="tel:+919876543210" class="btn btn-outline-success btn-sm w-50 rounded-pill d-flex align-items-center justify-content-center gap-1">
+                    <i class="bi bi-telephone-fill"></i> Call Helpline
+                </a>
+                <a href="https://wa.me/917219159731" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm w-50 rounded-pill d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                    <i class="bi bi-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+}

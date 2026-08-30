@@ -10,9 +10,31 @@ const BuyerProfile = require("../models/BuyerProfile");
  */
 exports.getAllCrops = async (req, res, next) => {
     try {
-        const { role, type, status, category, approvalStatus, search } = req.query;
+        const { role, type, status, category, approvalStatus, search, userId, postedBy, mobile, name } = req.query;
 
         let query = {};
+
+        const userFilter = userId || postedBy;
+        if ((userFilter && userFilter !== "all") || mobile || name) {
+            let userConditions = [];
+            if (userFilter && userFilter !== "all") {
+                if (mongoose.Types.ObjectId.isValid(userFilter)) {
+                    userConditions.push({ postedBy: userFilter });
+                }
+                userConditions.push({ postedByName: new RegExp(`^${userFilter}$`, "i") });
+                userConditions.push({ postedByMobile: userFilter });
+            }
+            if (mobile) {
+                userConditions.push({ postedByMobile: mobile });
+            }
+            if (name) {
+                userConditions.push({ postedByName: new RegExp(`^${name}$`, "i") });
+            }
+
+            if (userConditions.length > 0) {
+                query.$or = userConditions;
+            }
+        }
 
         if (role && role !== "all") {
             query.postedByRole = role;
@@ -24,7 +46,7 @@ exports.getAllCrops = async (req, res, next) => {
 
         if (status && status !== "all") {
             query.status = status;
-        } else if (!status) {
+        } else if (!status && !userFilter && !mobile && !name) {
             query.status = "active";
         }
 
@@ -37,13 +59,19 @@ exports.getAllCrops = async (req, res, next) => {
         }
 
         if (search) {
-            query.$or = [
+            const searchOr = [
                 { cropName: { $regex: search, $options: "i" } },
                 { subcategory: { $regex: search, $options: "i" } },
                 { location: { $regex: search, $options: "i" } },
                 { postedByName: { $regex: search, $options: "i" } },
                 { description: { $regex: search, $options: "i" } }
             ];
+            if (query.$or) {
+                query.$and = [{ $or: query.$or }, { $or: searchOr }];
+                delete query.$or;
+            } else {
+                query.$or = searchOr;
+            }
         }
 
         const crops = await Crop.find(query).sort({ createdAt: -1 });
@@ -91,11 +119,45 @@ exports.getCropById = async (req, res, next) => {
 
 /**
  * Get Current Logged-in User's Crops
- * GET /api/crops/my-crops
+ * GET /api/crops/my-crops or GET /api/crops/user/:userId
  */
 exports.getMyCrops = async (req, res, next) => {
     try {
-        const crops = await Crop.find({ postedBy: req.user._id }).sort({ createdAt: -1 });
+        const userId = (req.user && req.user._id)
+            ? req.user._id
+            : (req.query.userId || req.query.postedBy || req.params.userId);
+        const mobile = req.query.mobile || (req.user && req.user.mobile);
+        const name = req.query.name || (req.user && req.user.name);
+
+        const { status, approvalStatus, role, type } = req.query;
+
+        let query = {};
+        let userConditions = [];
+
+        if (userId && userId !== "all") {
+            if (mongoose.Types.ObjectId.isValid(userId)) {
+                userConditions.push({ postedBy: userId });
+            }
+            userConditions.push({ postedByName: new RegExp(`^${userId}$`, "i") });
+            userConditions.push({ postedByMobile: userId });
+        }
+        if (mobile) {
+            userConditions.push({ postedByMobile: mobile });
+        }
+        if (name) {
+            userConditions.push({ postedByName: new RegExp(`^${name}$`, "i") });
+        }
+
+        if (userConditions.length > 0) {
+            query.$or = userConditions;
+        }
+
+        if (role && role !== "all") query.postedByRole = role;
+        if (type && type !== "all") query.type = type;
+        if (status && status !== "all") query.status = status;
+        if (approvalStatus && approvalStatus !== "all") query.approvalStatus = approvalStatus;
+
+        const crops = await Crop.find(query).sort({ createdAt: -1 });
 
         res.json({
             success: true,
@@ -131,6 +193,8 @@ exports.addCrop = async (req, res, next) => {
             image,
             images,
             type,
+            postedBy,
+            userId: bodyUserId,
             postedByRole,
             postedByName,
             postedByMobile,
@@ -138,10 +202,10 @@ exports.addCrop = async (req, res, next) => {
             approvalStatus
         } = req.body;
 
-        const userId = req.user ? req.user._id : undefined;
-        const userRole = req.user ? req.user.role : (postedByRole || "admin");
-        const userName = req.user ? req.user.name : (postedByName || "GaonBazar Admin");
-        const userMobile = req.user ? req.user.mobile : (postedByMobile || "");
+        const userId = (req.user && req.user._id) ? req.user._id : (postedBy || bodyUserId || undefined);
+        const userRole = (req.user && req.user.role) ? req.user.role : (postedByRole || "farmer");
+        const userName = (req.user && req.user.name) ? req.user.name : (postedByName || "Farmer");
+        const userMobile = (req.user && req.user.mobile) ? req.user.mobile : (postedByMobile || "");
 
         const imageList = Array.isArray(images) && images.length > 0 ? images : (image ? [image] : []);
         const primaryImage = imageList.length > 0 ? imageList[0] : (image || "https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80");

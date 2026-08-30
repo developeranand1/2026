@@ -24,6 +24,7 @@ import { BuyerProfileComponent } from './buyer/buyer-profile/buyer-profile.compo
 import { LoginComponent } from './auth/login/login.component';
 import { NewsListComponent } from './pages/news/news-list.component';
 import { NewsDetailComponent } from './pages/news/news-detail.component';
+import { TeamComponent } from './pages/team/team.component';
 
 // Route configuration for KrisiMarg application
 export const routes: Routes = [
@@ -81,6 +82,11 @@ export const routes: Routes = [
         path: 'about',
         component: AboutComponent,
         title: 'About Us | KrisiMarg'
+    },
+    {
+        path: 'team',
+        component: TeamComponent,
+        title: 'Our Leadership & Team | KrisiMarg'
     },
     {
         path: 'contact',

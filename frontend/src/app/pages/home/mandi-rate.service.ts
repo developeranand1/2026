@@ -9,13 +9,16 @@ export class MandiRateService {
   private http = inject(HttpClient);
 
 
-  // private backendUrl = 'http://localhost:5000/api/mandi-rates';
-  // private cropUrl = 'http://localhost:5000/api/crops';
-  // private categoryUrl = 'http://localhost:5000/api/categories';
+  private getBaseUrl(): string {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:5000/api';
+    }
+    return 'https://api.krisimarg.com/api';
+  }
 
-    private backendUrl = 'https://api.krisimarg.com/api/mandi-rates';
-  private cropUrl = 'https://api.krisimarg.com/api/crops';
-  private categoryUrl = 'https://api.krisimarg.com/api/categories';
+  private get backendUrl(): string { return `${this.getBaseUrl()}/mandi-rates`; }
+  private get cropUrl(): string { return `${this.getBaseUrl()}/crops`; }
+  private get categoryUrl(): string { return `${this.getBaseUrl()}/categories`; }
 
   /**
    * Performs reverse geocoding via OpenStreetMap Nominatim
@@ -75,5 +78,33 @@ export class MandiRateService {
     if (role) url += `&role=${role}`;
     if (type) url += `&type=${type}`;
     return this.http.get<any>(url);
+  }
+
+  /**
+   * Fetch All Crops/Demands posted specifically by a User (by User ID, Mobile, or Name)
+   */
+  getCropsByUser(userId?: string, mobile?: string, name?: string, role?: string, type?: string): Observable<any> {
+    const params: string[] = [];
+    if (userId) params.push(`userId=${encodeURIComponent(userId)}`);
+    if (mobile) params.push(`mobile=${encodeURIComponent(mobile)}`);
+    if (name) params.push(`name=${encodeURIComponent(name)}`);
+    if (role) params.push(`role=${encodeURIComponent(role)}`);
+    if (type) params.push(`type=${encodeURIComponent(type)}`);
+    const query = params.length > 0 ? `?${params.join('&')}` : '';
+    return this.http.get<any>(`${this.cropUrl}${query}`);
+  }
+
+  /**
+   * Delete a Crop Listing by ID
+   */
+  deleteCrop(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.cropUrl}/${id}`);
+  }
+
+  /**
+   * Update a Crop Listing by ID
+   */
+  updateCrop(id: string, cropData: any): Observable<any> {
+    return this.http.put<any>(`${this.cropUrl}/${id}`, cropData);
   }
 }

@@ -44,9 +44,9 @@ export class HeroComponent implements OnInit, OnDestroy {
       image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80',
       altText: 'Fresh organic farm vegetables',
       primaryCtaText: 'Shop Fresh Produce',
-      primaryCtaLink: '/buyer-journey',
+      primaryCtaLink: '/mandi-rates',
       secondaryCtaText: 'Join as Farmer',
-      secondaryCtaLink: '/farmer-journey',
+      secondaryCtaLink: '/farmer/dashboard',
       tag: 'Fresh Harvest',
       mandiRatePill: 'Wheat Mandi: ₹2,275/qtl ▲ +2.4%',
       mandiIcon: 'bi-flower1'
@@ -78,7 +78,7 @@ export class HeroComponent implements OnInit, OnDestroy {
       image: 'https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=1200&q=80',
       altText: 'Fresh harvested vegetables basket',
       primaryCtaText: 'Explore Wholesale Deals',
-      primaryCtaLink: '/buyer-journey',
+      primaryCtaLink: '/mandi-rates',
       secondaryCtaText: 'Track Delivery',
       secondaryCtaLink: '/faq',
       tag: 'Fast Logistics',
@@ -133,10 +133,10 @@ export class HeroComponent implements OnInit, OnDestroy {
   searchProduct(query: string): void {
     const term = query.trim();
     if (!term) return;
-    this.router.navigate(['/buyer-journey'], { queryParams: { search: term } });
+    this.router.navigate(['/mandi-rates'], { queryParams: { search: term } });
   }
 
   applyTag(tagQuery: string): void {
-    this.router.navigate(['/buyer-journey'], { queryParams: { category: tagQuery } });
+    this.router.navigate(['/mandi-rates'], { queryParams: { category: tagQuery } });
   }
 }

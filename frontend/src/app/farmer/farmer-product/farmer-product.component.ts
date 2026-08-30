@@ -88,16 +88,60 @@ export class FarmerProductComponent implements OnInit {
   }
 
   loadMyFarmerCrops(): void {
+    const userId = this.farmerUser?._id || this.farmerUser?.id;
+    const mobile = this.farmerUser?.mobile;
+    const name = this.farmerUser?.name;
+
+    if (!userId && !mobile && !name) {
+      this.myCropsList = [];
+      this.isLoading = false;
+      return;
+    }
     this.isLoading = true;
-    this.mandiRateService.getApprovedCrops('farmer').subscribe({
+    this.mandiRateService.getCropsByUser(userId, mobile, name, 'farmer', 'sell').subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res.success && res.data) {
+        if (res && res.success && Array.isArray(res.data)) {
           this.myCropsList = res.data;
+        } else {
+          this.myCropsList = [];
         }
       },
       error: () => {
         this.isLoading = false;
+        this.myCropsList = [];
+      }
+    });
+  }
+
+  deleteCropListing(crop: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const cropId = crop._id || crop.id;
+    if (!cropId) return;
+
+    Swal.fire({
+      title: 'Delete Crop Listing?',
+      text: `Are you sure you want to delete "${crop.cropName}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.mandiRateService.deleteCrop(cropId).subscribe({
+          next: (res: any) => {
+            if (res.success) {
+              Swal.fire('Deleted!', 'Your crop listing has been removed.', 'success');
+              this.loadMyFarmerCrops();
+            }
+          },
+          error: (err: any) => {
+            Swal.fire('Error', err.error?.message || 'Failed to delete crop listing', 'error');
+          }
+        });
       }
     });
   }
@@ -304,6 +348,7 @@ export class FarmerProductComponent implements OnInit {
     this.calculateDiscount();
 
     const cropData = {
+      postedBy: this.farmerUser?._id || this.farmerUser?.id || undefined,
       postedByRole: 'farmer',
       postedByName: this.formName,
       postedByMobile: this.formMobile,

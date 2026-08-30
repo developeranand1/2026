@@ -1,0 +1,204 @@
+<div class="team-page-wrapper animate-fade-in">
+    <!-- Breadcrumb Navigation -->
+    <nav class="bg-light py-2 border-bottom" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a routerLink="/" class="text-success text-decoration-none fw-semibold">Home</a></li>
+                <li class="breadcrumb-item"><a routerLink="/about" class="text-success text-decoration-none fw-semibold">About Us</a></li>
+                <li class="breadcrumb-item active text-muted" aria-current="page">Our Leadership & Team</li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- Page Hero Banner -->
+    <section class="team-hero position-relative overflow-hidden py-5">
+        <div class="hero-bg-overlay"></div>
+        <div class="container position-relative py-4 text-white">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold mb-3 d-inline-flex align-items-center gap-1 shadow-sm">
+                        <i class="bi bi-people-fill"></i>
+                        The Visionaries Behind KrisiMarg
+                    </span>
+                    <h1 class="display-5 fw-bold mb-3 text-white">
+                        Meet Our Leadership & Executive Team
+                    </h1>
+                    <p class="lead opacity-90 mb-0" style="max-width: 680px;">
+                        Dedicated innovators and financial leaders committed to revolutionizing India's agriculture marketplace with fair prices, direct farmer access, and transparent settlements.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 text-lg-end d-none d-lg-block">
+                    <div class="p-4 rounded-4 bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-25 text-start">
+                        <span class="d-block text-warning fw-bold small text-uppercase mb-1">Our Core Commitment</span>
+                        <h6 class="fw-bold text-white mb-2">किसान की समृद्धि, भारत की तरक्की</h6>
+                        <small class="opacity-80 d-block">Connecting 10,000+ farmers directly with commercial buyers with zero middlemen.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leadership Profiles Main Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mx-auto mb-5" style="max-width: 650px;">
+                <span class="text-success fw-bold text-uppercase small letter-spacing-1 d-block mb-1">
+                    <i class="bi bi-award-fill me-1"></i> Executive Leadership
+                </span>
+                <h2 class="fw-bold text-dark mb-2">Pioneering Digital Agriculture in India</h2>
+                <p class="text-muted">Meet the visionary founder and financial leadership steering KrisiMarg’s mission to empower farming communities.</p>
+            </div>
+
+            <!-- Profile Cards Grid -->
+            <div class="row g-4 justify-content-center">
+                @for (member of teamMembers; track member.name) {
+                    <div class="col-12 col-lg-6">
+                        <article class="card border-0 shadow-sm rounded-4 bg-white h-100 overflow-hidden profile-card hover-elevate">
+                            <!-- Card Top Accent Strip -->
+                            <div class="profile-card-header p-4 text-white position-relative" [class.bg-founder]="member.name.includes('Rajesh')" [class.bg-finance]="member.name.includes('Atul')">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                    <span class="badge bg-white text-dark rounded-pill px-3 py-1 fw-bold shadow-sm" style="font-size: 11px;">
+                                        {{ member.badge }}
+                                    </span>
+                                    <span class="text-white-50 small">{{ member.department }}</span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="profile-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold shadow" style="width: 64px; height: 64px; font-size: 26px;">
+                                        <i class="bi {{ member.avatarIcon }}"></i>
+                                    </span>
+                                    <div>
+                                        <h3 class="fw-bold mb-0 text-white fs-4">{{ member.name }}</h3>
+                                        <div class="text-warning fw-semibold small">{{ member.hindiName }}</div>
+                                        <div class="text-white opacity-90 fw-semibold small mt-1">
+                                            {{ member.role }} <span class="opacity-75">({{ member.roleHindi }})</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Body Content -->
+                            <div class="card-body p-4 d-flex flex-column">
+                                <!-- Quote Box -->
+                                <div class="quote-box p-3 rounded-3 mb-4 bg-light border-start border-4" [class.border-success]="member.name.includes('Rajesh')" [class.border-primary]="member.name.includes('Atul')">
+                                    <i class="bi bi-quote fs-3 text-muted opacity-50 d-block mb-n2"></i>
+                                    <p class="mb-0 fst-italic text-dark small fw-semibold">
+                                        "{{ member.quote }}"
+                                    </p>
+                                </div>
+
+                                <!-- Biography -->
+                                <div class="mb-4">
+                                    <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+                                        <i class="bi bi-person-lines-fill text-success"></i>
+                                        About & Vision
+                                    </h6>
+                                    @for (para of member.bio; track $index) {
+                                        <p class="text-muted small mb-2 text-justify" style="line-height: 1.6;">
+                                            {{ para }}
+                                        </p>
+                                    }
+                                </div>
+
+                                <!-- Key Responsibilities -->
+                                <div class="mb-4">
+                                    <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+                                        <i class="bi bi-check2-circle text-primary"></i>
+                                        Key Leadership Responsibilities
+                                    </h6>
+                                    <ul class="list-unstyled mb-0">
+                                        @for (item of member.responsibilities; track item) {
+                                            <li class="d-flex align-items-start gap-2 text-muted small mb-1.5">
+                                                <i class="bi bi-patch-check-fill text-success mt-1 flex-shrink-0"></i>
+                                                <span>{{ item }}</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <!-- Expertise Tags -->
+                                <div class="mb-4">
+                                    <div class="d-flex flex-wrap gap-1.5">
+                                        @for (skill of member.skills; track skill) {
+                                            <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1" style="font-size: 11px;">
+                                                {{ skill }}
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Card Footer Connect Button -->
+                                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <a href="mailto:{{ member.email }}" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-envelope-fill"></i>
+                                        {{ member.email }}
+                                    </a>
+
+                                    <div class="d-flex gap-1 text-muted">
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 small">
+                                            KrisiMarg Management
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Pillars Section -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mx-auto mb-5" style="max-width: 650px;">
+                <span class="text-success fw-bold text-uppercase small letter-spacing-1 d-block mb-1">
+                    Principles & Values
+                </span>
+                <h2 class="fw-bold text-dark mb-2">Our Operating Pillars</h2>
+                <p class="text-muted">The core values driving our management team every single day.</p>
+            </div>
+
+            <div class="row g-4">
+                @for (pillar of corePillars; track pillar.title) {
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card border rounded-4 p-4 text-center h-100 bg-light hover-elevate">
+                            <span class="pillar-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 54px; height: 54px; font-size: 22px;">
+                                <i class="bi {{ pillar.icon }}"></i>
+                            </span>
+                            <h5 class="fw-bold text-dark mb-1">{{ pillar.title }}</h5>
+                            <small class="text-success fw-semibold d-block mb-2">{{ pillar.hindi }}</small>
+                            <p class="text-muted small mb-0">{{ pillar.description }}</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Join Community / Contact CTA -->
+    <section class="py-5 bg-success text-white">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold mb-2">
+                        Get In Touch
+                    </span>
+                    <h2 class="fw-bold mb-2 text-white">Have a Partnership Inquiry or Agri Proposal?</h2>
+                    <p class="mb-0 opacity-90">
+                        Our management team is always eager to collaborate with farmers, cooperatives, FPOs, bulk wholesalers, and agricultural stakeholders.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a routerLink="/contact" class="btn btn-warning btn-lg rounded-pill px-4 fw-bold text-dark shadow me-2 mb-2 mb-sm-0">
+                        <i class="bi bi-chat-dots-fill me-1"></i> Contact Leadership
+                    </a>
+                    <a routerLink="/login" [queryParams]="{mode: 'register', role: 'farmer'}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold">
+                        Join as Farmer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

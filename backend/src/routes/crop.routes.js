@@ -14,6 +14,7 @@ const {
 // Public / Authenticated endpoints
 router.get("/", getAllCrops);
 router.get("/my-crops", getMyCrops);
+router.get("/user/:userId", getMyCrops);
 router.get("/:id", getCropById);
 
 // Add, Update, Approval, Delete Endpoints

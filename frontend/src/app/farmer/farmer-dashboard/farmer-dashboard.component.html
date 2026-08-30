@@ -13,7 +13,7 @@
                 <h3 class="fw-bold mb-0 text-white">Welcome, {{ farmerUser?.name || 'Kisan Brother' }}!</h3>
                 @if (isLoggedIn) {
                   <span class="badge bg-light text-success fw-bold rounded-pill px-3 py-1">
-                    <i class="bi bi-patch-check-fill text-warning me-1"></i> Verified Account
+                    <i class="bi bi-patch-check-fill text-warning me-1"></i> Verified Farmer
                   </span>
                 } @else {
                   <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1">
@@ -32,11 +32,11 @@
         </div>
 
         <div class="col-lg-4 text-lg-end">
-          <button type="button" class="btn btn-light btn-sm rounded-pill px-3 py-2 fw-bold text-success shadow-sm me-2 mb-1" (click)="fetchLiveMandiRates()">
-            <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoadingRates"></i> Sync Mandi Rates
+          <button type="button" class="btn btn-warning btn-sm rounded-pill px-3.5 py-2 fw-bold text-dark shadow-sm me-2 mb-1" (click)="openCreateModal()">
+            <i class="bi bi-plus-circle-fill me-1"></i> + Add Crop Produce
           </button>
-          <a routerLink="/farmer/profile" class="btn btn-warning btn-sm rounded-pill px-3 py-2 fw-bold text-dark shadow-sm mb-1">
-            <i class="bi bi-person-lines-fill me-1"></i> Edit Profile
+          <a routerLink="/farmer/profile" class="btn btn-light btn-sm rounded-pill px-3 py-2 fw-bold text-success shadow-sm mb-1">
+            <i class="bi bi-person-lines-fill me-1"></i> Profile
           </a>
         </div>
       </div>
@@ -49,9 +49,11 @@
       <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-success">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Listed Crops</small>
-            <h4 class="fw-bold text-dark mb-0 mt-1">3 Crops</h4>
-            <small class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Active Listings</small>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">My Listed Crops</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">{{ myCropsList.length }} Produce</h4>
+            <small class="text-success fw-semibold">
+              <i class="bi bi-check-circle-fill me-1"></i>{{ activeCropsCount }} Active • {{ pendingCropsCount }} Pending
+            </small>
           </div>
           <span class="bg-success-subtle text-success p-3 rounded-circle fs-3"><i class="bi bi-flower1"></i></span>
         </div>
@@ -75,8 +77,8 @@
       <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 border-start border-4 border-warning">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Active Orders</small>
-            <h4 class="fw-bold text-dark mb-0 mt-1">0 Orders</h4>
+            <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Active Buyer Orders</small>
+            <h4 class="fw-bold text-dark mb-0 mt-1">{{ recentOrders.length }} Orders</h4>
             <small class="text-muted fw-semibold">Ready for buyers</small>
           </div>
           <span class="bg-warning-subtle text-warning p-3 rounded-circle fs-3"><i class="bi bi-box-seam"></i></span>
@@ -90,12 +92,120 @@
           <div>
             <small class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Direct Settlement</small>
             <h4 class="fw-bold text-dark mb-0 mt-1">₹0.00</h4>
-            <small class="text-info fw-semibold"><i class="bi bi-shield-check me-1"></i>0% Commission</small>
+            <small class="text-info fw-semibold"><i class="bi bi-shield-check me-1"></i>0% Middleman Cut</small>
           </div>
           <span class="bg-info-subtle text-info p-3 rounded-circle fs-3"><i class="bi bi-bank"></i></span>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- MY LISTED CROPS PRODUCE SECTION (Filtered by User ID) -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+      <div>
+        <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-box-seam-fill text-success"></i>
+          My Crop Produce Listings (मेरी दर्ज फसलें)
+        </h5>
+        <small class="text-muted">Displaying produce added specifically by your account ({{ myCropsList.length }} items)</small>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success btn-sm rounded-pill px-3.5 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1" (click)="openCreateModal()">
+          <i class="bi bi-plus-circle-fill"></i> + Add New Crop
+        </button>
+        <a routerLink="/farmer/product" class="btn btn-outline-success btn-sm rounded-pill px-3 py-1.5 fw-bold">
+          Manage All Listings <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    @if (isLoadingCrops) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="text-muted small mt-2">Loading your crop listings...</p>
+      </div>
+    } @else if (myCropsList.length === 0) {
+      <div class="text-center py-5 border rounded-3 bg-light">
+        <i class="bi bi-flower1 fs-1 text-success opacity-50 mb-2 d-block"></i>
+        <h6 class="fw-bold text-dark mb-1">No Crops Added Yet</h6>
+        <p class="text-muted small mb-3 px-3">When you add your crop harvest produce, it will be listed here specifically for your account.</p>
+        <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm" (click)="openCreateModal()">
+          <i class="bi bi-plus-circle me-1"></i> + List Your First Crop Now
+        </button>
+      </div>
+    } @else {
+      <div class="row g-3">
+        @for (item of myCropsList; track item._id || item.slug) {
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100 position-relative hover-elevate cursor-pointer" (click)="viewCropDetails(item)">
+              <!-- Thumbnail Header -->
+              <div class="position-relative" style="height: 160px;">
+                <img [src]="item.image || (item.images && item.images.length > 0 ? item.images[0] : 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80')" alt="Crop" class="w-100 h-100 object-fit-cover">
+                
+                <!-- Discount Badge overlay -->
+                @if (item.discountPercentage && item.discountPercentage > 0) {
+                  <span class="position-absolute top-0 start-0 m-2 badge bg-danger text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+                    {{ item.discountPercentage }}% OFF
+                  </span>
+                }
+
+                <!-- Approval Badge overlay -->
+                @if (item.approvalStatus === 'approved' || item.isApproved) {
+                  <span class="position-absolute top-0 end-0 m-2 badge bg-success text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+                    ✅ Approved
+                  </span>
+                } @else if (item.approvalStatus === 'pending' && !item.isApproved) {
+                  <span class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+                    ⏳ Pending Review
+                  </span>
+                } @else if (item.approvalStatus === 'rejected') {
+                  <span class="position-absolute top-0 end-0 m-2 badge bg-danger text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+                    ❌ Rejected
+                  </span>
+                }
+              </div>
+
+              <div class="card-body p-3 d-flex flex-column">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 11px;">{{ item.category }}</span>
+                  @if (item.variety) {
+                    <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5" style="font-size: 11px;">{{ item.variety }}</span>
+                  }
+                </div>
+
+                <h6 class="fw-bold text-dark mb-2 text-truncate">{{ item.cropName }}</h6>
+
+                <div class="bg-light rounded-3 p-2 mb-2">
+                  <div class="d-flex align-items-baseline justify-content-between">
+                    <div>
+                      <span class="text-muted d-block" style="font-size: 11px;">Selling Price</span>
+                      <strong class="text-success fs-5">₹{{ item.expectedPrice | number }}</strong> <span class="text-muted" style="font-size: 11px;">/ {{ item.priceUnit || 'Qtl' }}</span>
+                    </div>
+                    <div class="text-end">
+                      @if (item.originalPrice && item.originalPrice > item.expectedPrice) {
+                        <span class="text-muted text-decoration-line-through d-block" style="font-size: 11px;">₹{{ item.originalPrice | number }}</span>
+                      }
+                      <span class="fw-bold text-dark" style="font-size: 12px;">{{ item.quantity }} {{ item.unit }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-auto pt-2 border-top d-flex gap-2">
+                  <button type="button" class="btn btn-outline-success btn-sm flex-grow-1 rounded-pill fw-bold" style="font-size: 12px;" (click)="viewCropDetails(item); $event.stopPropagation()">
+                    <i class="bi bi-eye-fill me-1"></i> View Specifications
+                  </button>
+                  <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width:32px; height:32px; flex-shrink: 0;" title="Delete Listing" (click)="deleteCropListing(item, $event)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
   </div>
 
   <!-- Quick Action Navigation -->
@@ -123,18 +233,18 @@
       </div>
 
       <div class="col-6 col-md-4 col-lg-3">
-        <div class="card border shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100 cursor-pointer">
+        <a routerLink="/farmer/product" class="card border text-decoration-none shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100">
           <span class="fs-2 text-warning mb-2 d-block"><i class="bi bi-box-seam"></i></span>
-          <strong class="text-dark small d-block mb-1">Crop Listings</strong>
-          <small class="text-muted">3 Produce Listed</small>
-        </div>
+          <strong class="text-dark small d-block mb-1">My Crop Listings</strong>
+          <small class="text-muted">{{ myCropsList.length }} Produce Listed</small>
+        </a>
       </div>
 
       <div class="col-6 col-md-4 col-lg-3">
-        <div class="card border shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100 cursor-pointer">
-          <span class="fs-2 text-info mb-2 d-block"><i class="bi bi-people-fill"></i></span>
-          <strong class="text-dark small d-block mb-1">Buyer Network</strong>
-          <small class="text-muted">Verified Wholesalers</small>
+        <div class="card border shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100 cursor-pointer" (click)="openCreateModal()">
+          <span class="fs-2 text-info mb-2 d-block"><i class="bi bi-plus-circle-fill"></i></span>
+          <strong class="text-dark small d-block mb-1">+ Add Crop Produce</strong>
+          <small class="text-muted">Post harvest for sale</small>
         </div>
       </div>
     </div>
@@ -202,3 +312,165 @@
     }
   </div>
 </div>
+
+<!-- FARMER CREATE CROP LISTING MODAL -->
+@if (showCreateModal) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <!-- Modal Header -->
+        <div class="modal-header bg-success text-white py-3 px-4">
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2 fs-5">
+            <i class="bi bi-flower1"></i>
+            List Crop Product For Sale (Farmer 🌾)
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeCreateModal()"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body p-4 bg-light" style="max-height: 78vh; overflow-y: auto;">
+          <form (ngSubmit)="submitCropListing()">
+            <!-- Section 1: Farmer & Location Info -->
+            <div class="card border-0 rounded-3 p-3 bg-white mb-3 shadow-sm">
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-person-vcard text-success"></i>
+                1. Farmer & Origin Information
+              </h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-muted mb-1">Farmer / Owner Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control rounded-3" [(ngModel)]="formName" name="formName" placeholder="e.g. Ramesh Kumar" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-muted mb-1">Contact Mobile Number <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control rounded-3" [(ngModel)]="formMobile" name="formMobile" placeholder="10-digit mobile" maxlength="10" required>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label small fw-semibold text-muted mb-1">Farm / Mandi Location</label>
+                  <input type="text" class="form-control rounded-3" [(ngModel)]="formLocation" name="formLocation" placeholder="Village, District, State">
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Crop Classification -->
+            <div class="card border-0 rounded-3 p-3 bg-white mb-3 shadow-sm">
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-tags-fill text-success"></i>
+                2. Crop Classification & Name
+              </h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-muted mb-1">Select Crop Category <span class="text-danger">*</span></label>
+                  <select class="form-select rounded-3" [ngModel]="isCustomCategory ? 'NEW_CUSTOM_CATEGORY' : formCategory" (ngModelChange)="onCategoryChange($event)" name="formCategorySelect">
+                    @for (cat of dbCategories; track cat.name) {
+                      <option [value]="cat.name">{{ cat.name }}</option>
+                    }
+                    <option value="NEW_CUSTOM_CATEGORY">+ Add New / Other Category</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-muted mb-1">Subcategory / Type</label>
+                  @if (!isCustomSubcategory) {
+                    <select class="form-select rounded-3" [ngModel]="formSubcategory" (ngModelChange)="onSubcategoryChange($event)" name="formSubcategorySelect">
+                      @for (sub of availableSubcategories; track sub.name) {
+                        <option [value]="sub.name">{{ sub.name }}</option>
+                      }
+                      <option value="NEW_CUSTOM_SUBCATEGORY">+ Custom Subcategory</option>
+                    </select>
+                  } @else {
+                    <input type="text" class="form-control rounded-3" [(ngModel)]="formSubcategory" name="formSubcategoryText" placeholder="Enter subcategory">
+                  }
+                </div>
+
+                <div class="col-md-7">
+                  <label class="form-label small fw-semibold text-muted mb-1">Crop Title / Produce Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control rounded-3 fw-semibold" [(ngModel)]="formTitle" name="formTitle" placeholder="e.g. Sharbati Premium Wheat (लोकवन गेहूं)" required>
+                </div>
+
+                <div class="col-md-5">
+                  <label class="form-label small fw-semibold text-muted mb-1">Variety / Seed Spec</label>
+                  <input type="text" class="form-control rounded-3" [(ngModel)]="formVariety" name="formVariety" placeholder="e.g. Lokwan 148, Desi">
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Quantity & Pricing -->
+            <div class="card border-0 rounded-3 p-3 bg-white mb-3 shadow-sm">
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-currency-rupee text-success"></i>
+                3. Quantity, Units & Direct Price
+              </h6>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold text-muted mb-1">Available Quantity</label>
+                  <input type="number" class="form-control rounded-3" [(ngModel)]="formQuantity" name="formQuantity" min="1">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold text-muted mb-1">Unit</label>
+                  <select class="form-select rounded-3" [(ngModel)]="formUnit" name="formUnit">
+                    <option value="Qtl">Quintal (क्विंटल)</option>
+                    <option value="Kg">Kilogram (किग्रा)</option>
+                    <option value="Ton">Metric Ton (टन)</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold text-muted mb-1">Selling Price (₹/Unit) <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control rounded-3 fw-bold text-success" [(ngModel)]="formSellingPrice" (ngModelChange)="calculateDiscount()" name="formSellingPrice" placeholder="e.g. 2150" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Specifications & Photos -->
+            <div class="card border-0 rounded-3 p-3 bg-white mb-3 shadow-sm">
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-card-text text-success"></i>
+                4. Quality Specifications & Images
+              </h6>
+              
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-muted mb-1">Crop Description & Quality Specifications</label>
+                <div class="btn-group btn-group-sm mb-2 d-flex flex-wrap gap-1">
+                  <button type="button" class="btn btn-outline-secondary rounded-2" (click)="applyTextFormat('b')"><b>B</b></button>
+                  <button type="button" class="btn btn-outline-secondary rounded-2" (click)="applyTextFormat('i')"><i>I</i></button>
+                  <button type="button" class="btn btn-outline-secondary rounded-2" (click)="applyTextFormat('ul')"><i class="bi bi-list-ul"></i> Bullet</button>
+                  <button type="button" class="btn btn-outline-secondary rounded-2" (click)="applyTextFormat('moisture')">Moisture Badge</button>
+                </div>
+                <textarea class="form-control rounded-3" rows="3" [(ngModel)]="formDescription" name="formDescription" placeholder="Enter crop quality, moisture content, packaging..."></textarea>
+              </div>
+
+              <div>
+                <label class="form-label small fw-semibold text-muted mb-1">Upload Produce Photos (Max 1MB each)</label>
+                <input type="file" class="form-control rounded-3 mb-2" accept="image/*" multiple (change)="onFileSelected($event)">
+                @if (isUploading) {
+                  <div class="text-primary small mb-2"><div class="spinner-border spinner-border-sm me-1"></div> Uploading photo...</div>
+                }
+                <div class="d-flex flex-wrap gap-2">
+                  @for (img of formImages; track $index) {
+                    <div class="position-relative border rounded-2 p-1 bg-light" style="width: 70px; height: 70px;">
+                      <img [src]="img" class="w-100 h-100 object-fit-cover rounded-1" alt="Preview">
+                      <button type="button" class="btn btn-danger btn-sm p-0 position-absolute top-0 end-0 rounded-circle d-flex align-items-center justify-content-center" style="width: 18px; height: 18px; font-size: 10px;" (click)="removeImageAtIndex($index)">×</button>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-2 border-top">
+              <button type="button" class="btn btn-light rounded-pill px-4" (click)="closeCreateModal()">Cancel</button>
+              <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSubmitting">
+                @if (isSubmitting) {
+                  <span class="spinner-border spinner-border-sm me-1"></span> Submitting...
+                } @else {
+                  <i class="bi bi-cloud-upload me-1"></i> Submit Crop Produce For Review
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

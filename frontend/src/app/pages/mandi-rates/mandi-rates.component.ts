@@ -3,6 +3,12 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MandiRateService } from '../home/mandi-rate.service';
+import { 
+  getAllIndianStates, 
+  getDistrictsForState, 
+  getPopularMandisForState, 
+  INDIA_STATES_DISTRICTS 
+} from '../../core/india-locations.data';
 
 export interface DetailedCropMandiRate {
   id: string;
@@ -22,9 +28,9 @@ export interface DetailedCropMandiRate {
   isUp: boolean;
   icon: string;
   image: string;
-  season: string;
-  description: string;
-  marketTips: string;
+  season?: string;
+  description?: string;
+  marketTips?: string;
   isExpanded?: boolean;
 }
 
@@ -41,7 +47,7 @@ export class MandiRatesPageComponent implements OnInit {
   isLoading = false;
   isLocating = false;
   searchQuery = '';
-  selectedState = 'Bihar';
+  selectedState = 'Uttar Pradesh';
   selectedDistrict = '';
   selectedCategory = 'All';
   locationStatus = 'Detecting nearest Mandi market...';
@@ -52,10 +58,11 @@ export class MandiRatesPageComponent implements OnInit {
   activeCropDetail: DetailedCropMandiRate | null = null;
   showDetailModal = false;
 
-  statesList = [
-    'Bihar', 'Uttar Pradesh', 'Punjab', 'Haryana', 'Madhya Pradesh', 
-    'Rajasthan', 'Gujarat', 'Maharashtra', 'West Bengal'
-  ];
+  // Complete List of all 36 Indian States & UTs with their respective Districts & Mandis
+  readonly statesList: string[] = getAllIndianStates();
+  districtsList: string[] = [];
+  popularMandisList: string[] = [];
+  readonly locationDb = INDIA_STATES_DISTRICTS;
 
   categoryList = [
     { label: 'All Crops', value: 'All', icon: 'bi-grid-fill' },
@@ -310,7 +317,35 @@ export class MandiRatesPageComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.updateDistrictsAndMandis();
     this.requestLocationAndFetchRates();
+  }
+
+  updateDistrictsAndMandis(): void {
+    this.districtsList = getDistrictsForState(this.selectedState);
+    this.popularMandisList = getPopularMandisForState(this.selectedState);
+  }
+
+  onStateChange(): void {
+    this.updateDistrictsAndMandis();
+    this.selectedDistrict = '';
+    this.locationStatus = `Location: All Mandis in ${this.selectedState}`;
+    this.fetchMandiRates();
+  }
+
+  onDistrictChange(): void {
+    this.locationStatus = this.selectedDistrict 
+      ? `Location: ${this.selectedDistrict} District, ${this.selectedState}`
+      : `Location: All Mandis in ${this.selectedState}`;
+    this.fetchMandiRates();
+  }
+
+  selectQuickMandi(mandiName: string): void {
+    this.searchQuery = mandiName;
+  }
+
+  getStateHindi(stateName: string): string {
+    return this.locationDb[stateName]?.hindiName || stateName;
   }
 
   autoDetectLocation(): void {
@@ -332,10 +367,14 @@ export class MandiRatesPageComponent implements OnInit {
                 const district = res.address.state_district || res.address.county || res.address.city;
                 if (state) {
                   const matched = this.statesList.find(s => s.toLowerCase() === state.toLowerCase());
-                  this.selectedState = matched || state;
+                  if (matched) {
+                    this.selectedState = matched;
+                    this.updateDistrictsAndMandis();
+                  }
                 }
                 if (district) {
-                  this.selectedDistrict = district;
+                  const matchedDistrict = this.districtsList.find(d => d.toLowerCase().includes(district.toLowerCase()));
+                  this.selectedDistrict = matchedDistrict || district;
                 }
                 this.locationStatus = `Location: ${this.selectedDistrict || 'Local Area'}, ${this.selectedState}`;
               }

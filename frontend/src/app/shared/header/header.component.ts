@@ -15,12 +15,16 @@ export class HeaderComponent implements OnInit {
   isLoggedIn = false;
   userName = '';
   userRole = '';
+  userMobile = '';
+  userLocation = '';
+  isMobileMenuOpen = false;
 
   ngOnInit(): void {
     this.checkLoginStatus();
-    // Re-verify login status on any route changes
+    // Re-verify login status and close mobile menu on route changes
     this.router.events.subscribe(() => {
       this.checkLoginStatus();
+      this.closeMobileMenu();
     });
   }
 
@@ -33,6 +37,8 @@ export class HeaderComponent implements OnInit {
         const user = JSON.parse(userStr);
         this.userName = user.name || 'User';
         this.userRole = user.role || 'farmer';
+        this.userMobile = user.mobile || '';
+        this.userLocation = user.district ? `${user.district}, ${user.state || ''}` : (user.state || '');
       } catch (e) {
         this.isLoggedIn = false;
       }
@@ -40,7 +46,17 @@ export class HeaderComponent implements OnInit {
       this.isLoggedIn = false;
       this.userName = '';
       this.userRole = '';
+      this.userMobile = '';
+      this.userLocation = '';
     }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
   }
 
   logout(): void {
@@ -49,6 +65,9 @@ export class HeaderComponent implements OnInit {
     this.isLoggedIn = false;
     this.userName = '';
     this.userRole = '';
+    this.userMobile = '';
+    this.userLocation = '';
+    this.closeMobileMenu();
     this.router.navigate(['/login'], { queryParams: { mode: 'login' } });
   }
 }

@@ -59,32 +59,57 @@
         <!-- Filter Controls Bar -->
         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
             <div class="row g-3 align-items-center">
+                <!-- State Selector (All 36 States & UTs) -->
                 <div class="col-md-5">
-                    <label class="form-label text-success fw-bold small">Select Mandi State</label>
+                    <label class="form-label text-success fw-bold small mb-1">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Select State / UT (राज्य चुनें)
+                    </label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-success"></i></span>
-                        <select class="form-select border-start-0 ps-0" [(ngModel)]="selectedState" (change)="fetchMandiRates()">
+                        <select class="form-select border-start-0 ps-0 fw-semibold" [(ngModel)]="selectedState" (change)="onStateChange()">
                             @for (st of statesList; track st) {
-                            <option [value]="st">{{ st }} State Mandis</option>
+                            <option [value]="st">{{ st }} ({{ getStateHindi(st) }})</option>
                             }
                         </select>
                     </div>
                 </div>
 
+                <!-- District Selector (All Cities/Districts of Selected State) -->
                 <div class="col-md-4">
-                    <label class="form-label text-success fw-bold small">Filter District (Optional)</label>
+                    <label class="form-label text-success fw-bold small mb-1">
+                        <i class="bi bi-pin-map-fill me-1"></i> Select District / City (ज़िला चुनें)
+                    </label>
                     <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Enter district (e.g. Muzaffarpur)..." [(ngModel)]="selectedDistrict" (keyup.enter)="fetchMandiRates()">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo text-success"></i></span>
+                        <select class="form-select border-start-0 ps-0 fw-semibold" [(ngModel)]="selectedDistrict" (change)="onDistrictChange()">
+                            <option value="">All {{ districtsList.length }} Districts in {{ selectedState }} (सभी ज़िले)</option>
+                            @for (dist of districtsList; track dist) {
+                            <option [value]="dist">{{ dist }}</option>
+                            }
+                        </select>
                     </div>
                 </div>
 
                 <div class="col-md-3 text-end pt-md-4">
-                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold w-100 text-truncate">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold w-100 text-truncate shadow-sm">
                         <i class="bi bi-check-circle-fill me-1"></i> {{ filteredCrops.length }} Crop Rates Live
                     </span>
                 </div>
             </div>
+
+            <!-- Popular Mandis in Selected State -->
+            @if (popularMandisList && popularMandisList.length > 0) {
+            <div class="d-flex flex-wrap align-items-center gap-1.5 pt-3 mt-3 border-top">
+                <span class="small text-muted fw-bold me-1 text-nowrap">
+                    <i class="bi bi-shop text-success me-1"></i> Key APMC Mandis:
+                </span>
+                @for (mandi of popularMandisList; track mandi) {
+                <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1.5 btn hover-elevate small" (click)="selectQuickMandi(mandi)" title="Filter by {{ mandi }}">
+                    <i class="bi bi-search text-muted me-1" style="font-size: 10px;"></i> {{ mandi }}
+                </button>
+                }
+            </div>
+            }
 
             <!-- Category Chips -->
             <div class="category-scroll-bar d-flex gap-2 overflow-auto pt-3 mt-3 border-top">
