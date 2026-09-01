@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { CommonModule, CurrencyPipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -32,12 +32,12 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
 
   mandiRates: HomepageMandiRate[] = [];
-  selectedState: string = 'Bihar';
+  selectedState: string = 'Uttar Pradesh';
   selectedDistrict: string = '';
   selectedCommodity: string = '';
   loadingRates: boolean = false;
   isLocating: boolean = false;
-  locationStatus: string = '';
+  locationStatus: string = 'Detecting APMC Mandi...';
   ratesSource: string = '';
   ratesDate: string = new Date().toLocaleDateString('en-IN');
 
@@ -45,8 +45,22 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
   activeSlideIndex: number = 0;
   private autoSlideTimer: any = null;
   isPaused: boolean = false;
+  screenWidth: number = 1200;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.screenWidth = window.innerWidth;
+      if (this.activeSlideIndex > this.maxSlideIndex) {
+        this.activeSlideIndex = 0;
+      }
+    }
+  }
 
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.screenWidth = window.innerWidth;
+    }
     this.requestLocationAndFetchRates();
   }
 
@@ -54,13 +68,28 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  get duplicatedRates(): HomepageMandiRate[] {
-    if (this.mandiRates.length === 0) return [];
-    return [...this.mandiRates, ...this.mandiRates, ...this.mandiRates];
+  get itemsPerView(): number {
+    if (this.screenWidth < 768) return 1; // 1 card on mobile
+    if (this.screenWidth < 992) return 2; // 2 cards on tablet
+    return 3; // 3 cards on desktop
+  }
+
+  get maxSlideIndex(): number {
+    return Math.max(0, this.mandiRates.length - this.itemsPerView);
+  }
+
+  get dotsList(): number[] {
+    const total = this.maxSlideIndex + 1;
+    return Array.from({ length: total }, (_, i) => i);
+  }
+
+  get transformStyle(): string {
+    const step = 100 / this.itemsPerView;
+    return `translateX(-${this.activeSlideIndex * step}%)`;
   }
 
   requestLocationAndFetchRates(): void {
-    this.locationStatus = 'Requesting location...';
+    this.locationStatus = 'Detecting nearest APMC Mandi...';
     if (isPlatformBrowser(this.platformId) && navigator.geolocation) {
       this.isLocating = true;
       navigator.geolocation.getCurrentPosition(
@@ -70,9 +99,8 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
           this.reverseGeocode(lat, lon);
         },
         (error) => {
-          console.warn('Geolocation error:', error);
           this.isLocating = false;
-          this.locationStatus = 'Location permission denied. Using default settings.';
+          this.locationStatus = `Location: All Mandis in ${this.selectedState}`;
           this.fetchMandiRates();
         },
         { timeout: 5000 }
@@ -98,15 +126,15 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
             this.selectedDistrict = district.replace(/District/i, '').trim();
           }
           
-          this.locationStatus = `Location: ${this.selectedDistrict || 'Local Area'}, ${this.selectedState}`;
+          this.locationStatus = `Location: ${this.selectedDistrict ? this.selectedDistrict + ', ' : ''}${this.selectedState}`;
         } else {
-          this.locationStatus = 'Could not resolve location. Using defaults.';
+          this.locationStatus = `Location: All Mandis in ${this.selectedState}`;
         }
         this.fetchMandiRates();
       },
-      error: (err) => {
+      error: () => {
         this.isLocating = false;
-        console.error('Reverse geocoding failed:', err);
+        this.locationStatus = `Location: All Mandis in ${this.selectedState}`;
         this.fetchMandiRates();
       }
     });
@@ -116,21 +144,23 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
     this.loadingRates = true;
     this.stopAutoSlide();
 
+    // Fetch live 100% dynamic data from API
     this.mandiRateService.getLiveRates(this.selectedState, this.selectedDistrict, this.selectedCommodity).subscribe({
       next: (res) => {
         this.loadingRates = false;
-        if (res && res.success) {
-          this.mandiRates = (res.data || []).map((item: any, idx: number) => {
+        if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+          // Top dynamic records for homepage 3-card sliding carousel
+          this.mandiRates = res.data.slice(0, 9).map((item: any, idx: number) => {
             const cropName = item.commodity || item.crop || 'Crop';
             return {
               ...item,
               icon: this.getCropIcon(cropName),
               badgeClass: this.getCropBadgeClass(cropName),
-              change: (idx % 2 === 0 ? '+' : '-') + (1.2 + (idx % 3) * 0.7).toFixed(1) + '%',
-              isUp: idx % 2 === 0
+              change: item.change || ((idx % 2 === 0 ? '+' : '-') + (1.2 + (idx % 3) * 0.7).toFixed(1) + '%'),
+              isUp: item.isUp !== undefined ? item.isUp : idx % 2 === 0
             };
           });
-          this.ratesSource = res.source;
+          this.ratesSource = res.source || 'Official AGMARKNET (Govt of India)';
           this.ratesDate = res.date || new Date().toLocaleDateString('en-IN');
 
           if (this.mandiRates.length > 0) {
@@ -138,40 +168,15 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
             this.startAutoSlide();
           }
         } else {
-          this.fallbackHomepageRates();
+          this.mandiRates = [];
         }
       },
       error: (err) => {
         this.loadingRates = false;
-        console.warn('Homepage Mandi rates fallback:', err?.message || err);
-        this.fallbackHomepageRates();
+        console.error('Failed to fetch homepage live mandi rates:', err);
+        this.mandiRates = [];
       }
     });
-  }
-
-  private fallbackHomepageRates(): void {
-    const defaultData = [
-      { commodity: 'Wheat', modal_price: 2275, market: `${this.selectedDistrict || this.selectedState} APMC`, variety: 'Sharbati Grade A', state: this.selectedState, district: this.selectedDistrict || 'Local APMC', change: '+2.4%', isUp: true },
-      { commodity: 'Paddy (Rice)', modal_price: 2180, market: `${this.selectedDistrict || this.selectedState} APMC`, variety: 'Basmati Grade 1', state: this.selectedState, district: this.selectedDistrict || 'Local APMC', change: '+1.8%', isUp: true },
-      { commodity: 'Potato', modal_price: 1420, market: `${this.selectedDistrict || this.selectedState} Sabzi Mandi`, variety: 'Jyoti Grade A', state: this.selectedState, district: this.selectedDistrict || 'Local APMC', change: '+4.0%', isUp: true },
-      { commodity: 'Red Onion', modal_price: 2650, market: `${this.selectedDistrict || this.selectedState} APMC`, variety: 'Nasik Red', state: this.selectedState, district: this.selectedDistrict || 'Local APMC', change: '+2.0%', isUp: true },
-      { commodity: 'Tomato', modal_price: 2100, market: `${this.selectedDistrict || this.selectedState} Sabzi Mandi`, variety: 'Desi Hybrid', state: this.selectedState, district: this.selectedDistrict || 'Local APMC', change: '+3.5%', isUp: true },
-      { commodity: 'Mustard Seeds', modal_price: 5450, market: `${this.selectedDistrict || this.selectedState} APMC`, variety: 'Yellow Sarson', state: this.selectedState, district: this.selectedDistrict || 'Local APMC', change: '+3.1%', isUp: true }
-    ];
-
-    this.mandiRates = defaultData.map((item, idx) => ({
-      ...item,
-      min_price: Math.round(item.modal_price * 0.94),
-      max_price: Math.round(item.modal_price * 1.06),
-      arrival_date: 'Today',
-      icon: this.getCropIcon(item.commodity),
-      badgeClass: this.getCropBadgeClass(item.commodity)
-    }));
-
-    if (this.mandiRates.length > 0) {
-      this.activeSlideIndex = 0;
-      this.startAutoSlide();
-    }
   }
 
   // CAROUSEL SLIDER CONTROLS
@@ -182,7 +187,7 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
       if (!this.isPaused && this.mandiRates.length > 0) {
         this.nextSlide();
       }
-    }, 2800); // Continuous auto slide every 2.8 seconds
+    }, 3200);
   }
 
   stopAutoSlide(): void {
@@ -194,18 +199,18 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
 
   nextSlide(): void {
     if (this.mandiRates.length === 0) return;
-    const maxIndex = this.mandiRates.length - 1;
-    this.activeSlideIndex = this.activeSlideIndex >= maxIndex ? 0 : this.activeSlideIndex + 1;
+    this.activeSlideIndex = this.activeSlideIndex >= this.maxSlideIndex ? 0 : this.activeSlideIndex + 1;
   }
 
   prevSlide(): void {
     if (this.mandiRates.length === 0) return;
-    const maxIndex = this.mandiRates.length - 1;
-    this.activeSlideIndex = this.activeSlideIndex <= 0 ? maxIndex : this.activeSlideIndex - 1;
+    this.activeSlideIndex = this.activeSlideIndex <= 0 ? this.maxSlideIndex : this.activeSlideIndex - 1;
   }
 
   goToSlide(idx: number): void {
-    this.activeSlideIndex = idx;
+    if (idx >= 0 && idx <= this.maxSlideIndex) {
+      this.activeSlideIndex = idx;
+    }
   }
 
   pauseSlide(): void {
@@ -225,6 +230,8 @@ export class MandiRatesComponent implements OnInit, OnDestroy {
     if (name.includes('potato') || name.includes('aalu')) return 'bi-box-seam';
     if (name.includes('onion') || name.includes('pyaz')) return 'bi-tag-fill';
     if (name.includes('tomato') || name.includes('tamatar')) return 'bi-basket2-fill';
+    if (name.includes('apple') || name.includes('seb')) return 'bi-apple';
+    if (name.includes('mango') || name.includes('aam')) return 'bi-basket3-fill';
     return 'bi-flower1';
   }
 

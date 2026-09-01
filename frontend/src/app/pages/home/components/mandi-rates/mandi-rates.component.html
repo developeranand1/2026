@@ -35,7 +35,7 @@
                 selectedDistrict ? '(' + selectedDistrict + ')' : '' }}...</p>
         </div>
 
-        <!-- CONTINUOUS SLIDING CAROUSEL DISPLAY -->
+        <!-- CONTINUOUS SLIDING 3-CARD CAROUSEL DISPLAY -->
         <div *ngIf="!loadingRates">
 
             <div *ngIf="mandiRates.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm border">
@@ -54,20 +54,19 @@
                         <span
                             class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
                             <i class="bi bi-arrow-repeat text-success pulse-icon" [class.spin]="!isPaused"></i>
-                            {{ isPaused ? 'Paused on Hover' : 'Live Continuous 1 by 1 Loop' }}
+                            {{ isPaused ? 'Paused on Hover' : 'Live Continuous 3-Card Loop' }}
                         </span>
-                        <small class="text-muted d-none d-sm-inline">Card {{ activeSlideIndex + 1 }} of {{
-                            mandiRates.length }}</small>
+                        <small class="text-muted d-none d-sm-inline">Showing {{ mandiRates.length }} Live APMC Commodities</small>
                     </div>
 
                     <!-- Slide Prev / Next Arrow Buttons -->
                     <div class="d-flex align-items-center gap-2">
                         <button type="button" class="btn btn-light btn-carousel-arrow rounded-circle border shadow-sm"
-                            (click)="prevSlide()" title="Previous Card">
+                            (click)="prevSlide()" title="Previous Cards">
                             <i class="bi bi-chevron-left"></i>
                         </button>
                         <button type="button" class="btn btn-light btn-carousel-arrow rounded-circle border shadow-sm"
-                            (click)="nextSlide()" title="Next Card">
+                            (click)="nextSlide()" title="Next Cards">
                             <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
@@ -76,9 +75,9 @@
                 <!-- CAROUSEL TRACK -->
                 <div class="carousel-container overflow-hidden rounded-4 py-2 px-1">
                     <div class="carousel-track d-flex transition-transform"
-                        [style.transform]="'translateX(-' + (activeSlideIndex * 100) + '%)'">
+                        [style.transform]="transformStyle">
 
-                        @for (rate of mandiRates.slice(0,9); track rate.commodity; let idx = $index) {
+                        @for (rate of mandiRates; track rate.commodity; let idx = $index) {
                         <div class="carousel-slide flex-shrink-0 px-2">
                             <div
                                 class="card premium-mandi-card border-0 shadow-sm rounded-4 bg-white h-100 d-flex flex-column justify-content-between p-3.5 transition-hover">
@@ -161,14 +160,16 @@
                 </div>
 
                 <!-- Slide Dots Indicator Row -->
+                @if (dotsList.length > 1) {
                 <div class="d-flex align-items-center justify-content-center gap-1.5 mt-3">
-                    @for (rate of mandiRates; track rate.commodity; let idx = $index) {
+                    @for (dot of dotsList; track dot) {
                     <button type="button" class="carousel-dot border-0 transition-all"
-                        [class.active]="idx === activeSlideIndex" (click)="goToSlide(idx)"
-                        [title]="'Slide to ' + rate.commodity">
+                        [class.active]="dot === activeSlideIndex" (click)="goToSlide(dot)"
+                        [title]="'Slide to position ' + (dot + 1)">
                     </button>
                     }
                 </div>
+                }
 
             </div>
 
