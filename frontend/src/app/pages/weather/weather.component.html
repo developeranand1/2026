@@ -1,0 +1,355 @@
+<section class="weather-hero">
+    <div class="hero-pattern"></div>
+
+    <div class="container position-relative text-center">
+        <span class="page-label">
+            <i class="bi bi-cloud-sun-fill text-warning me-1"></i>
+            Live Agricultural Weather & Rain Intelligence (मौसम पूर्वानुमान)
+        </span>
+
+        <h1>Mausam & Barish Forecast</h1>
+
+        <p>
+            Real-time hourly rainfall probability, precipitation timing, 7-day agricultural forecasts,
+            and expert farming advisories for all districts in India.
+        </p>
+    </div>
+</section>
+
+<section class="weather-content-section">
+    <div class="container">
+
+        <!-- Location Filter & Auto Detect Bar -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 mb-4 bg-white filter-card">
+            <div class="row align-items-center g-3">
+                
+                <!-- State Selector -->
+                <div class="col-md-4">
+                    <label class="form-label text-success fw-bold small mb-1">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Select State (राज्य)
+                    </label>
+                    <select class="form-select fw-semibold" [(ngModel)]="selectedState" (change)="onStateChange()">
+                        @for (st of statesList; track st) {
+                        <option [value]="st">{{ st }} ({{ getStateHindi(st) }})</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- District Selector -->
+                <div class="col-md-4">
+                    <label class="form-label text-success fw-bold small mb-1">
+                        <i class="bi bi-pin-map-fill me-1"></i> Select District / City (ज़िला)
+                    </label>
+                    <select class="form-select fw-semibold" [(ngModel)]="selectedDistrict" (change)="onDistrictChange()">
+                        @for (dist of districtsList; track dist) {
+                        <option [value]="dist">{{ dist }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="col-md-4 text-md-end pt-md-4">
+                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 me-2" (click)="autoDetectOrFetch()" [disabled]="isLocating">
+                        <i class="bi bi-crosshair me-1" [class.spin]="isLocating"></i> Auto-Detect My Location
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm rounded-pill px-3" (click)="fetchWeather()">
+                        <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> Refresh
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm border mb-4">
+            <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+            <h5 class="fw-bold text-dark mb-1">Loading Live Weather & Rain Radar for {{ selectedDistrict }}...</h5>
+            <p class="text-muted small mb-0">Connecting to Meteorological Satellites & Open-Meteo High-Resolution Models</p>
+        </div>
+        } @else if (errorMessage) {
+        <div class="alert alert-danger rounded-4 p-4 text-center shadow-sm border-0 mb-4 bg-white border border-danger-subtle">
+            <i class="bi bi-exclamation-triangle-fill fs-2 d-block mb-2 text-danger"></i>
+            <h5 class="fw-bold text-dark mb-1">{{ errorMessage }}</h5>
+            <p class="text-muted small mb-3">Please verify your internet connection or try searching another district.</p>
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-4" (click)="fetchWeather()">
+                <i class="bi bi-arrow-clockwise me-1"></i> Retry Live Radar
+            </button>
+        </div>
+        } @else if (weatherData) {
+
+        <!-- MAIN CURRENT WEATHER HERO CARD (Google Weather Style) -->
+        <div class="current-weather-card card border-0 shadow-lg rounded-4 overflow-hidden mb-4" [class.is-rainy]="weatherData.current.isRain">
+            <div class="card-body p-4 p-md-5 text-white position-relative">
+                <div class="weather-bg-glow"></div>
+
+                <div class="row align-items-center g-4 position-relative">
+                    
+                    <!-- Left: Location & Condition -->
+                    <div class="col-lg-6">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-white-20 backdrop-blur rounded-pill px-3 py-1.5 fw-semibold">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ weatherData.location.city }}, {{ weatherData.location.state }}
+                            </span>
+                            <span class="badge bg-white-20 backdrop-blur rounded-pill px-3 py-1.5 fw-semibold">
+                                Updated: {{ weatherData.updatedAt }}
+                            </span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 my-3">
+                            <i class="bi {{ weatherData.current.icon }} weather-main-icon text-warning"></i>
+                            <div>
+                                <h1 class="display-3 fw-bold mb-0 text-white temp-display">
+                                    {{ weatherData.current.temperature }}°C
+                                </h1>
+                                <p class="fs-5 mb-0 text-white-90 fw-semibold">
+                                    {{ weatherData.current.condition }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <p class="mb-0 text-white-75 small">
+                            <span class="me-3"><i class="bi bi-thermometer-half me-1"></i>Feels like: <strong>{{ weatherData.current.feelsLike }}°C</strong></span>
+                            @if (weatherData.dailyForecast.length > 0) {
+                            <span><i class="bi bi-arrow-up-circle-fill text-warning me-1"></i>High: <strong>{{ weatherData.dailyForecast[0].maxTemp }}°C</strong> / <i class="bi bi-arrow-down-circle-fill text-info me-1"></i>Low: <strong>{{ weatherData.dailyForecast[0].minTemp }}°C</strong></span>
+                            }
+                        </p>
+                    </div>
+
+                    <!-- Right: Rain Alert Banner & Quick Metrics -->
+                    <div class="col-lg-6">
+                        
+                        <!-- Rain Timing Alert Box -->
+                        <div class="rain-alert-card rounded-3 p-3 mb-3 backdrop-blur" [class.rain-active]="weatherData.rainAlert.hasRain">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi {{ weatherData.rainAlert.hasRain ? 'bi-cloud-rain-heavy-fill text-info' : 'bi-sun-fill text-warning' }} fs-4"></i>
+                                <strong class="fs-6 text-white">{{ weatherData.rainAlert.hasRain ? 'Rain Forecast & Timing Alert (बारिश का समय)' : 'Rain Probability Status' }}</strong>
+                            </div>
+                            <p class="mb-0 text-white-90 small fw-medium">
+                                {{ weatherData.rainAlert.message }}
+                            </p>
+                        </div>
+
+                        <!-- 4-Grid Quick Specs -->
+                        <div class="row g-2 text-center text-white">
+                            <div class="col-3">
+                                <div class="stat-pill p-2 rounded-3 backdrop-blur">
+                                    <i class="bi bi-droplet-half text-info fs-5 d-block"></i>
+                                    <span class="x-small text-white-75 d-block">Humidity</span>
+                                    <strong class="small">{{ weatherData.current.humidity }}%</strong>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="stat-pill p-2 rounded-3 backdrop-blur">
+                                    <i class="bi bi-wind text-warning fs-5 d-block"></i>
+                                    <span class="x-small text-white-75 d-block">Wind</span>
+                                    <strong class="small">{{ weatherData.current.windSpeed }} km/h</strong>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="stat-pill p-2 rounded-3 backdrop-blur">
+                                    <i class="bi bi-cloud-fill text-white-75 fs-5 d-block"></i>
+                                    <span class="x-small text-white-75 d-block">Cloud Cover</span>
+                                    <strong class="small">{{ weatherData.current.cloudCover }}%</strong>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="stat-pill p-2 rounded-3 backdrop-blur">
+                                    <i class="bi bi-speedometer2 text-success fs-5 d-block"></i>
+                                    <span class="x-small text-white-75 d-block">Pressure</span>
+                                    <strong class="small">{{ weatherData.current.pressure }} hPa</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 24-HOUR INTERACTIVE HOURLY FORECAST & RAIN GRAPH (Google Weather Style) -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+            
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-graph-up-arrow text-success me-2"></i> 24-Hour Hourly Weather & Rain Timeline
+                    </h5>
+                    <small class="text-muted">Interactive hour-by-hour forecast & precipitation graph</small>
+                </div>
+
+                <!-- Tab Buttons -->
+                <div class="btn-group btn-group-sm rounded-pill p-1 bg-light">
+                    <button type="button" class="btn rounded-pill px-3 fw-semibold"
+                        [class.btn-success]="activeHourlyGraphTab === 'rain'"
+                        [class.text-muted]="activeHourlyGraphTab !== 'rain'"
+                        (click)="activeHourlyGraphTab = 'rain'">
+                        <i class="bi bi-cloud-rain me-1"></i> Rain Chance (%)
+                    </button>
+                    <button type="button" class="btn rounded-pill px-3 fw-semibold"
+                        [class.btn-success]="activeHourlyGraphTab === 'temp'"
+                        [class.text-muted]="activeHourlyGraphTab !== 'temp'"
+                        (click)="activeHourlyGraphTab = 'temp'">
+                        <i class="bi bi-thermometer-sun me-1"></i> Temperature (°C)
+                    </button>
+                    <button type="button" class="btn rounded-pill px-3 fw-semibold"
+                        [class.btn-success]="activeHourlyGraphTab === 'wind'"
+                        [class.text-muted]="activeHourlyGraphTab !== 'wind'"
+                        (click)="activeHourlyGraphTab = 'wind'">
+                        <i class="bi bi-wind me-1"></i> Wind (km/h)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Hourly Timeline Strip -->
+            <div class="hourly-timeline-container d-flex gap-2 overflow-auto pb-2">
+                @for (hr of weatherData.hourlyForecast; track hr.time) {
+                <div class="hourly-item-card text-center p-2.5 rounded-3 border transition-all cursor-pointer"
+                    [class.active-hour]="selectedHourlyItem?.time === hr.time"
+                    [class.has-rain-hour]="hr.rainProb >= 40"
+                    (click)="selectHour(hr)">
+                    
+                    <span class="x-small text-muted fw-bold d-block mb-1">{{ hr.hourLabel }}</span>
+                    
+                    <i class="bi {{ hr.icon }} fs-4 d-block my-1"
+                        [class.text-warning]="!hr.isRain"
+                        [class.text-primary]="hr.isRain"></i>
+                    
+                    <strong class="d-block text-dark small mb-2">{{ hr.temp }}°C</strong>
+
+                    <!-- Dynamic Visual Bar depending on active tab -->
+                    <div class="graph-bar-wrapper">
+                        @if (activeHourlyGraphTab === 'rain') {
+                        <div class="graph-bar bg-info" [style.height]="getRainBarHeight(hr.rainProb)" [title]="hr.rainProb + '% rain probability'"></div>
+                        <span class="x-small text-info fw-bold d-block mt-1">{{ hr.rainProb }}%</span>
+                        } @else if (activeHourlyGraphTab === 'temp') {
+                        <div class="graph-bar bg-warning" [style.height]="getTempBarHeight(hr.temp)" [title]="hr.temp + '°C'"></div>
+                        <span class="x-small text-dark fw-bold d-block mt-1">{{ hr.temp }}°</span>
+                        } @else {
+                        <div class="graph-bar bg-secondary" [style.height]="getWindBarHeight(hr.windSpeed)" [title]="hr.windSpeed + ' km/h'"></div>
+                        <span class="x-small text-muted fw-bold d-block mt-1">{{ hr.windSpeed }}k</span>
+                        }
+                    </div>
+
+                </div>
+                }
+            </div>
+
+            <!-- Selected Hour Detailed Inspector Card -->
+            @if (selectedHourlyItem) {
+            <div class="selected-hour-inspector alert alert-success border-success-subtle bg-success-subtle rounded-3 p-3 mt-3 mb-0">
+                <div class="row align-items-center g-2">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi {{ selectedHourlyItem.icon }} fs-3 text-success"></i>
+                            <div>
+                                <strong class="d-block text-dark">{{ selectedHourlyItem.hourLabel }} Weather Details</strong>
+                                <small class="text-muted">{{ selectedHourlyItem.condition }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex flex-wrap justify-content-md-end gap-3 small">
+                            <span><i class="bi bi-thermometer-half text-danger me-1"></i>Temp: <strong>{{ selectedHourlyItem.temp }}°C</strong> (Feels {{ selectedHourlyItem.feelsLike }}°C)</span>
+                            <span><i class="bi bi-cloud-rain-fill text-info me-1"></i>Rain Chance: <strong>{{ selectedHourlyItem.rainProb }}%</strong> ({{ selectedHourlyItem.rainVol }} mm)</span>
+                            <span><i class="bi bi-droplet-fill text-primary me-1"></i>Humidity: <strong>{{ selectedHourlyItem.humidity }}%</strong></span>
+                            <span><i class="bi bi-wind text-secondary me-1"></i>Wind: <strong>{{ selectedHourlyItem.windSpeed }} km/h</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+        </div>
+
+        <!-- 7-DAY EXTENDED AGRICULTURAL FORECAST -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+            <div class="mb-3 pb-2 border-bottom">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-calendar3-week-fill text-success me-2"></i> 7-Day Extended Agricultural Forecast (7 दिनों का मौसम)
+                </h5>
+                <small class="text-muted">Daily maximum/minimum temperatures, rainfall probability, and sunrise/sunset timings</small>
+            </div>
+
+            <div class="row g-3">
+                @for (day of weatherData.dailyForecast; track day.date) {
+                <div class="col-6 col-md-4 col-lg">
+                    <div class="daily-forecast-card p-3 rounded-3 border bg-light text-center h-100 transition-hover">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-bold mb-2">
+                            {{ day.dayLabel }}
+                        </span>
+                        <small class="text-muted d-block mb-1">{{ day.dateFormatted }}</small>
+
+                        <i class="bi {{ day.icon }} fs-2 d-block my-2"
+                            [class.text-warning]="day.rainProbMax < 40"
+                            [class.text-primary]="day.rainProbMax >= 40"></i>
+
+                        <div class="d-flex justify-content-center align-items-baseline gap-1.5 my-2">
+                            <strong class="text-dark fs-5">{{ day.maxTemp }}°</strong>
+                            <span class="text-muted small">/ {{ day.minTemp }}°</span>
+                        </div>
+
+                        <!-- Rain Chance Pill -->
+                        <div class="rain-chance-chip d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill small mb-2"
+                            [class.bg-info-subtle]="day.rainProbMax >= 30"
+                            [class.text-info]="day.rainProbMax >= 30"
+                            [class.bg-light]="day.rainProbMax < 30"
+                            [class.text-muted]="day.rainProbMax < 30">
+                            <i class="bi bi-cloud-rain-fill" style="font-size: 11px;"></i>
+                            <span class="fw-bold" style="font-size: 11px;">{{ day.rainProbMax }}%</span>
+                        </div>
+
+                        <div class="border-top pt-2 mt-1 text-muted" style="font-size: 11px;">
+                            <div><i class="bi bi-sunrise text-warning me-1"></i>{{ day.sunrise }}</div>
+                            <div><i class="bi bi-sunset text-danger me-1"></i>{{ day.sunset }}</div>
+                        </div>
+
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- SMART FARMER AGRICULTURAL ADVISORIES (कृषि मौसम सलाह) -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+            <div class="mb-3 pb-2 border-bottom">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-shield-check text-success me-2"></i> Krishi Mausam Advisory (किसानों के लिए कृषि मौसम सलाह)
+                </h5>
+                <small class="text-muted">Actionable recommendations for irrigation, pesticide spraying, and crop harvesting</small>
+            </div>
+
+            <div class="row g-3">
+                @for (adv of weatherData.advisories; track adv.title) {
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 border rounded-3 p-3 advisory-card"
+                        [class.border-warning]="adv.type === 'warning'"
+                        [class.border-danger]="adv.type === 'danger'"
+                        [class.border-success]="adv.type === 'success'"
+                        [class.border-info]="adv.type === 'info'">
+                        
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi {{ adv.icon }} fs-4"
+                                [class.text-warning]="adv.type === 'warning'"
+                                [class.text-danger]="adv.type === 'danger'"
+                                [class.text-success]="adv.type === 'success'"
+                                [class.text-info]="adv.type === 'info'"></i>
+                            <h6 class="fw-bold mb-0 text-dark">{{ adv.title }}</h6>
+                        </div>
+
+                        <p class="text-muted small mb-0 leading-relaxed">
+                            {{ adv.advice }}
+                        </p>
+
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        }
+
+    </div>
+</section>

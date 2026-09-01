@@ -1,0 +1,219 @@
+.weather-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 60px 0 80px;
+    background: linear-gradient(135deg,
+            #0f3b26 0%,
+            #1b4d3e 40%,
+            #2d6a4f 100%);
+    color: white;
+}
+
+.hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image: radial-gradient(circle, #ffffff 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+}
+
+.page-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.weather-hero h1 {
+    margin: 16px 0 12px;
+    font-size: clamp(28px, 4.5vw, 48px);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.weather-hero p {
+    max-width: 680px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.65;
+}
+
+.weather-content-section {
+    margin-top: -32px;
+    position: relative;
+    z-index: 2;
+    padding-bottom: 60px;
+}
+
+.filter-card {
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Current Weather Hero Card */
+.current-weather-card {
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%);
+    position: relative;
+
+    &.is-rainy {
+        background: linear-gradient(135deg, #1c2e4a 0%, #2b4162 50%, #385f71 100%);
+    }
+}
+
+.weather-bg-glow {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.weather-main-icon {
+    font-size: 64px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+.temp-display {
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    letter-spacing: -1px;
+}
+
+.rain-alert-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &.rain-active {
+        background: rgba(13, 110, 253, 0.25);
+        border-color: rgba(13, 110, 253, 0.4);
+    }
+}
+
+.stat-pill {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.bg-white-20 {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(8px);
+}
+
+/* Hourly Timeline Strip */
+.hourly-timeline-container {
+    scrollbar-width: thin;
+    scrollbar-color: #ced4da transparent;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 2px 14px;
+}
+
+.hourly-item-card {
+    min-width: 82px;
+    background: #f8f9fa;
+    user-select: none;
+
+    &:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    &.active-hour {
+        background: #e8f5e9;
+        border-color: #2e7d32 !important;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15);
+    }
+
+    &.has-rain-hour {
+        border-color: #b6d4fe !important;
+    }
+}
+
+.graph-bar-wrapper {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.graph-bar {
+    width: 14px;
+    border-radius: 8px;
+    transition: height 0.3s ease;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.x-small {
+    font-size: 11px;
+}
+
+.spin {
+    animation: spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.transition-all {
+    transition: all 0.2s ease;
+}
+
+.transition-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+}
+
+/* =========================================
+   Mobile & Tablet Responsive Optimizations
+   ========================================= */
+@media (max-width: 767.98px) {
+    .weather-hero {
+        padding: 40px 0 60px;
+    }
+
+    .weather-hero h1 {
+        font-size: 26px;
+    }
+
+    .weather-hero p {
+        font-size: 13.5px;
+    }
+
+    .weather-content-section {
+        margin-top: -24px;
+    }
+
+    .weather-main-icon {
+        font-size: 48px;
+    }
+
+    .temp-display {
+        font-size: 42px !important;
+    }
+
+    .hourly-item-card {
+        min-width: 74px;
+        padding: 8px 4px !important;
+    }
+}

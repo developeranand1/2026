@@ -12,6 +12,7 @@ const contactRoutes = require("./routes/contact.routes");
 const newsTypeRoutes = require("./routes/newsType.routes");
 const newsRoutes = require("./routes/news.routes");
 const userRoutes = require("./routes/user.routes");
+const weatherRoutes = require("./routes/weather.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -35,6 +36,7 @@ app.get("/", (req, res) => {
     });
 });
 
+// Mount routes on /api
 app.use("/api/auth", authRoutes);
 app.use("/api/crops", cropRoutes);
 app.use("/api/dashboard", dashboardRoutes);
@@ -44,6 +46,19 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/news-types", newsTypeRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/weather", weatherRoutes);
+
+// Also mount routes on /api/v1 to support v1 endpoints seamlessly
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/crops", cropRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/mandi-rates", mandiRateRoutes);
+app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/contact", contactRoutes);
+app.use("/api/v1/news-types", newsTypeRoutes);
+app.use("/api/v1/news", newsRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/weather", weatherRoutes);
 
 app.use(errorMiddleware);
 

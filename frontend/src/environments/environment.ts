@@ -2,6 +2,6 @@
 export const environment = {
   production: false,
 
-  apiUrl: 'https://backend.sirfservice.com/api/v1',
-
+  apiUrl: 'https://api.krisimarg.com/api',
+  // apiUrl: 'http://localhost:5000/api/v1',
 };

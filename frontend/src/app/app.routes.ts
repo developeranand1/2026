@@ -8,6 +8,7 @@ import { TermsComponent } from './pages/terms/terms.component';
 import { RefundPolicyComponent } from './pages/refund-policy/refund-policy.component';
 import { DisclaimerComponent } from './pages/disclaimer/disclaimer.component';
 import { MandiRatesPageComponent } from './pages/mandi-rates/mandi-rates.component';
+import { WeatherPageComponent } from './pages/weather/weather.component';
 import { CropDetailComponent } from './pages/crop-detail/crop-detail.component';
 
 import { FarmerSidebarComponent } from './farmer/farmer-sidebar/farmer-sidebar.component';
@@ -55,6 +56,12 @@ export const routes: Routes = [
     },
 
     {
+        path: 'weather',
+        component: WeatherPageComponent,
+        title: 'Live Mausam & Barish Forecast | KrisiMarg'
+    },
+
+    {
         path: 'farmer',
         component: FarmerSidebarComponent,
         children: [
@@ -63,7 +70,8 @@ export const routes: Routes = [
             { path: 'product', component: FarmerProductComponent, title: 'My Crop Produce | KrisiMarg' },
             { path: 'product/:id', component: CropDetailComponent, title: 'Crop Produce Specifications | KrisiMarg' },
             { path: 'profile', component: FarmerProfileComponent, title: 'Farmer Profile | KrisiMarg' },
-            { path: 'mandi-rates', component: FarmerMindiRateComponent, title: 'Live Mandi Rates | KrisiMarg' }
+            { path: 'mandi-rates', component: FarmerMindiRateComponent, title: 'Live Mandi Rates | KrisiMarg' },
+            { path: 'weather', component: WeatherPageComponent, title: 'Krishi Mausam & Rain Forecast | KrisiMarg' }
         ]
     },
     {

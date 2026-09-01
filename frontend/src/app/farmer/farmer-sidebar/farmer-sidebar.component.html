@@ -54,11 +54,20 @@
             </a>
           </li>
 
+          <!-- Weather & Rain Forecast -->
+          <li class="nav-item">
+            <a routerLink="/farmer/weather" routerLinkActive="active-nav"
+              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2.5 rounded-3 hover-light">
+              <i class="bi bi-cloud-sun-fill fs-5 text-info"></i>
+              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Krishi Mausam (मौसम)</span>
+            </a>
+          </li>
+
           <!-- Profile -->
           <li class="nav-item">
             <a routerLink="/farmer/profile" routerLinkActive="active-nav"
               class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2.5 rounded-3 hover-light">
-              <i class="bi bi-person-lines-fill fs-5 text-info"></i>
+              <i class="bi bi-person-lines-fill fs-5 text-success"></i>
               <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Farmer Profile (प्रोफ़ाइल)</span>
             </a>
           </li>
@@ -69,7 +78,7 @@
 
   <!-- MAIN CONTENT AREA -->
   <main class="farmer-main-content flex-grow-1 bg-light d-flex flex-column pb-5 pb-md-0">
-    <!-- ROUTED SUB-COMPONENT CONTENT (Dashboard / Product / Profile / Mandi Rates) -->
+    <!-- ROUTED SUB-COMPONENT CONTENT (Dashboard / Product / Profile / Mandi Rates / Weather) -->
     <div class="portal-body-content p-3 p-md-4 flex-grow-1">
       <router-outlet></router-outlet>
     </div>
@@ -89,14 +98,21 @@
       <a routerLink="/farmer/product" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
         <i class="bi bi-box-seam-fill fs-5 mb-1 text-warning"></i>
-        <span style="font-size: 11px;" class="fw-semibold">My Produce</span>
+        <span style="font-size: 11px;" class="fw-semibold">My Crops</span>
       </a>
 
       <!-- Mandi Rates Tab -->
       <a routerLink="/farmer/mandi-rates" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
         <i class="bi bi-graph-up-arrow fs-5 mb-1"></i>
-        <span style="font-size: 11px;" class="fw-semibold">Mandi Rates</span>
+        <span style="font-size: 11px;" class="fw-semibold">Mandi</span>
+      </a>
+
+      <!-- Weather Tab -->
+      <a routerLink="/farmer/weather" routerLinkActive="active-mobile-tab"
+        class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
+        <i class="bi bi-cloud-sun-fill fs-5 mb-1 text-info"></i>
+        <span style="font-size: 11px;" class="fw-semibold">Mausam</span>
       </a>
 
       <!-- Profile Tab -->
@@ -105,14 +121,6 @@
         <i class="bi bi-person-lines-fill fs-5 mb-1"></i>
         <span style="font-size: 11px;" class="fw-semibold">Profile</span>
       </a>
-
-      <!-- Logout Tab -->
-      <button type="button"
-        class="mobile-nav-item border-0 bg-transparent text-center text-danger d-flex flex-column align-items-center p-0"
-        (click)="logout()">
-        <i class="bi bi-box-arrow-right fs-5 mb-1"></i>
-        <span style="font-size: 11px;" class="fw-semibold">Logout</span>
-      </button>
     </div>
   </nav>
 </div>
