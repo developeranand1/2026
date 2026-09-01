@@ -3,6 +3,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MandiRateService } from '../../pages/home/mandi-rate.service';
 import { AuthService } from '../../core/auth.service';
+import { getAllIndianStates, getDistrictsForState } from '../../core/india-locations.data';
 
 export interface MandiRateItem {
   commodity: string;
@@ -35,7 +36,7 @@ export class FarmerMindiRateComponent implements OnInit {
   isLoading = false;
   isLocating = false;
   searchQuery = '';
-  selectedState = 'Bihar';
+  selectedState = 'Uttar Pradesh';
   selectedDistrict = '';
   selectedCategory = 'All';
   viewMode: 'grid' | 'list' = 'grid';
@@ -44,29 +45,19 @@ export class FarmerMindiRateComponent implements OnInit {
   selectedRateDetail: MandiRateItem | null = null;
   showModal = false;
 
-  statesList = [
-    'Bihar', 'Uttar Pradesh', 'Punjab', 'Haryana', 'Madhya Pradesh', 
-    'Rajasthan', 'Gujarat', 'Maharashtra', 'West Bengal'
-  ];
+  statesList: string[] = getAllIndianStates();
+  districtsList: string[] = [];
 
   categoryList = [
     { label: 'All Crops', value: 'All', icon: 'bi-grid-fill' },
     { label: 'Grains & Cereals', value: 'Grains', icon: 'bi-flower1' },
     { label: 'Vegetables', value: 'Vegetables', icon: 'bi-basket2-fill' },
+    { label: 'Fresh Fruits', value: 'Fruits', icon: 'bi-apple' },
     { label: 'Oilseeds', value: 'Oilseeds', icon: 'bi-droplet-half' },
     { label: 'Pulses & Legumes', value: 'Pulses', icon: 'bi-egg-fried' }
   ];
 
-  ratesList: MandiRateItem[] = [
-    { commodity: 'Wheat (गेहूं)', category: 'Grains', market: 'Muzaffarpur APMC', district: 'Muzaffarpur', state: 'Bihar', variety: 'Dara / Hybrid', arrivalDate: 'Today', minPrice: 2150, maxPrice: 2350, modalPrice: 2275, unit: 'Quintal', change: '+2.4%', isUp: true, icon: 'bi-flower1' },
-    { commodity: 'Paddy (धान - Sharbati)', category: 'Grains', market: 'Patna Central Mandi', district: 'Patna', state: 'Bihar', variety: 'Sharbati / Grade A', arrivalDate: 'Today', minPrice: 1980, maxPrice: 2250, modalPrice: 2180, unit: 'Quintal', change: '+1.8%', isUp: true, icon: 'bi-flower2' },
-    { commodity: 'Mustard (सरसों - Yellow)', category: 'Oilseeds', market: 'Gaya APMC', district: 'Gaya', state: 'Bihar', variety: 'Peeli Sarson', arrivalDate: 'Today', minPrice: 5150, maxPrice: 5650, modalPrice: 5450, unit: 'Quintal', change: '+3.1%', isUp: true, icon: 'bi-droplet-half' },
-    { commodity: 'Maize (मक्का)', category: 'Grains', market: 'Begusarai Mandi', district: 'Begusarai', state: 'Bihar', variety: 'Yellow Corn', arrivalDate: 'Today', minPrice: 1780, maxPrice: 1980, modalPrice: 1920, unit: 'Quintal', change: '-0.5%', isUp: false, icon: 'bi-tree-fill' },
-    { commodity: 'Potato (आलू - Jyoti)', category: 'Vegetables', market: 'Nalanda Mandi', district: 'Nalanda', state: 'Bihar', variety: 'Jyoti Grade A', arrivalDate: 'Today', minPrice: 1250, maxPrice: 1550, modalPrice: 1420, unit: 'Quintal', change: '+4.0%', isUp: true, icon: 'bi-box-seam' },
-    { commodity: 'Onion (प्याज़ - Red)', category: 'Vegetables', market: 'Samastipur APMC', district: 'Samastipur', state: 'Bihar', variety: 'Nasik Red', arrivalDate: 'Today', minPrice: 2450, maxPrice: 2850, modalPrice: 2650, unit: 'Quintal', change: '+2.0%', isUp: true, icon: 'bi-tag-fill' },
-    { commodity: 'Tomato (टमाटर)', category: 'Vegetables', market: 'Vaishali Mandi', district: 'Vaishali', state: 'Bihar', variety: 'Desi Hybrid', arrivalDate: 'Today', minPrice: 1850, maxPrice: 2300, modalPrice: 2100, unit: 'Quintal', change: '+3.5%', isUp: true, icon: 'bi-basket2-fill' },
-    { commodity: 'Green Gram (मूंग)', category: 'Pulses', market: 'Bhagalpur APMC', district: 'Bhagalpur', state: 'Bihar', variety: 'Hari Moong', arrivalDate: 'Today', minPrice: 6800, maxPrice: 7500, modalPrice: 7200, unit: 'Quintal', change: '+2.8%', isUp: true, icon: 'bi-egg-fried' }
-  ];
+  ratesList: MandiRateItem[] = [];
 
   ngOnInit(): void {
     const user = this.authService.getUser();
@@ -76,13 +67,27 @@ export class FarmerMindiRateComponent implements OnInit {
     if (user && user.district) {
       this.selectedDistrict = user.district;
     }
+    this.updateDistricts();
+    this.fetchRates();
+  }
+
+  updateDistricts(): void {
+    this.districtsList = getDistrictsForState(this.selectedState);
+  }
+
+  onStateChange(): void {
+    this.updateDistricts();
+    this.selectedDistrict = '';
+    this.fetchRates();
+  }
+
+  onDistrictChange(): void {
     this.fetchRates();
   }
 
   // Detect current location via Browser Geolocation API
   autoDetectLocation(): void {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+    if (typeof window === 'undefined' || !navigator.geolocation) {
       return;
     }
 
@@ -100,10 +105,15 @@ export class FarmerMindiRateComponent implements OnInit {
 
               if (state) {
                 const matchedState = this.statesList.find(s => s.toLowerCase() === state.toLowerCase());
-                this.selectedState = matchedState || state;
+                if (matchedState) {
+                  this.selectedState = matchedState;
+                  this.updateDistricts();
+                }
               }
               if (district) {
-                this.selectedDistrict = district;
+                const cleanDist = district.replace(/District/i, '').trim();
+                const matchedDist = this.districtsList.find(d => d.toLowerCase().includes(cleanDist.toLowerCase()));
+                this.selectedDistrict = matchedDist || cleanDist;
               }
               this.fetchRates();
             }
@@ -117,7 +127,8 @@ export class FarmerMindiRateComponent implements OnInit {
       (err) => {
         this.isLocating = false;
         console.warn('Geolocation denied:', err.message);
-      }
+      },
+      { timeout: 6000 }
     );
   }
 
@@ -129,20 +140,24 @@ export class FarmerMindiRateComponent implements OnInit {
         if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
           this.ratesList = res.data.map((item: any) => {
             const cropName = item.commodity || item.crop || 'Crop';
+            const modal = item.modal_price || item.modalPrice || item.rate || 2000;
+            const min = item.min_price || item.minPrice || Math.round(modal * 0.94);
+            const max = item.max_price || item.maxPrice || Math.round(modal * 1.06);
+
             return {
               commodity: cropName,
-              category: this.detectCategory(cropName),
+              category: item.category || this.detectCategory(cropName),
               market: item.market || item.mandi || `${this.selectedState} APMC`,
               district: item.district || this.selectedDistrict || 'Local Mandi',
               state: item.state || this.selectedState,
               variety: item.variety || 'Standard Grade',
-              arrivalDate: item.arrival_date || item.arrivalDate || new Date().toLocaleDateString('en-IN'),
-              minPrice: item.min_price || item.minPrice || Math.round((item.modal_price || item.modalPrice || 2000) * 0.94),
-              maxPrice: item.max_price || item.maxPrice || Math.round((item.modal_price || item.modalPrice || 2000) * 1.06),
-              modalPrice: item.modal_price || item.modalPrice || item.rate || 2000,
+              arrivalDate: item.arrival_date || item.arrivalDate || 'Today',
+              minPrice: min,
+              maxPrice: max,
+              modalPrice: modal,
               unit: item.unit || 'Quintal',
-              change: item.change || '+2.0%',
-              isUp: !(item.change && item.change.includes('-')),
+              change: item.change || '+1.8%',
+              isUp: item.isUp !== undefined ? item.isUp : !(item.change && item.change.includes('-')),
               icon: this.getCropIcon(cropName)
             };
           });
@@ -150,7 +165,7 @@ export class FarmerMindiRateComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Error fetching mandi rates:', err);
+        console.warn('Error fetching mandi rates:', err);
       }
     });
   }
@@ -167,7 +182,8 @@ export class FarmerMindiRateComponent implements OnInit {
       result = result.filter(r => 
         r.commodity.toLowerCase().includes(q) || 
         r.market.toLowerCase().includes(q) ||
-        r.district.toLowerCase().includes(q)
+        r.district.toLowerCase().includes(q) ||
+        r.variety.toLowerCase().includes(q)
       );
     }
 
@@ -194,13 +210,16 @@ export class FarmerMindiRateComponent implements OnInit {
 
   private detectCategory(cropName: string): string {
     const name = cropName.toLowerCase();
-    if (name.includes('potato') || name.includes('aalu') || name.includes('onion') || name.includes('pyaz') || name.includes('tomato') || name.includes('tamatar') || name.includes('veggie')) {
+    if (name.includes('potato') || name.includes('onion') || name.includes('tomato') || name.includes('cauliflower') || name.includes('chilli') || name.includes('garlic') || name.includes('ginger')) {
       return 'Vegetables';
     }
-    if (name.includes('mustard') || name.includes('sarson') || name.includes('soybean') || name.includes('oil')) {
+    if (name.includes('apple') || name.includes('mango') || name.includes('banana') || name.includes('orange') || name.includes('pomegranate') || name.includes('guava')) {
+      return 'Fruits';
+    }
+    if (name.includes('mustard') || name.includes('soybean') || name.includes('groundnut') || name.includes('sunflower') || name.includes('oil')) {
       return 'Oilseeds';
     }
-    if (name.includes('gram') || name.includes('chana') || name.includes('pulse') || name.includes('moong') || name.includes('dal')) {
+    if (name.includes('gram') || name.includes('chana') || name.includes('pulse') || name.includes('moong') || name.includes('tur') || name.includes('urad') || name.includes('dal') || name.includes('cotton') || name.includes('sugarcane')) {
       return 'Pulses';
     }
     return 'Grains';
@@ -208,6 +227,7 @@ export class FarmerMindiRateComponent implements OnInit {
 
   private getCropIcon(cropName: string): string {
     const name = cropName.toLowerCase();
+    if (name.includes('apple') || name.includes('mango') || name.includes('banana') || name.includes('orange') || name.includes('pomegranate')) return 'bi-apple';
     if (name.includes('wheat') || name.includes('gehun')) return 'bi-flower1';
     if (name.includes('paddy') || name.includes('dhan') || name.includes('rice')) return 'bi-flower2';
     if (name.includes('mustard') || name.includes('sarson')) return 'bi-droplet-half';
