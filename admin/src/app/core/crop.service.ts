@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface CropListing {
   _id?: string;
@@ -36,15 +37,11 @@ export interface CropListing {
 })
 export class AdminCropService {
   private http = inject(HttpClient);
-  // private apiUrl = 'http://localhost:5000/api/crops';
-
-    private apiUrl = 'https://api.krisimarg.com/api/crops';
-
-
+  private apiUrl = `${environment.apiUrl}/crops`;
 
   // Upload Cloudinary image for crop listing
   uploadCropImage(imageStr: string): Observable<any> {
-    return this.http.post<any>('https://api.krisimarg.com/api/categories/upload-image', { imageStr });
+    return this.http.post<any>(`${environment.apiUrl}/categories/upload-image`, { imageStr });
   }
 
   // Get All Crop Listings

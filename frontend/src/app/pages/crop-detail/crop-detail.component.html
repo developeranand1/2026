@@ -150,13 +150,39 @@
         </div>
 
         <!-- Direct Action Buttons -->
-        <div class="d-grid gap-2">
+        <div class="d-grid gap-2 mb-3">
           <button type="button" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" (click)="contactSeller()">
             <i class="bi bi-telephone-fill"></i> Contact {{ cropDetails.postedByRole === 'buyer' ? 'Buyer' : 'Farmer' }} Now
           </button>
 
-          <button type="button" class="btn btn-outline-secondary rounded-pill py-2 fw-semibold fs-7" (click)="goBack()">
-            Return to Crop Marketplace
+          <!-- WhatsApp Share Button with Graphic Card Preview -->
+          <button type="button" class="btn btn-outline-success rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-xs" (click)="shareOnWhatsApp()">
+            <i class="bi bi-whatsapp fs-5 text-success"></i> Share on WhatsApp (With Photo & Price)
+          </button>
+        </div>
+
+        <!-- Social Share Pills -->
+        <div class="p-3 bg-light rounded-4 border text-center">
+          <span class="fs-8 text-muted d-block mb-2 fw-semibold text-uppercase">Share this Produce:</span>
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Share on Facebook" (click)="shareOnSocial('facebook')">
+              <i class="bi bi-facebook text-primary"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Share on Twitter" (click)="shareOnSocial('twitter')">
+              <i class="bi bi-twitter-x text-dark"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Share on Telegram" (click)="shareOnSocial('telegram')">
+              <i class="bi bi-telegram text-info"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Copy Produce Link" (click)="shareOnSocial('copy')">
+              <i class="bi bi-link-45deg text-secondary fs-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-3 text-center">
+          <button type="button" class="btn btn-link text-decoration-none text-muted py-1 fs-8" (click)="goBack()">
+            <i class="bi bi-arrow-left me-1"></i> Return to Crop Marketplace
           </button>
         </div>
       </div>

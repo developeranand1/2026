@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  // private backendUrl = 'http://localhost:5000/api/auth';
-    private backendUrl = 'https://api.krisimarg.com/api/auth';
+  private backendUrl = `${environment.apiUrl}/auth`;
 
   
   /**

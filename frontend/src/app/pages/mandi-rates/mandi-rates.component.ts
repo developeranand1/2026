@@ -3,6 +3,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MandiRateService } from '../home/mandi-rate.service';
+import { SeoService } from '../../core/seo.service';
 import { 
   getAllIndianStates, 
   getDistrictsForState, 
@@ -44,6 +45,7 @@ export interface DetailedCropMandiRate {
 })
 export class MandiRatesPageComponent implements OnInit {
   private mandiRateService = inject(MandiRateService);
+  private seoService = inject(SeoService);
 
   isLoading = false;
   isLocating = false;
@@ -99,6 +101,12 @@ export class MandiRatesPageComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.seoService.updateSeo({
+      title: 'लाइव मंडी भाव (Live Mandi Rates Today) | APMC Market Prices | KrisiMarg',
+      description: 'भारत के सभी राज्यों और APMC मंडियों के आज के ताज़ा भाव देखें। गेहूं, धान, सरसों, चना, प्याज, आलू, फल और सब्जियों के दैनिक मंडी भाव।',
+      keywords: 'Mandi Rates Today, Mandi Bhav, APMC Live Price, Gehu Mandi Bhav, Dhan Rate, Sarso Bhav, Chana Mandi, All India Mandi Bhav, KrisiMarg',
+      url: '/mandi-rates'
+    });
     this.updateDistrictsAndMandis();
     this.locationStatus = `Location: All Mandis in ${this.selectedState}`;
     this.requestLocationAndFetchRates();

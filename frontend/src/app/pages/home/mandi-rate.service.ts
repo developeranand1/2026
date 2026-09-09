@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,17 +9,9 @@ import { Observable } from 'rxjs';
 export class MandiRateService {
   private http = inject(HttpClient);
 
-
-  private getBaseUrl(): string {
-    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      return 'http://localhost:5000/api';
-    }
-    return 'https://api.krisimarg.com/api';
-  }
-
-  private get backendUrl(): string { return `${this.getBaseUrl()}/mandi-rates`; }
-  private get cropUrl(): string { return `${this.getBaseUrl()}/crops`; }
-  private get categoryUrl(): string { return `${this.getBaseUrl()}/categories`; }
+  private get backendUrl(): string { return `${environment.apiUrl}/mandi-rates`; }
+  private get cropUrl(): string { return `${environment.apiUrl}/crops`; }
+  private get categoryUrl(): string { return `${environment.apiUrl}/categories`; }
 
   /**
    * Performs reverse geocoding via OpenStreetMap Nominatim

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ContactInquiry {
   _id: string;
@@ -34,8 +35,7 @@ export interface ContactApiResponse {
 })
 export class AdminContactService {
   private http = inject(HttpClient);
-  // private baseUrl = 'http://localhost:5000/api/contact';
-    private baseUrl = 'https://api.krisimarg.com/api/contact';
+  private baseUrl = `${environment.apiUrl}/contact`;
 
    
 

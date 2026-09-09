@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,15 +9,8 @@ import { Observable, tap } from 'rxjs';
 export class AuthService {
   private http = inject(HttpClient);
 
-  private getBaseUrl(): string {
-    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      return 'http://localhost:5000/api';
-    }
-    return 'https://api.krisimarg.com/api';
-  }
-
   private get backendUrl(): string {
-    return `${this.getBaseUrl()}/auth`;
+    return `${environment.apiUrl}/auth`;
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HeroComponent } from './components/hero/hero.component';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { ProductsComponent } from './components/products/products.component';
@@ -8,6 +8,7 @@ import { TestimonialsComponent } from './components/testimonials/testimonials.co
 import { FarmerCtaComponent } from './components/farmer-cta/farmer-cta.component';
 import { NewsletterComponent } from './components/newsletter/newsletter.component';
 import { HomeNewsComponent } from './components/home-news/home-news.component';
+import { SeoService } from '../../core/seo.service';
 
 @Component({
   selector: 'app-home',
@@ -26,8 +27,13 @@ import { HomeNewsComponent } from './components/home-news/home-news.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  private seoService = inject(SeoService);
   selectedCategoryName = 'all';
+
+  ngOnInit(): void {
+    this.seoService.resetToDefault();
+  }
 
   onCategorySelect(catName: string): void {
     this.selectedCategoryName = catName;

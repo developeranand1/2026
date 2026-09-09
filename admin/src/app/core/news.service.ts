@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface NewsType {
   _id: string;
@@ -49,11 +50,8 @@ export interface NewsApiResponse {
 })
 export class AdminNewsService {
   private http = inject(HttpClient);
-  // private newsTypeUrl = 'http://localhost:5000/api/news-types';
-  // private newsUrl = 'http://localhost:5000/api/news';
-
-  private newsTypeUrl = 'https://api.krisimarg.com/api/news-types';
-  private newsUrl = 'https://api.krisimarg.com/api/news';
+  private newsTypeUrl = `${environment.apiUrl}/news-types`;
+  private newsUrl = `${environment.apiUrl}/news`;
 
     
 

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../core/seo.service';
 
 interface FaqItem {
   id: string;
@@ -21,7 +22,8 @@ interface FaqCategory {
   templateUrl: './faq.component.html',
   styleUrl: './faq.component.scss'
 })
-export class FaqComponent {
+export class FaqComponent implements OnInit {
+  private seoService = inject(SeoService);
   searchText = '';
 
   readonly categories: FaqCategory[] = [
@@ -169,5 +171,22 @@ export class FaqComponent {
         )
       }))
       .filter((category) => category.items.length > 0);
+  }
+
+  ngOnInit(): void {
+    const allFaqItems = this.categories.flatMap(c => c.items);
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": allFaqItems.map(item => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer
+        }
+      }))
+    };
+    this.seoService.setJsonLd(faqSchema, 'faq-page-jsonld');
   }
 }

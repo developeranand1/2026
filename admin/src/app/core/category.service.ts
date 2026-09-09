@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 export interface Subcategory {
   _id?: string;
@@ -32,8 +33,7 @@ export interface Category {
 export class CategoryService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  // private baseUrl = 'http://localhost:5000/api/categories';
-   private baseUrl = ' https://api.krisimarg.com/api/categories';
+  private baseUrl = `${environment.apiUrl}/categories`;
 
  
 

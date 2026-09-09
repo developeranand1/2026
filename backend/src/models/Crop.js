@@ -16,7 +16,7 @@ const cropSchema = new mongoose.Schema(
 
         postedByName: {
             type: String,
-            default: "GaonBazar Farmer"
+            default: "KrisiMarg Farmer"
         },
 
         postedByMobile: {

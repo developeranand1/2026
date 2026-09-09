@@ -44,7 +44,7 @@ const newsSchema = new mongoose.Schema(
         author: {
             type: String,
             trim: true,
-            default: "GaonBazar News Desk"
+            default: "KrisiMarg News Desk"
         },
 
         // SEO Meta Data Fields

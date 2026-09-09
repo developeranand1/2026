@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FrontendNewsService, NewsArticle, NewsType } from './news.service';
+import { SeoService } from '../../core/seo.service';
 
 @Component({
   selector: 'app-news-list',
@@ -13,6 +14,7 @@ import { FrontendNewsService, NewsArticle, NewsType } from './news.service';
 })
 export class NewsListComponent implements OnInit {
   private newsService = inject(FrontendNewsService);
+  private seoService = inject(SeoService);
 
   articles: NewsArticle[] = [];
   newsTypes: NewsType[] = [];
@@ -23,6 +25,12 @@ export class NewsListComponent implements OnInit {
   isLoading = false;
 
   ngOnInit(): void {
+    this.seoService.updateSeo({
+      title: 'कृषि समाचार व मंडी अपडेट (Agriculture News & Market Updates) | KrisiMarg',
+      description: 'कृषि जगत की ताज़ा खबरें, सरकारी योजनाएं, मंडी भाव विश्लेषण, मौसम रिपोर्ट एवं उन्नत खेती के टिप्स पढ़ें।',
+      keywords: 'Krishi Samachar, Agri News India, Mandi News, Farming Updates, Kisan Yojana, KrisiMarg News',
+      url: '/news'
+    });
     this.loadNewsTypes();
     this.loadNews();
   }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { WeatherService, WeatherResponse, WeatherHourlyItem, WeatherDailyItem, WeatherAdvisoryItem } from '../../core/weather.service';
+import { SeoService } from '../../core/seo.service';
 import { 
   getAllIndianStates, 
   getDistrictsForState, 
@@ -18,6 +19,7 @@ import {
 })
 export class WeatherPageComponent implements OnInit {
   private weatherService = inject(WeatherService);
+  private seoService = inject(SeoService);
 
   isLoading = true;
   isLocating = false;
@@ -36,6 +38,12 @@ export class WeatherPageComponent implements OnInit {
   selectedHourlyItem: WeatherHourlyItem | null = null;
 
   ngOnInit(): void {
+    this.seoService.updateSeo({
+      title: 'लाइव कृषि मौसम व बारिश अलर्ट (Krishi Mausam Forecast) | KrisiMarg',
+      description: 'सटीक 7-दिवसीय मौसम पूर्वानुमान, प्रति घंटा बारिश अलर्ट, तापमान, आर्द्रता और कृषि सलाह (Crop Weather Advisory)।',
+      keywords: 'Krishi Mausam, Aaj Ka Mausam, Rain Alert, Weather Forecast India, Barish Update, Kheti Mausam, KrisiMarg Weather',
+      url: '/weather'
+    });
     this.updateDistricts();
     this.autoDetectOrFetch();
   }

@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Meta, Title } from '@angular/platform-browser';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FrontendNewsService, NewsArticle, NewsType } from './news.service';
+import { SeoService } from '../../core/seo.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,8 +16,7 @@ import Swal from 'sweetalert2';
 export class NewsDetailComponent implements OnInit {
   private newsService = inject(FrontendNewsService);
   private route = inject(ActivatedRoute);
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
+  private seoService = inject(SeoService);
   private sanitizer = inject(DomSanitizer);
 
   article: NewsArticle | null = null;
@@ -54,19 +53,21 @@ export class NewsDetailComponent implements OnInit {
           // Sanitize HTML description for safe rendering
           this.safeContent = this.sanitizer.bypassSecurityTrustHtml(this.article.description);
 
-          // Update Meta Tags dynamically
+          // Update SEO, Meta Tags, and OG Card dynamically
           const metaTitle = this.article.metaTitle || `${this.article.title} | KrisiMarg`;
           const metaDesc = this.article.metaDescription || this.article.shortDescription || this.article.title;
-          const metaKeys = this.article.metaKeywords || 'KrisiMarg, mandi rates, agriculture news, farming updates';
+          const metaKeys = this.article.metaKeywords || 'KrisiMarg, mandi rates, agriculture news, farming updates, krishi samachar';
 
-          this.titleService.setTitle(metaTitle);
-          this.metaService.updateTag({ name: 'description', content: metaDesc });
-          this.metaService.updateTag({ name: 'keywords', content: metaKeys });
-          this.metaService.updateTag({ property: 'og:title', content: metaTitle });
-          this.metaService.updateTag({ property: 'og:description', content: metaDesc });
-          if (this.article.image) {
-            this.metaService.updateTag({ property: 'og:image', content: this.article.image });
-          }
+          this.seoService.updateSeo({
+            title: metaTitle,
+            description: metaDesc,
+            keywords: metaKeys,
+            image: this.article.image,
+            url: `/news/${this.article.slug || slug}`,
+            type: 'article',
+            author: this.article.author || 'KrisiMarg Editorial Desk',
+            publishedTime: this.article.publishedAt || this.article.createdAt
+          });
 
           // Load related articles
           this.loadRelatedArticles();

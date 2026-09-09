@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MandiRateService } from '../home/mandi-rate.service';
+import { SeoService } from '../../core/seo.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,6 +15,7 @@ import Swal from 'sweetalert2';
 export class CropDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private mandiRateService = inject(MandiRateService);
+  private seoService = inject(SeoService);
   private location = inject(Location);
 
   cropId = '';
@@ -37,6 +39,7 @@ export class CropDetailComponent implements OnInit {
         this.isLoading = false;
         if (res.success && res.data) {
           this.cropDetails = res.data;
+          this.updateCropSeo();
         } else {
           this.cropDetails = null;
         }
@@ -46,6 +49,42 @@ export class CropDetailComponent implements OnInit {
         this.cropDetails = null;
       }
     });
+  }
+
+  private updateCropSeo(): void {
+    if (!this.cropDetails) return;
+    const name = this.cropDetails.cropName || 'Crop Listing';
+    const loc = this.cropDetails.location || 'India';
+    const price = `₹${this.cropDetails.expectedPrice || 0}/${this.cropDetails.priceUnit || 'Qtl'}`;
+    const qty = `${this.cropDetails.quantity || ''} ${this.cropDetails.unit || 'Qtl'}`;
+    const img = (this.cropDetails.images && this.cropDetails.images[0]) || this.cropDetails.image || '';
+
+    this.seoService.updateSeo({
+      title: `${name} (${qty}) - ${price} | KrisiMarg`,
+      description: `Buy ${name} from ${this.cropDetails.postedByName || 'Farmer'} in ${loc}. Quantity: ${qty}, Expected Price: ${price}. Verified agricultural listing on KrisiMarg.`,
+      keywords: `${name}, ${this.cropDetails.category || ''}, ${loc} mandi, ${name} price today, buy farm produce online, KrisiMarg`,
+      image: img || undefined,
+      url: `/product/${this.cropId}`,
+      type: 'product'
+    });
+
+    const productSchema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": name,
+      "image": img || "https://krisimarg.com/imgs/banner/banner-all.png",
+      "description": `Direct farm produce ${name} listed on KrisiMarg from ${loc}`,
+      "category": this.cropDetails.category || "Agricultural Produce",
+      "offers": {
+        "@type": "Offer",
+        "price": this.cropDetails.expectedPrice || 0,
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "priceValidUntil": "2027-12-31"
+      }
+    };
+    this.seoService.setJsonLd(productSchema, 'crop-product-jsonld');
   }
 
   setActiveImage(index: number): void {
@@ -87,5 +126,56 @@ export class CropDetailComponent implements OnInit {
       showConfirmButton: false,
       showCloseButton: true
     });
+  }
+
+  shareOnWhatsApp(): void {
+    if (!this.cropDetails) return;
+    const name = this.cropDetails.cropName || 'Crop Produce';
+    const loc = this.cropDetails.location || 'India';
+    const price = `₹${this.cropDetails.expectedPrice || 0}/${this.cropDetails.priceUnit || 'Quintal'}`;
+    const qty = `${this.cropDetails.quantity || ''} ${this.cropDetails.unit || 'Qtl'}`;
+    const url = `https://krisimarg.com/product/${this.cropId}`;
+    
+    const text = `🌾 *${name}* (${qty}) Available for Sale on KrisiMarg!\n💰 *Price:* ${price}\n📍 *Location:* ${loc}\n\n👉 *View Details & Contact Seller:* ${url}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  shareOnSocial(platform: 'facebook' | 'twitter' | 'linkedin' | 'telegram' | 'copy'): void {
+    if (!this.cropDetails) return;
+    const url = `https://krisimarg.com/product/${this.cropId}`;
+    const title = `${this.cropDetails.cropName} on KrisiMarg`;
+
+    let shareUrl = '';
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+        break;
+      case 'telegram':
+        shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        break;
+      case 'copy':
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Link Copied!',
+              text: 'Produce link copied to clipboard. You can paste and share it anywhere.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          });
+        }
+        return;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=600,height=450');
+    }
   }
 }

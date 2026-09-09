@@ -13,6 +13,8 @@ const newsTypeRoutes = require("./routes/newsType.routes");
 const newsRoutes = require("./routes/news.routes");
 const userRoutes = require("./routes/user.routes");
 const weatherRoutes = require("./routes/weather.routes");
+const sitemapRoutes = require("./routes/sitemap.routes");
+const ogRoutes = require("./routes/og.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -32,9 +34,15 @@ if (process.env.NODE_ENV === "development") {
 app.get("/", (req, res) => {
     res.json({
         success: true,
-        message: "GaonBazar API is running"
+        message: "KrisiMarg API is running"
     });
 });
+
+// Dynamic Sitemap & Open Graph Social Sharing Crawler endpoints
+app.use("/", sitemapRoutes);
+app.use("/api", sitemapRoutes);
+app.use("/", ogRoutes);
+app.use("/api", ogRoutes);
 
 // Mount routes on /api
 app.use("/api/auth", authRoutes);
