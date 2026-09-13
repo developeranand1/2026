@@ -1,0 +1,1004 @@
+<div class="agri-calculator-page bg-light">
+
+  <!-- ========================================== -->
+  <!-- 1. HERO HEADER BANNER -->
+  <!-- ========================================== -->
+  <section class="calc-hero-section py-4 py-md-5 text-white position-relative overflow-hidden">
+    <div class="container position-relative">
+      <div class="row align-items-center g-4">
+
+        <div class="col-lg-8">
+          <!-- Breadcrumb -->
+          <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0 fs-8">
+              <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i
+                    class="bi bi-house-door-fill me-1"></i>होम (Home)</a></li>
+              <li class="breadcrumb-item text-white active" aria-current="page">किसान वित्तीय कैलकुलेटर (Agri Financial
+                Calculator)</li>
+            </ol>
+          </nav>
+
+          <span
+            class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-2 fs-8 mb-3 d-inline-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-patch-check-fill"></i>
+            <span>भारत सरकार व RBI स्वीकृत कृषि योजना कैलकुलेटर • 100% निःशुल्क</span>
+          </span>
+
+          <h1 class="fw-bold display-6 mb-3 hero-heading">
+            किसान वित्तीय सुविधा व ऋण सब्सिडी कैलकुलेटर
+          </h1>
+          <p class="fs-6 text-white-75 mb-4 max-w-750">
+            KCC फसल ऋण, ट्रैक्टर EMI, PM-KUSUM 60% सोलर पंप सब्सिडी और फसल लागत व मुनाफे की सटीक गणना सेकंडों में करें।
+            समय पर भुगतान पर 3% सरकारी ब्याज छूट का लाभ उठाएं।
+          </p>
+
+          <div class="d-flex flex-wrap gap-2 pt-1">
+            <a href="#calculator-box"
+              class="btn btn-warning btn-lg rounded-pill fw-bold px-4 py-2 text-dark shadow-sm d-inline-flex align-items-center gap-2">
+              <i class="bi bi-calculator-fill"></i>
+              <span>तुरंत गणना करें</span>
+            </a>
+            <a href="#schemes-section"
+              class="btn btn-outline-light btn-lg rounded-pill fw-semibold px-4 py-2 d-inline-flex align-items-center gap-2">
+              <i class="bi bi-journal-bookmark-fill"></i>
+              <span>सरकारी योजनाएं व सब्सिडी</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-block">
+          <div class="hero-quick-card bg-white text-dark p-4 rounded-4 shadow-lg border">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div
+                class="quick-icon bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi bi-shield-check fs-3"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0 text-success">RBI KCC मानक</h6>
+                <small class="text-muted">₹1.60 लाख तक बिना गारंटी</small>
+              </div>
+            </div>
+            <hr class="my-3">
+            <div class="row g-2 text-center">
+              <div class="col-6">
+                <div class="p-2 bg-light rounded-3">
+                  <span class="fs-9 text-muted d-block">शुद्ध KCC ब्याज</span>
+                  <strong class="text-success fs-5">4% p.a.</strong>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-2 bg-light rounded-3">
+                  <span class="fs-9 text-muted d-block">सोलर पंप सब्सिडी</span>
+                  <strong class="text-primary fs-5">60% छूट</strong>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button type="button" class="btn btn-success btn-sm w-100 rounded-pill fw-bold py-2"
+                (click)="applyGeneralAdvisory()">
+                <i class="bi bi-whatsapp me-1"></i> एक्सपर्ट से व्हाट्सएप पर पूछें
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. MAIN CALCULATOR CONTAINER -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5" id="calculator-box">
+    <div class="container">
+
+      <!-- Navigation Calculator Mode Tabs -->
+      <div
+        class="calc-tabs-wrapper p-2 bg-white rounded-pill shadow-sm border mb-4 d-flex justify-content-center flex-wrap gap-2 max-w-850 mx-auto">
+        <button type="button"
+          class="btn calc-tab-btn rounded-pill px-3 px-md-4 py-2 fw-bold d-flex align-items-center gap-2"
+          [class.btn-success]="activeTab === 'kcc-loan'" [class.btn-light]="activeTab !== 'kcc-loan'"
+          (click)="setActiveTab('kcc-loan')">
+          <i class="bi bi-credit-card-2-front-fill"></i>
+          <span>1. KCC व कृषि ऋण EMI</span>
+        </button>
+
+        <button type="button"
+          class="btn calc-tab-btn rounded-pill px-3 px-md-4 py-2 fw-bold d-flex align-items-center gap-2"
+          [class.btn-success]="activeTab === 'pm-kusum'" [class.btn-light]="activeTab !== 'pm-kusum'"
+          (click)="setActiveTab('pm-kusum')">
+          <i class="bi bi-sun-fill text-warning"></i>
+          <span>2. PM-KUSUM सोलर पंप सब्सिडी</span>
+        </button>
+
+        <button type="button"
+          class="btn calc-tab-btn rounded-pill px-3 px-md-4 py-2 fw-bold d-flex align-items-center gap-2"
+          [class.btn-success]="activeTab === 'crop-profit'" [class.btn-light]="activeTab !== 'crop-profit'"
+          (click)="setActiveTab('crop-profit')">
+          <i class="bi bi-graph-up-arrow"></i>
+          <span>3. फसल लाभ व ROI (Crop Profit)</span>
+        </button>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- TAB 1: KCC & AGRI LOAN CALCULATOR -->
+      <!-- ======================================================== -->
+      <div *ngIf="activeTab === 'kcc-loan'" class="calc-tab-content">
+
+        <!-- Loan Type Selector -->
+        <div class="row g-3 mb-4 justify-content-center">
+          <div *ngFor="let type of loanTypes" class="col-6 col-md-3">
+            <div class="loan-type-card p-3 rounded-4 border h-100 cursor-pointer text-center"
+              [class.active-loan-type]="selectedLoanType === type.id" (click)="selectLoanType(type.id)">
+              <div class="loan-type-icon mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi {{ type.icon }}"></i>
+              </div>
+              <h6 class="fw-bold text-dark mb-1 fs-7 text-truncate">{{ type.nameHi }}</h6>
+              <span class="fs-9 text-muted d-block text-truncate mb-2">{{ type.nameEn }}</span>
+              <span class="badge bg-light text-success border rounded-pill px-3 py-1 fs-9 d-inline-block">
+                {{ type.defaultRate }}% ब्याज
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Loan Card -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+          <div class="row g-4 g-lg-4 align-items-center">
+
+            <!-- LEFT: Inputs & Sliders -->
+            <div class="col-lg-7">
+
+              <!-- Loan Amount -->
+              <div class="mb-4 pb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                  <label class="form-label fw-bold text-dark fs-7 mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-cash-stack text-success"></i>
+                    <span>ऋण राशि (Loan Amount):</span>
+                  </label>
+                  <div class="input-group input-group-sm amount-input-group">
+                    <span class="input-group-text bg-warning border-end-0 fw-bold text-success px-3">₹</span>
+                    <input type="number" class="form-control fw-bold text-dark border-start-0 fs-7 py-2"
+                      [(ngModel)]="loanAmount" (ngModelChange)="calculateLoan()" min="10000" max="2500000" step="5000">
+                  </div>
+                </div>
+
+                <input type="range" class="form-range custom-range" [(ngModel)]="loanAmount"
+                  (ngModelChange)="calculateLoan()" min="10000" max="2000000" step="5000">
+
+                <div class="d-flex justify-content-between text-muted fs-9 mt-2 mb-2">
+                  <span>₹10,000</span>
+                  <span>₹10 Lakh</span>
+                  <span>₹20 Lakh</span>
+                </div>
+
+                <!-- Presets -->
+                <div class="d-flex gap-2 overflow-x-auto pt-1 pb-1 custom-scrollbar">
+                  <button type="button" *ngFor="let amt of amountPresets"
+                    class="btn btn-sm btn-warining border rounded-pill fs-9 fw-semibold px-3 py-1 flex-shrink-0 preset-chip"
+                    [class.btn-success]="loanAmount === amt" [class.text-white]="loanAmount === amt"
+                    (click)="setAmountPreset(amt)">
+                    ₹{{ amt >= 100000 ? (amt / 100000) + ' Lakh' : (amt / 1000) + 'K' }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Interest Rate -->
+              <div class="mb-4 pb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <label class="form-label fw-bold text-dark fs-7 mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-percent text-success"></i>
+                    <span>वार्षिक ब्याज दर (Annual Interest Rate):</span>
+                  </label>
+                  <div class="badge bg-success text-white rounded-pill px-3 py-2 fs-7 fw-bold">
+                    {{ interestRate }}% p.a.
+                  </div>
+                </div>
+
+                <input type="range" class="form-range custom-range" [(ngModel)]="interestRate"
+                  (ngModelChange)="calculateLoan()" min="4" max="15" step="0.1">
+
+                <div class="d-flex justify-content-between text-muted fs-9 mt-2">
+                  <span>4% (KCC Subvention)</span>
+                  <span>7% (Standard KCC)</span>
+                  <span>15%</span>
+                </div>
+              </div>
+
+              <!-- Tenure -->
+              <div class="mb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <label class="form-label fw-bold text-dark fs-7 mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar3 text-success"></i>
+                    <span>ऋण अवधि (Tenure):</span>
+                  </label>
+                  <div class="badge bg-light text-dark border rounded-pill px-3 py-2 fs-7 fw-bold">
+                    {{ tenureYears }} वर्ष ({{ tenureYears * 12 }} माह)
+                  </div>
+                </div>
+
+                <input type="range" class="form-range custom-range" [(ngModel)]="tenureYears"
+                  (ngModelChange)="calculateLoan()" min="1" max="7" step="1">
+
+                <div class="d-flex justify-content-between text-muted fs-9 mt-2">
+                  <span>1 वर्ष (12 माह)</span>
+                  <span>3 वर्ष</span>
+                  <span>5 वर्ष</span>
+                  <span>7 वर्ष (84 माह)</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT: Results Card -->
+            <div class="col-lg-5">
+              <div class="calc-results-card p-3 p-md-4 rounded-4 border bg-light">
+
+                <!-- Monthly EMI Highlight -->
+                <div class="emi-highlight-box p-3 p-md-4 rounded-4 text-center mb-3 border">
+                  <span class="fs-8 text-uppercase fw-bold text-success-emphasis d-block mb-2 letter-spacing-1">
+                    अनुमानित मासिक किस्त • MONTHLY EMI
+                  </span>
+                  <h2 class="fw-bold text-success mb-0 emi-number">
+                    ₹{{ monthlyEmi | number }}
+                    <small class="fs-7 text-muted fw-normal">/ महीना</small>
+                  </h2>
+                </div>
+
+                <!-- 3 Metric Cards -->
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <div class="metric-card p-3 bg-white rounded-3 border h-100">
+                      <span class="fs-9 text-muted d-block mb-1">मूल ऋण (Principal)</span>
+                      <strong class="text-dark fs-6">₹{{ loanAmount | number }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-card p-3 bg-white rounded-3 border h-100">
+                      <span class="fs-9 text-muted d-block mb-1">कुल ब्याज (Interest)</span>
+                      <strong class="text-danger fs-6">₹{{ totalInterest | number }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div
+                      class="metric-card p-3 bg-white rounded-3 border d-flex align-items-center justify-content-between">
+                      <span class="fs-8 text-muted">कुल भुगतान (Total Repayment):</span>
+                      <strong class="text-dark fs-6">₹{{ totalPayment | number }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between fs-9 fw-semibold mb-1">
+                    <span class="text-success"><i class="bi bi-circle-fill fs-9 me-1"></i>मूलधन: {{ principalPercent
+                      }}%</span>
+                    <span class="text-warning-emphasis"><i class="bi bi-circle-fill fs-9 me-1"></i>ब्याज: {{
+                      interestPercent }}%</span>
+                  </div>
+                  <div class="progress rounded-pill overflow-hidden" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" [style.width.%]="principalPercent"></div>
+                    <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="interestPercent"></div>
+                  </div>
+                </div>
+
+                <!-- KCC 3% Subvention Notice -->
+                <div *ngIf="kccSubventionSavings > 0"
+                  class="p-3 bg-success-subtle bg-opacity-30 rounded-3 border border-success-subtle mb-3">
+                  <div class="d-flex gap-2 align-items-center">
+                    <i class="bi bi-patch-check-fill text-success fs-5 flex-shrink-0"></i>
+                    <div class="fs-8 text-dark">
+                      <strong>3% शीघ्र भुगतान छूट:</strong> समय पर भुगतान करने पर आप लगभग <strong>₹{{
+                        kccSubventionSavings | number }}</strong> ब्याज बचत पा सकते हैं!
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="d-grid">
+                  <button type="button"
+                    class="btn btn-success btn-lg rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 advisory-btn"
+                    (click)="applyGeneralAdvisory()">
+                    <i class="bi bi-whatsapp fs-5"></i>
+                    <span>बैंक ऋण व KCC सहायता प्राप्त करें</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- TAB 2: PM-KUSUM SOLAR PUMP CALCULATOR -->
+      <!-- ======================================================== -->
+      <div *ngIf="activeTab === 'pm-kusum'" class="calc-tab-content">
+
+        <!-- HP Capacity Selector Grid -->
+        <div class="row g-3 mb-4 justify-content-center">
+          <div *ngFor="let opt of kusumHpOptions" class="col-6 col-md">
+            <div class="kusum-hp-card p-3 rounded-4 border h-100 cursor-pointer text-center"
+              [class.active-hp-card]="selectedHp === opt.hp" (click)="selectHp(opt.hp)">
+              <div
+                class="hp-badge rounded-pill bg-light text-success fw-bold px-2 py-1 fs-8 mb-2 d-inline-block border">
+                {{ opt.hp }} HP
+              </div>
+              <h6 class="fw-bold text-dark mb-1 fs-8">{{ opt.title }}</h6>
+              <span class="fs-9 text-muted d-block mb-2">मानक लागत: ₹{{ opt.benchmarkCost | number }}</span>
+              <span class="badge bg-success text-white rounded-pill px-2 py-1 fs-9">
+                60% सब्सिडी
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main PM-KUSUM Card -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+          <div class="row g-4 g-lg-4 align-items-center">
+
+            <!-- LEFT: Pump Configuration & Diesel Pricing -->
+            <div class="col-lg-7">
+
+              <!-- Pump Type Radio Selector -->
+              <div class="mb-4">
+                <label class="form-label fw-bold text-dark fs-7 mb-2 d-flex align-items-center gap-2">
+                  <i class="bi bi-gear-wide-connected text-success"></i>
+                  <span>सोलर पंप प्रकार (Pump Mechanism):</span>
+                </label>
+                <div class="d-flex gap-3">
+                  <div class="form-check custom-radio-box p-3 border rounded-3 flex-grow-1 cursor-pointer"
+                    [class.border-success]="pumpType === 'submersible'"
+                    [class.bg-success-subtle]="pumpType === 'submersible'"
+                    (click)="pumpType = 'submersible'; calculateKusum()">
+                    <input class="form-check-input" type="radio" name="pumpType" id="submersibleRadio"
+                      [checked]="pumpType === 'submersible'">
+                    <label class="form-check-label fw-bold text-dark fs-7 cursor-pointer ms-2" for="submersibleRadio">
+                      सबमर्सिबल पंप (Submersible)
+                      <span class="fs-9 text-muted d-block fw-normal">बोरवेल व गहरे कुएं के लिए (Deep Well)</span>
+                    </label>
+                  </div>
+                  <div class="form-check custom-radio-box p-3 border rounded-3 flex-grow-1 cursor-pointer"
+                    [class.border-success]="pumpType === 'surface'" [class.bg-success-subtle]="pumpType === 'surface'"
+                    (click)="pumpType = 'surface'; calculateKusum()">
+                    <input class="form-check-input" type="radio" name="pumpType" id="surfaceRadio"
+                      [checked]="pumpType === 'surface'">
+                    <label class="form-check-label fw-bold text-dark fs-7 cursor-pointer ms-2" for="surfaceRadio">
+                      सरफेस पंप (Surface Mono)
+                      <span class="fs-9 text-muted d-block fw-normal">नहर, तालाब व उथले जल स्रोत हेतु</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Diesel Rate Slider for Savings -->
+              <div class="mb-4 pb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <label class="form-label fw-bold text-dark fs-7 mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-fuel-pump text-danger"></i>
+                    <span>वर्तमान डीजल मूल्य (Diesel Rate):</span>
+                  </label>
+                  <div class="badge bg-dark text-white rounded-pill px-3 py-2 fs-7 fw-bold">
+                    ₹{{ dieselPricePerLitre }} / लीटर
+                  </div>
+                </div>
+                <input type="range" class="form-range custom-range" [(ngModel)]="dieselPricePerLitre"
+                  (ngModelChange)="calculateKusum()" min="80" max="110" step="1">
+              </div>
+
+              <!-- Detailed Subsidy Breakdown Table -->
+              <div class="table-responsive border rounded-3 bg-light p-3">
+                <h6 class="fw-bold text-dark fs-8 mb-3 d-flex align-items-center gap-2">
+                  <i class="bi bi-info-circle-fill text-primary"></i>
+                  <span>PM-KUSUM घटक-B वित्तीय विभाजन विवरण ({{ selectedHp }} HP):</span>
+                </h6>
+                <table class="table table-sm table-borderless fs-8 mb-0">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">मानक प्रणाली लागत (MNRE Benchmark):</td>
+                      <td class="text-end fw-bold text-dark">₹{{ kusumTotalBenchmarkCost | number }}</td>
+                    </tr>
+                    <tr class="text-success">
+                      <td><i class="bi bi-check-circle-fill me-1"></i>केंद्र सरकार 30% सब्सिडी:</td>
+                      <td class="text-end fw-bold">- ₹{{ kusumCentralSubsidy | number }}</td>
+                    </tr>
+                    <tr class="text-success">
+                      <td><i class="bi bi-check-circle-fill me-1"></i>राज्य सरकार 30% सब्सिडी:</td>
+                      <td class="text-end fw-bold">- ₹{{ kusumStateSubsidy | number }}</td>
+                    </tr>
+                    <tr class="border-top">
+                      <td class="fw-bold text-dark">कुल सरकारी सब्सिडी (60% Subsidy):</td>
+                      <td class="text-end fw-bold text-success fs-7">₹{{ kusumTotalSubsidy | number }}</td>
+                    </tr>
+                    <tr class="table-warning rounded-2">
+                      <td class="fw-bold text-dark">किसान का कुल हिस्सा (40% Farmer Share):</td>
+                      <td class="text-end fw-bold text-dark fs-7">₹{{ kusumFarmerShareTotal | number }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+            <!-- RIGHT: Kusum Results & Diesel Savings Card -->
+            <div class="col-lg-5">
+              <div class="calc-results-card p-3 p-md-4 rounded-4 border bg-light">
+
+                <!-- Farmer Cash Margin Highlight -->
+                <div class="emi-highlight-box p-3 p-md-4 rounded-4 text-center mb-3 border">
+                  <span class="fs-8 text-uppercase fw-bold text-success-emphasis d-block mb-2 letter-spacing-1">
+                    किसान नकद अंशदान • MINIMUM CASH SHARE (10%)
+                  </span>
+                  <h2 class="fw-bold text-success mb-0 emi-number">
+                    ₹{{ kusumFarmerCashShare | number }}
+                    <small class="fs-8 text-muted fw-normal d-block mt-1">(शेष 30% बैंक लोन सुविधा उपलब्ध)</small>
+                  </h2>
+                </div>
+
+                <!-- 2 Metrics: Annual Diesel Savings & Payback -->
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <div class="metric-card p-3 bg-white rounded-3 border h-100">
+                      <span class="fs-9 text-muted d-block mb-1">वार्षिक डीजल बचत</span>
+                      <strong class="text-success fs-6">₹{{ kusumAnnualDieselSavings | number }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-card p-3 bg-white rounded-3 border h-100">
+                      <span class="fs-9 text-muted d-block mb-1">लागत वसूली समय</span>
+                      <strong class="text-primary fs-6">{{ kusumPaybackYears }} वर्ष</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Green Energy Environmental Impact -->
+                <div class="p-3 bg-success-subtle bg-opacity-30 rounded-3 border border-success-subtle mb-3">
+                  <div class="d-flex gap-2 align-items-center">
+                    <i class="bi bi-tree-fill text-success fs-4 flex-shrink-0"></i>
+                    <div class="fs-8 text-dark">
+                      <strong>डीजल व बिजली बिल से 100% मुक्ति:</strong> 25 वर्ष की सोलर पैनल वारंटी और दिन में निर्बाध
+                      सिंचाई सुविधा।
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="d-grid">
+                  <button type="button"
+                    class="btn btn-success btn-lg rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 advisory-btn"
+                    (click)="applyGeneralAdvisory()">
+                    <i class="bi bi-whatsapp fs-5"></i>
+                    <span>सोलर पंप सब्सिडी आवेदन सहायता</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- TAB 3: CROP PROFIT & ROI (FASAL LABH) CALCULATOR -->
+      <!-- ======================================================== -->
+      <div *ngIf="activeTab === 'crop-profit'" class="calc-tab-content">
+
+        <!-- Crop Preset Selector Grid -->
+        <div class="row g-2 g-md-3 mb-4 justify-content-center">
+          <div *ngFor="let crop of cropPresets" class="col-6 col-md-3">
+            <div class="crop-preset-card p-3 rounded-4 border h-100 cursor-pointer text-center"
+              [class.active-crop-card]="selectedCropId === crop.id" (click)="selectCropPreset(crop.id)">
+              <div class="crop-icon mx-auto mb-2 rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi {{ crop.icon }}"></i>
+              </div>
+              <h6 class="fw-bold text-dark mb-1 fs-7 text-truncate">{{ crop.nameHi }}</h6>
+              <span class="fs-9 text-muted d-block">उपज: ~{{ crop.avgYieldPerAcre }} क्विंटल/एकड़</span>
+              <span class="badge bg-light text-success border rounded-pill px-2 py-1 fs-9 mt-1">
+                MSP: ₹{{ crop.mandiPricePerQuintal | number }}/Q
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Crop Profit Card -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+          <div class="row g-4 g-lg-4 align-items-center">
+
+            <!-- LEFT: Land Area & Cost Inputs -->
+            <div class="col-lg-7">
+
+              <!-- Land Area & Unit Selector -->
+              <div class="mb-4 pb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                  <label class="form-label fw-bold text-dark fs-7 mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-rulers text-success"></i>
+                    <span>खेती का कुल रकबा (Land Area):</span>
+                  </label>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="input-group input-group-sm" style="max-width: 120px;">
+                      <input type="number" class="form-control fw-bold text-dark text-center fs-7 py-2"
+                        [(ngModel)]="landArea" (ngModelChange)="calculateCropProfit()" min="0.5" max="100" step="0.5">
+                    </div>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn fw-semibold" [class.btn-success]="landUnit === 'acre'"
+                        [class.btn-outline-secondary]="landUnit !== 'acre'" (click)="setLandUnit('acre')">एकड़
+                        (Acre)</button>
+                      <button type="button" class="btn fw-semibold" [class.btn-success]="landUnit === 'bigha'"
+                        [class.btn-outline-secondary]="landUnit !== 'bigha'" (click)="setLandUnit('bigha')">बीघा
+                        (Bigha)</button>
+                    </div>
+                  </div>
+                </div>
+
+                <input type="range" class="form-range custom-range" [(ngModel)]="landArea"
+                  (ngModelChange)="calculateCropProfit()" min="0.5" max="25" step="0.5">
+              </div>
+
+              <!-- Expected Yield & Mandi Price -->
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold text-dark fs-8 mb-1">अनुमानित उपज (Quintal / Acre):</label>
+                  <div class="input-group input-group-sm">
+                    <input type="number" class="form-control fw-bold fs-7 py-2" [(ngModel)]="yieldPerAcre"
+                      (ngModelChange)="calculateCropProfit()">
+                    <span class="input-group-text bg-light text-muted">क्विंटल</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold text-dark fs-8 mb-1">मंडी भाव / MSP (Price / Quintal):</label>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light text-success fw-bold">₹</span>
+                    <input type="number" class="form-control fw-bold fs-7 py-2" [(ngModel)]="mandiPrice"
+                      (ngModelChange)="calculateCropProfit()">
+                    <span class="input-group-text bg-light text-muted">/ Q</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input Cost Breakdown Sliders/Inputs -->
+              <div class="border rounded-3 p-3 bg-light mb-2">
+                <h6 class="fw-bold text-dark fs-8 mb-3 d-flex align-items-center gap-2">
+                  <i class="bi bi-wallet2 text-success"></i>
+                  <span>प्रति एकड़ अनुमानित लागत विवरण (Cost Per Acre Breakdown):</span>
+                </h6>
+                <div class="row g-2">
+                  <div class="col-6 col-md-4">
+                    <label class="fs-9 text-muted mb-1 d-block">बीज लागत (Seed):</label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text px-2">₹</span>
+                      <input type="number" class="form-control fs-8" [(ngModel)]="seedCost"
+                        (ngModelChange)="calculateCropProfit()">
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4">
+                    <label class="fs-9 text-muted mb-1 d-block">खाद व दवा (Fertilizer):</label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text px-2">₹</span>
+                      <input type="number" class="form-control fs-8" [(ngModel)]="fertilizerCost"
+                        (ngModelChange)="calculateCropProfit()">
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4">
+                    <label class="fs-9 text-muted mb-1 d-block">सिंचाई (Irrigation):</label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text px-2">₹</span>
+                      <input type="number" class="form-control fs-8" [(ngModel)]="irrigationCost"
+                        (ngModelChange)="calculateCropProfit()">
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-6">
+                    <label class="fs-9 text-muted mb-1 d-block">जुताई व मजदूरी (Labor/Machinery):</label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text px-2">₹</span>
+                      <input type="number" class="form-control fs-8" [(ngModel)]="laborCost"
+                        (ngModelChange)="calculateCropProfit()">
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-6">
+                    <label class="fs-9 text-muted mb-1 d-block">कटाई व अन्य (Harvest/Misc):</label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text px-2">₹</span>
+                      <input type="number" class="form-control fs-8" [(ngModel)]="miscCost"
+                        (ngModelChange)="calculateCropProfit()">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT: Profit Results Card -->
+            <div class="col-lg-5">
+              <div class="calc-results-card p-3 p-md-4 rounded-4 border bg-light">
+
+                <!-- Net Profit Highlight -->
+                <div class="emi-highlight-box p-3 p-md-4 rounded-4 text-center mb-3 border">
+                  <span class="fs-8 text-uppercase fw-bold text-success-emphasis d-block mb-2 letter-spacing-1">
+                    कुल अनुमानित शुद्ध लाभ • NET PROFIT ({{ landArea }} {{ landUnit }})
+                  </span>
+                  <h2 class="fw-bold text-success mb-0 emi-number">
+                    ₹{{ totalFarmNetProfit | number }}
+                    <small class="fs-8 text-muted fw-normal d-block mt-1">ROI: {{ roiPercent }}% मुनाफा</small>
+                  </h2>
+                </div>
+
+                <!-- 3 Metric Cards -->
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <div class="metric-card p-3 bg-white rounded-3 border h-100">
+                      <span class="fs-9 text-muted d-block mb-1">कुल सकल आय (Revenue)</span>
+                      <strong class="text-primary fs-6">₹{{ totalFarmRevenue | number }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-card p-3 bg-white rounded-3 border h-100">
+                      <span class="fs-9 text-muted d-block mb-1">कुल लागत (Expense)</span>
+                      <strong class="text-danger fs-6">₹{{ totalFarmExpense | number }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div
+                      class="metric-card p-3 bg-white rounded-3 border d-flex align-items-center justify-content-between">
+                      <span class="fs-8 text-muted">प्रति एकड़ शुद्ध बचत (Per Acre Profit):</span>
+                      <strong class="text-success fs-6">₹{{ netProfitPerAcre | number }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Direct Mandi Price Linking CTA -->
+                <div class="p-3 bg-success-subtle bg-opacity-30 rounded-3 border border-success-subtle mb-3">
+                  <div class="d-flex gap-2 align-items-center">
+                    <i class="bi bi-graph-up text-success fs-4 flex-shrink-0"></i>
+                    <div class="fs-8 text-dark">
+                      <strong>सीधे खरीदारों को बेचें:</strong> KrisiMarg पर अपनी फसल बिना किसी बिचौलिए के सही दाम पर
+                      बेचकर 15-20% अधिक मुनाफा कमाएं।
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="d-grid">
+                  <button type="button"
+                    class="btn btn-success btn-lg rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 advisory-btn"
+                    (click)="applyGeneralAdvisory()">
+                    <i class="bi bi-whatsapp fs-5"></i>
+                    <span>उपज खरीद-बिक्री व भाव सहायता लें</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. GOVERNMENT SCHEMES & SUBSIDIES GUIDE -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5 bg-white border-top border-bottom" id="schemes-section">
+    <div class="container">
+
+      <div class="text-center max-w-750 mx-auto mb-4 mb-md-5">
+        <span
+          class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-8 fw-bold mb-3 d-inline-flex align-items-center gap-2">
+          <i class="bi bi-award-fill"></i>
+          <span>सरकारी योजनाएं व सब्सिडी गाइड • Govt Schemes & Subsidies</span>
+        </span>
+        <h2 class="fw-bold text-dark mb-3 section-title">
+          प्रमुख भारतीय कृषि ऋण व सब्सिडी योजनाएं
+        </h2>
+        <p class="text-muted fs-7 mb-0">
+          भारतीय किसानों के लिए उपलब्ध केंद्रीय व राज्य स्तरीय रियायती ऋण योजनाएं एवं पात्रता नियम।
+        </p>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- Scheme 1: KCC & Interest Subvention -->
+        <div class="col-md-6 col-lg-3">
+          <div class="scheme-card p-4 rounded-4 border bg-light h-100 d-flex flex-column">
+            <div class="scheme-badge mb-3">
+              <span class="badge bg-success text-white rounded-pill px-3 py-1 fs-9">4% प्रभावी दर</span>
+            </div>
+            <h5 class="fw-bold text-dark mb-2 fs-6">KCC ब्याज छूट योजना (ISS)</h5>
+            <p class="text-muted fs-8 mb-3 flex-grow-1">
+              ₹3 लाख तक के फसल ऋण पर 7% मानक ब्याज में से 3% केंद्र सरकार द्वारा समय पर भुगतान प्रोत्साहन (Prompt
+              Repayment) दिया जाता है।
+            </p>
+            <ul class="list-unstyled fs-9 text-dark mb-3">
+              <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> ₹1.60 लाख तक बिना बंधक</li>
+              <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> 5 वर्ष तक आसान नवीनीकरण</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Scheme 2: PM-KUSUM Component B -->
+        <div class="col-md-6 col-lg-3">
+          <div class="scheme-card p-4 rounded-4 border bg-light h-100 d-flex flex-column">
+            <div class="scheme-badge mb-3">
+              <span class="badge bg-primary text-white rounded-pill px-3 py-1 fs-9">60% कुल सब्सिडी</span>
+            </div>
+            <h5 class="fw-bold text-dark mb-2 fs-6">PM-KUSUM सोलर पंप योजना</h5>
+            <p class="text-muted fs-8 mb-3 flex-grow-1">
+              स्टैंडअलोन सोलर कृषि पंप की स्थापना पर 30% केंद्र + 30% राज्य सरकार सब्सिडी। किसान का नकद हिस्सा मात्र
+              10%।
+            </p>
+            <ul class="list-unstyled fs-9 text-dark mb-3">
+              <li class="mb-1"><i class="bi bi-check2-circle text-primary me-1"></i> 2 HP से 10 HP क्षमता</li>
+              <li class="mb-1"><i class="bi bi-check2-circle text-primary me-1"></i> 25 साल पैनल वारंटी</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Scheme 3: Agriculture Infrastructure Fund (AIF) -->
+        <div class="col-md-6 col-lg-3">
+          <div class="scheme-card p-4 rounded-4 border bg-light h-100 d-flex flex-column">
+            <div class="scheme-badge mb-3">
+              <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-9">3% ब्याज छूट</span>
+            </div>
+            <h5 class="fw-bold text-dark mb-2 fs-6">एग्रीकल्चर इंफ्रास्ट्रक्चर फंड (AIF)</h5>
+            <p class="text-muted fs-8 mb-3 flex-grow-1">
+              कोल्ड स्टोरेज, वेयरहाउस, ग्रेडिंग-पैकिंग यूनिट व कस्टम हायरिंग सेंटर हेतु ₹2 करोड़ तक के ऋण पर 3% वार्षिक
+              ब्याज छूट।
+            </p>
+            <ul class="list-unstyled fs-9 text-dark mb-3">
+              <li class="mb-1"><i class="bi bi-check2-circle text-warning-emphasis me-1"></i> FPO, किसान व
+                एग्रीप्रेन्योर पात्र</li>
+              <li class="mb-1"><i class="bi bi-check2-circle text-warning-emphasis me-1"></i> 7 वर्ष तक ब्याज छूट सुविधा
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Scheme 4: Dairy & Animal Husbandry -->
+        <div class="col-md-6 col-lg-3">
+          <div class="scheme-card p-4 rounded-4 border bg-light h-100 d-flex flex-column">
+            <div class="scheme-badge mb-3">
+              <span class="badge bg-info text-dark rounded-pill px-3 py-1 fs-9">पशुपालन KCC</span>
+            </div>
+            <h5 class="fw-bold text-dark mb-2 fs-6">पशुपालन व डेयरी KCC ऋण</h5>
+            <p class="text-muted fs-8 mb-3 flex-grow-1">
+              गाय, भैंस, बकरी व मुर्गी पालन के लिए ₹2 लाख तक का रियायती KCC ऋण 4% शुद्ध ब्याज दर पर उपलब्ध।
+            </p>
+            <ul class="list-unstyled fs-9 text-dark mb-3">
+              <li class="mb-1"><i class="bi bi-check2-circle text-info-emphasis me-1"></i> बिना जमीन वाले किसान भी पात्र
+              </li>
+              <li class="mb-1"><i class="bi bi-check2-circle text-info-emphasis me-1"></i> चारा व चिकित्सा खर्च शामिल
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. ELIGIBILITY & DOCUMENT CHECKLIST -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5">
+    <div class="container">
+
+      <div class="row g-4 align-items-center">
+
+        <div class="col-lg-6">
+          <span
+            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-8 fw-bold mb-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-card-checklist"></i>
+            <span>दस्तावेज व पात्रता चेकलिस्ट • Documents Required</span>
+          </span>
+          <h2 class="fw-bold text-dark mb-3">
+            KCC व कृषि लोन के लिए आवश्यक दस्तावेज
+          </h2>
+          <p class="text-muted fs-7 mb-4">
+            बैंक शाखा में आवेदन करने से पहले निम्नलिखित दस्तावेजों की स्व-प्रमाणित प्रतियां तैयार रखें:
+          </p>
+
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <div class="p-3 bg-white rounded-3 border h-100 d-flex align-items-start gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
+                <div>
+                  <h6 class="fw-bold text-dark mb-1 fs-8">पहचान व निवास प्रमाण</h6>
+                  <span class="fs-9 text-muted">आधार कार्ड / वोटर आईडी / पैन कार्ड</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="p-3 bg-white rounded-3 border h-100 d-flex align-items-start gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
+                <div>
+                  <h6 class="fw-bold text-dark mb-1 fs-8">भूमि दस्तावेज</h6>
+                  <span class="fs-9 text-muted">खसरा, खतौनी या 7/12 नकल व LPC</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="p-3 bg-white rounded-3 border h-100 d-flex align-items-start gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
+                <div>
+                  <h6 class="fw-bold text-dark mb-1 fs-8">बैंक विवरण</h6>
+                  <span class="fs-9 text-muted">बचत खाता पासबुक व 6 माह का विवरण</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="p-3 bg-white rounded-3 border h-100 d-flex align-items-start gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
+                <div>
+                  <h6 class="fw-bold text-dark mb-1 fs-8">अदेयता प्रमाण पत्र (NDC)</h6>
+                  <span class="fs-9 text-muted">निकटवर्ती बैंकों से नो ड्यूज सर्टिफिकेट</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Advisory Form -->
+        <div class="col-lg-6">
+          <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <h5 class="fw-bold text-dark mb-2">
+              <i class="bi bi-chat-dots-fill text-success me-2"></i>
+              निःशुल्क किसान परामर्श व सहायता फॉर्म
+            </h5>
+            <p class="text-muted fs-8 mb-3">
+              अपना विवरण भरें और KrisiMarg कृषि विशेषज्ञ से व्हाट्सएप पर त्वरित मार्गदर्शन पाएं।
+            </p>
+
+            <form (ngSubmit)="applyGeneralAdvisory()">
+              <div class="mb-3">
+                <label class="form-label fw-bold text-dark fs-8 mb-1">किसान का पूरा नाम:</label>
+                <input type="text" class="form-control fs-7 py-2" [(ngModel)]="farmerName" name="fName"
+                  placeholder="उदा. रामेश्वर सिंह" required>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold text-dark fs-8 mb-1">मोबाइल नंबर (WhatsApp):</label>
+                  <input type="tel" class="form-control fs-7 py-2" [(ngModel)]="farmerMobile" name="fMobile"
+                    placeholder="98765 XXXXX">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold text-dark fs-8 mb-1">जिला व राज्य:</label>
+                  <input type="text" class="form-control fs-7 py-2" [(ngModel)]="farmerDistrict" name="fDist"
+                    placeholder="उदा. संत कबीर नगर, UP">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-bold text-dark fs-8 mb-1">आवश्यक सहायता का प्रकार:</label>
+                <select class="form-select fs-7 py-2" [(ngModel)]="farmerLoanRequirement" name="fReq">
+                  <option value="KCC Loan Assistance">KCC फसल ऋण सहायता (KCC Crop Loan)</option>
+                  <option value="PM-KUSUM Solar Pump">PM-KUSUM सोलर पंप 60% सब्सिडी</option>
+                  <option value="Tractor Loan">ट्रैक्टर व कृषि यंत्र ऋण (Tractor Loan)</option>
+                  <option value="Dairy Loan">डेयरी व पशुपालन ऋण (Dairy Pashupalan)</option>
+                  <option value="Direct Crop Selling">फसल खरीद-बिक्री व मंडी भाव (Direct Selling)</option>
+                </select>
+              </div>
+
+              <button type="submit"
+                class="btn btn-success btn-lg w-100 rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-whatsapp fs-5"></i>
+                <span>व्हाट्सएप पर सहायता शुरू करें (Instant Connect)</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. COMPREHENSIVE SEO FAQ ACCORDION -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5 bg-white border-top">
+    <div class="container max-w-850">
+
+      <div class="text-center mb-4 mb-md-5">
+        <span
+          class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-8 fw-bold mb-3 d-inline-flex align-items-center gap-2">
+          <i class="bi bi-question-circle-fill"></i>
+          <span>सवाल-जवाब • Frequently Asked Questions</span>
+        </span>
+        <h2 class="fw-bold text-dark mb-2 section-title">
+          किसान वित्तीय कैलकुलेटर अक्सर पूछे जाने वाले सवाल
+        </h2>
+        <p class="text-muted fs-7 mb-0">
+          KCC ऋण, ब्याज दर, सब्सिडी और फसल लाभ से जुड़े मुख्य प्रश्नों के उत्तर।
+        </p>
+      </div>
+
+      <div class="accordion accordion-flush custom-faq-accordion" id="calcFaqAccordion">
+
+        <!-- Q1 -->
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="faqHeading1">
+            <button class="accordion-button fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">
+              1. किसान क्रेडिट कार्ड (KCC) पर ब्याज दर क्या है और 4% दर का लाभ कैसे मिलता है?
+            </button>
+          </h2>
+          <div id="faqCollapse1" class="accordion-collapse collapse show" aria-labelledby="faqHeading1"
+            data-bs-parent="#calcFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              KCC पर केंद्र सरकार की ब्याज छूट योजना (Interest Subvention Scheme) के तहत मानक ब्याज दर 7% निर्धारित है।
+              यदि किसान ऋण का भुगतान देय तिथि से पहले (1 वर्ष के भीतर) कर देता है, तो 3% की अतिरिक्त शीघ्र चुकौती छूट
+              (Prompt Repayment Incentive) मिलती है, जिससे शुद्ध ब्याज दर मात्र <strong>4% वार्षिक</strong> रह जाती है।
+              यह सुविधा ₹3 लाख तक के फसल ऋण पर मान्य है।
+            </div>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="faqHeading2">
+            <button class="accordion-button collapsed fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
+              2. बिना किसी जमीन बंधक (Collateral-Free) KCC पर कितना लोन स्वीकृत होता है?
+            </button>
+          </h2>
+          <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2"
+            data-bs-parent="#calcFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              भारतीय रिजर्व बैंक (RBI) और नाबार्ड के दिशानिर्देशों के अनुसार, छोटे और सीमांत किसान बिना किसी भूमि बंधक
+              या बैंक गारंटी के <strong>₹1.60 लाख तक का KCC ऋण</strong> प्राप्त कर सकते हैं।
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="faqHeading3">
+            <button class="accordion-button collapsed fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
+              3. PM-KUSUM योजना के अंतर्गत सोलर पंप पर सब्सिडी के लिए कौन पात्र है?
+            </button>
+          </h2>
+          <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3"
+            data-bs-parent="#calcFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              वे सभी व्यक्तिगत किसान, किसानों के समूह, सहकारी समितियां और FPO जिनके पास खेती योग्य भूमि और सिंचाई जल
+              स्रोत (बोरवेल या कुआं) उपलब्ध है, PM-KUSUM घटक-B के पात्र हैं। इसमें कुल 60% सब्सिडी (30% केंद्र + 30%
+              राज्य) प्रदान की जाती है।
+            </div>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="faqHeading4">
+            <button class="accordion-button collapsed fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse"
+              data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
+              4. क्या पशुपालक और डेयरी किसान भी KCC का लाभ ले सकते हैं?
+            </button>
+          </h2>
+          <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4"
+            data-bs-parent="#calcFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              हाँ, भारत सरकार ने KCC सुविधा का विस्तार डेयरी, पशुपालन और मत्स्य पालन (Fisheries) के लिए भी कर दिया है।
+              पशुपालक बिना किसी कृषि भूमि के भी ₹2 लाख तक का रियायती ऋण 4% शुद्ध ब्याज दर पर ले सकते हैं।
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</div>

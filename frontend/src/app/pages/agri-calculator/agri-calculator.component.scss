@@ -1,0 +1,207 @@
+.agri-calculator-page {
+  min-height: 100vh;
+  padding-bottom: 95px; // Avoid overlap with bottom-right floating support widget
+
+  // Custom typography utilities
+  .fs-7 { font-size: 0.875rem !important; }
+  .fs-8 { font-size: 0.8rem !important; }
+  .fs-9 { font-size: 0.72rem !important; }
+  .letter-spacing-1 { letter-spacing: 0.5px; }
+  .max-w-700 { max-width: 700px; }
+  .max-w-750 { max-width: 750px; }
+  .max-w-850 { max-width: 850px; }
+
+  // Hero Section
+  .calc-hero-section {
+    background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%);
+    
+    .hero-heading {
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .hero-quick-card {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      
+      .quick-icon {
+        width: 52px;
+        height: 52px;
+      }
+    }
+  }
+
+  // Calculator Mode Switcher Tabs
+  .calc-tabs-wrapper {
+    .calc-tab-btn {
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+
+      &:hover:not(.btn-success) {
+        background-color: #f1f5f9;
+      }
+    }
+  }
+
+  // Loan & Feature Cards
+  .loan-type-card,
+  .kusum-hp-card,
+  .crop-preset-card {
+    background-color: #ffffff;
+    border-color: #e2e8f0 !important;
+    transition: all 0.2s ease;
+
+    .loan-type-icon,
+    .crop-icon {
+      width: 46px;
+      height: 46px;
+      background-color: #f1f5f9;
+      color: #16a34a;
+      font-size: 1.3rem;
+      transition: all 0.2s ease;
+    }
+
+    &:hover {
+      border-color: #86efac !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.08);
+    }
+
+    &.active-loan-type,
+    &.active-hp-card,
+    &.active-crop-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 2px solid #16a34a !important;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.12);
+
+      .loan-type-icon,
+      .crop-icon {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        color: #ffffff;
+      }
+    }
+  }
+
+  // Radio Box
+  .custom-radio-box {
+    transition: all 0.2s ease;
+    border-color: #cbd5e1 !important;
+
+    &:hover {
+      border-color: #16a34a !important;
+    }
+  }
+
+  // Range Slider
+  .custom-range {
+    height: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &::-webkit-slider-runnable-track {
+      background: #e2e8f0;
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    &::-webkit-slider-thumb {
+      width: 22px;
+      height: 22px;
+      background: #16a34a;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+      margin-top: -7px;
+      transition: transform 0.15s ease;
+
+      &:hover {
+        transform: scale(1.15);
+      }
+    }
+  }
+
+  .preset-chip {
+    transition: all 0.15s ease;
+    border-color: #cbd5e1 !important;
+    &:hover {
+      background-color: #e2e8f0;
+    }
+  }
+
+  // Results Card
+  .calc-results-card {
+    border-color: #e2e8f0 !important;
+
+    .emi-highlight-box {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border-color: #bbf7d0 !important;
+
+      .emi-number {
+        font-size: 2.2rem;
+        letter-spacing: -0.5px;
+        line-height: 1;
+      }
+    }
+
+    .metric-card {
+      border-color: #e2e8f0 !important;
+    }
+
+    .advisory-btn {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      border: none;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25) !important;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  // Scheme Cards
+  .scheme-card {
+    border-color: #e2e8f0 !important;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      background-color: #ffffff !important;
+    }
+  }
+
+  // Accordion
+  .custom-faq-accordion {
+    .accordion-item {
+      border-color: #e2e8f0 !important;
+    }
+    
+    .accordion-button:not(.collapsed) {
+      background-color: #f0fdf4;
+      color: #166534;
+      box-shadow: none;
+    }
+
+    .accordion-button:focus {
+      box-shadow: none;
+      border-color: #16a34a;
+    }
+  }
+
+  // Custom Scrollbar
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 4px;
+    }
+  }
+}

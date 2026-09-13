@@ -26,6 +26,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { NewsListComponent } from './pages/news/news-list.component';
 import { NewsDetailComponent } from './pages/news/news-detail.component';
 import { TeamComponent } from './pages/team/team.component';
+import { AgriCalculatorComponent } from './pages/agri-calculator/agri-calculator.component';
 
 // Route configuration with comprehensive SEO Meta data for KrisiMarg application
 export const routes: Routes = [
@@ -221,6 +222,23 @@ export const routes: Routes = [
                 keywords: 'Mandi Rates Today, Mandi Bhav, APMC Live Price, Gehu Mandi Bhav, Dhan Rate, Sarso Bhav, Chana Mandi, All India Mandi Bhav, KrisiMarg'
             }
         }
+    },
+    {
+        path: 'agri-calculator',
+        component: AgriCalculatorComponent,
+        title: 'Agri Financial Calculator | KCC Loan, Solar Pump Subsidy & Crop Profit | KrisiMarg',
+        data: {
+            seo: {
+                title: 'किसान ऋण व KCC ईएमआई कैलकुलेटर (Agri Financial Calculator) | KrisiMarg',
+                description: 'KCC फसल ऋण EMI, 3% सरकारी ब्याज छूट, PM-KUSUM 60% सोलर पंप सब्सिडी और फसल उपज व शुद्ध मुनाफे (Crop ROI) की सटीक गणना करें।',
+                keywords: 'Agri Financial Calculator, Kisan Loan Calculator, KCC EMI Calculator, PM Kusum Solar Pump Subsidy, Crop Profit Calculator, Fasal Labh Calculator, Tractor Loan EMI, Kisan Credit Card Scheme, Agriculture Loan Interest Subvention, Krishi Marg'
+            }
+        }
+    },
+    {
+        path: 'loan-calculator',
+        redirectTo: 'agri-calculator',
+        pathMatch: 'full'
     },
 
     {
