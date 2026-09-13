@@ -1,0 +1,454 @@
+<div class="agri-schemes-page bg-light">
+
+  <!-- ========================================== -->
+  <!-- 1. HERO HEADER BANNER -->
+  <!-- ========================================== -->
+  <section class="schemes-hero-section py-4 py-md-5 text-white position-relative overflow-hidden">
+    <div class="container position-relative">
+      <div class="row align-items-center g-4">
+        
+        <div class="col-lg-8">
+          <!-- Breadcrumb -->
+          <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0 fs-8">
+              <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>होम (Home)</a></li>
+              <li class="breadcrumb-item text-white active" aria-current="page">सरकारी कृषि योजनाएं (Govt Schemes & Subsidies)</li>
+            </ol>
+          </nav>
+
+          <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-2 fs-8 mb-3 d-inline-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-award-fill"></i>
+            <span>केंद्र व राज्य सरकार कृषि योजना पोर्टल • 100% सत्यापित जानकारी</span>
+          </span>
+
+          <h1 class="fw-bold display-6 mb-3 hero-heading">
+            सरकारी कृषि योजनाएं व सब्सिडी डायरेक्टरी
+          </h1>
+          <p class="fs-6 text-white-75 mb-4 max-w-750">
+            PM-KISAN ₹6,000 सम्मान निधि, PM-KUSUM 60% सोलर पंप, KCC 4% ऋण, फसल बीमा (PMFBY), कृषि यंत्र अनुदान और पशुपालन योजनाओं की सम्पूर्ण जानकारी, पात्रता व ऑनलाइन आवेदन लिंक।
+          </p>
+
+          <div class="d-flex flex-wrap gap-2 pt-1">
+            <a href="#schemes-list" class="btn btn-warning btn-lg rounded-pill fw-bold px-4 py-2 text-dark shadow-sm d-inline-flex align-items-center gap-2">
+              <i class="bi bi-search"></i>
+              <span>सभी योजनाएं खोजें</span>
+            </a>
+            <a routerLink="/agri-calculator" class="btn btn-outline-light btn-lg rounded-pill fw-semibold px-4 py-2 d-inline-flex align-items-center gap-2">
+              <i class="bi bi-calculator-fill"></i>
+              <span>ऋण व सब्सिडी कैलकुलेटर</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-block">
+          <div class="hero-stats-card bg-white text-dark p-4 rounded-4 shadow-lg border">
+            <h6 class="fw-bold text-success mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-stars"></i>
+              <span>योजना डायरेक्टरी अवलोकन</span>
+            </h6>
+            
+            <div class="row g-2 text-center mb-3">
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 border">
+                  <span class="fs-9 text-muted d-block">कुल योजनाएं</span>
+                  <strong class="text-success fs-4">12+</strong>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 border">
+                  <span class="fs-9 text-muted d-block">अधिकतम सब्सिडी</span>
+                  <strong class="text-primary fs-4">80% तक</strong>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 border">
+                  <span class="fs-9 text-muted d-block">KCC ब्याज दर</span>
+                  <strong class="text-dark fs-5">4% p.a.</strong>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 bg-light rounded-3 border">
+                  <span class="fs-9 text-muted d-block">फसल बीमा</span>
+                  <strong class="text-warning-emphasis fs-5">1.5% - 2%</strong>
+                </div>
+              </div>
+            </div>
+
+            <a href="tel:18001801551" class="btn btn-outline-success btn-sm w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center gap-1">
+              <i class="bi bi-telephone-fill"></i> किसान कॉल सेंटर: 1800-180-1551
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. SEARCH & CATEGORY FILTER TABS -->
+  <!-- ========================================== -->
+  <section class="py-4 bg-white border-bottom sticky-top shadow-xs" style="top: 68px; z-index: 1020;" id="schemes-list">
+    <div class="container">
+      
+      <div class="row g-3 align-items-center justify-content-between">
+        
+        <!-- Live Search Input -->
+        <div class="col-md-5 col-lg-4">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-success ps-3">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" 
+              class="form-control border-start-0 fs-7 py-2 bg-light search-input" 
+              placeholder="योजना का नाम, सब्सिडी या कीवर्ड खोजें..."
+              [(ngModel)]="searchQuery">
+            <button *ngIf="searchQuery" class="btn btn-light border-start-0 border text-muted" type="button" (click)="searchQuery = ''">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Count Badge -->
+        <div class="col-md-7 col-lg-8 text-md-end">
+          <span class="badge bg-light text-muted border rounded-pill px-3 py-2 fs-8">
+            दिखाए गए परिणाम: <strong class="text-success">{{ filteredSchemes.length }}</strong> योजनाएं
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="d-flex gap-2 overflow-x-auto pt-3 pb-1 custom-scrollbar">
+        <button type="button" *ngFor="let cat of categories"
+          class="btn btn-sm rounded-pill px-3 py-2 fw-semibold flex-shrink-0 category-pill-btn d-flex align-items-center gap-1.5"
+          [class.btn-success]="selectedCategory === cat.id"
+          [class.btn-light]="selectedCategory !== cat.id"
+          (click)="setCategory(cat.id)">
+          <i class="bi {{ cat.icon }}"></i>
+          <span>{{ cat.labelHi }}</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. SCHEMES GRID -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5">
+    <div class="container">
+      
+      <!-- No Results State -->
+      <div *ngIf="filteredSchemes.length === 0" class="text-center py-5 bg-white rounded-4 border p-4">
+        <i class="bi bi-search text-muted fs-1 mb-3 d-block"></i>
+        <h5 class="fw-bold text-dark mb-2">कोई योजना नहीं मिली (No Schemes Found)</h5>
+        <p class="text-muted fs-7 mb-3">आपके खोज शब्द "{{ searchQuery }}" के लिए कोई योजना नहीं मिली।</p>
+        <button type="button" class="btn btn-success btn-sm rounded-pill px-4 py-2 fw-bold" (click)="searchQuery = ''; selectedCategory = 'all'">
+          सभी योजनाएं देखें
+        </button>
+      </div>
+
+      <!-- Schemes Cards Grid -->
+      <div class="row g-3 g-md-4">
+        <div *ngFor="let scheme of filteredSchemes" class="col-md-6 col-lg-4">
+          <div class="scheme-directory-card bg-white rounded-4 border p-3 p-md-4 h-100 d-flex flex-column shadow-xs">
+            
+            <!-- Card Header: Category & Badge -->
+            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+              <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1 fs-9 d-flex align-items-center gap-1">
+                <i class="bi {{ scheme.icon }} text-success"></i>
+                <span>{{ scheme.categoryLabelHi }}</span>
+              </span>
+              <span class="badge bg-{{ scheme.badgeColor }}-subtle text-{{ scheme.badgeColor }} border border-{{ scheme.badgeColor }}-subtle rounded-pill px-2.5 py-1 fs-9 fw-bold">
+                {{ scheme.badge }}
+              </span>
+            </div>
+
+            <!-- Title & Tagline -->
+            <h5 class="fw-bold text-dark mb-2 fs-6 scheme-title cursor-pointer" (click)="openSchemeDetails(scheme)">
+              {{ scheme.nameHi }}
+            </h5>
+            <span class="fs-9 text-muted d-block mb-2">{{ scheme.nameEn }}</span>
+            <p class="text-muted fs-8 mb-3 flex-grow-1 line-clamp-3">
+              {{ scheme.tagline }}
+            </p>
+
+            <!-- Benefit Box -->
+            <div class="p-2.5 bg-light rounded-3 border mb-3">
+              <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-gift-fill text-success fs-6 flex-shrink-0 mt-0.5"></i>
+                <div class="fs-8 text-dark">
+                  <strong>मुख्य लाभ:</strong> {{ scheme.benefitAmount }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 pt-2 border-top mt-auto">
+              <button type="button" class="btn btn-outline-success btn-sm rounded-pill w-50 fw-bold d-flex align-items-center justify-content-center gap-1"
+                (click)="openSchemeDetails(scheme)">
+                <i class="bi bi-info-circle"></i>
+                <span>पूरा विवरण</span>
+              </button>
+              
+              <button type="button" class="btn btn-success btn-sm rounded-pill w-50 fw-bold d-flex align-items-center justify-content-center gap-1 shadow-sm"
+                (click)="applyViaWhatsApp(scheme)">
+                <i class="bi bi-whatsapp"></i>
+                <span>सहायता लें</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. SCHEME DETAIL MODAL / POPUP -->
+  <!-- ========================================== -->
+  <div *ngIf="selectedScheme" class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3">
+    <div class="modal-card bg-white rounded-4 shadow-lg border w-100 max-w-750 overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="modal-header-custom p-3 p-md-4 bg-light border-bottom d-flex align-items-start justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="scheme-modal-icon rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0">
+            <i class="bi {{ selectedScheme.icon }} fs-4"></i>
+          </div>
+          <div>
+            <span class="badge bg-{{ selectedScheme.badgeColor }} text-white rounded-pill px-2.5 py-1 fs-9 mb-1">
+              {{ selectedScheme.badge }}
+            </span>
+            <h5 class="fw-bold text-dark mb-0">{{ selectedScheme.nameHi }}</h5>
+            <small class="text-muted">{{ selectedScheme.nameEn }}</small>
+          </div>
+        </div>
+        <button type="button" class="btn btn-light rounded-circle p-1 d-flex align-items-center justify-content-center"
+          style="width: 34px; height: 34px;" (click)="closeSchemeDetails()">
+          <i class="bi bi-x-lg fs-6"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-custom p-3 p-md-4 overflow-y-auto" style="max-height: 70vh;">
+        
+        <!-- Overview -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark fs-7 mb-2 d-flex align-items-center gap-2">
+            <i class="bi bi-card-text text-success"></i>
+            <span>योजना का विवरण (Scheme Overview):</span>
+          </h6>
+          <p class="text-muted fs-8 mb-0 lh-base">{{ selectedScheme.description }}</p>
+        </div>
+
+        <!-- Benefit Highlight -->
+        <div class="p-3 bg-success-subtle bg-opacity-30 rounded-3 border border-success-subtle mb-4">
+          <div class="d-flex gap-2 align-items-start">
+            <i class="bi bi-cash-stack text-success fs-5 flex-shrink-0"></i>
+            <div>
+              <strong class="text-dark fs-8 d-block mb-1">वित्तीय लाभ व सब्सिडी राशि:</strong>
+              <span class="text-dark fs-8">{{ selectedScheme.benefitAmount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eligibility Criteria -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark fs-7 mb-2 d-flex align-items-center gap-2">
+            <i class="bi bi-person-check-fill text-primary"></i>
+            <span>पात्रता मानदंड (Eligibility Criteria):</span>
+          </h6>
+          <ul class="list-unstyled mb-0 fs-8 text-dark">
+            <li *ngFor="let elig of selectedScheme.eligibility" class="mb-1.5 d-flex align-items-start gap-2">
+              <i class="bi bi-check-circle-fill text-success flex-shrink-0 mt-1"></i>
+              <span>{{ elig }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Required Documents -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark fs-7 mb-2 d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-text-fill text-warning-emphasis"></i>
+            <span>आवश्यक दस्तावेज (Required Documents):</span>
+          </h6>
+          <div class="row g-2">
+            <div *ngFor="let doc of selectedScheme.documentsRequired" class="col-sm-6">
+              <div class="p-2 bg-light rounded-2 border fs-8 d-flex align-items-center gap-2">
+                <i class="bi bi-check2 text-success fw-bold"></i>
+                <span class="text-dark">{{ doc }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How to Apply -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark fs-7 mb-2 d-flex align-items-center gap-2">
+            <i class="bi bi-diagram-3-fill text-info-emphasis"></i>
+            <span>आवेदन कैसे करें (Step-by-Step Application Process):</span>
+          </h6>
+          <ol class="mb-0 fs-8 text-dark ps-3">
+            <li *ngFor="let step of selectedScheme.applicationProcess" class="mb-1.5">
+              {{ step }}
+            </li>
+          </ol>
+        </div>
+
+        <!-- Helpline & Official Portal -->
+        <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div>
+            <span class="fs-9 text-muted d-block">हेल्पलाइन नंबर:</span>
+            <strong class="text-dark fs-8"><i class="bi bi-telephone me-1 text-success"></i>{{ selectedScheme.helpline }}</strong>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline-success btn-sm rounded-pill fw-bold"
+              (click)="openOfficialPortal(selectedScheme.officialPortalUrl)">
+              <i class="bi bi-box-arrow-up-right me-1"></i>
+              <span>आधिकारिक पोर्टल ({{ selectedScheme.portalName }})</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer-custom p-3 bg-light border-top d-flex gap-2">
+        <button type="button" class="btn btn-light btn-sm rounded-pill px-4 fw-semibold border" (click)="closeSchemeDetails()">
+          बंद करें
+        </button>
+        <button type="button" class="btn btn-success btn-sm rounded-pill px-4 fw-bold ms-auto shadow-sm d-flex align-items-center gap-2"
+          (click)="applyViaWhatsApp(selectedScheme)">
+          <i class="bi bi-whatsapp"></i>
+          <span>व्हाट्सएप पर सहायता लें (Instant Help)</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. NATIONAL & STATE HELPLINES STRIP -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5 bg-white border-top border-bottom">
+    <div class="container">
+      
+      <div class="text-center max-w-750 mx-auto mb-4">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-8 fw-bold mb-3 d-inline-flex align-items-center gap-2">
+          <i class="bi bi-headset"></i>
+          <span>किसान सहायता व हेल्पलाइन • Emergency & Govt Helplines</span>
+        </span>
+        <h2 class="fw-bold text-dark mb-2 section-title">
+          प्रमुख राष्ट्रीय व राज्य कृषि हेल्पलाइन नंबर
+        </h2>
+        <p class="text-muted fs-7 mb-0">
+          योजना संबंधी किसी भी समस्या या जानकारी के लिए टोल-फ्री नंबरों पर संपर्क करें:
+        </p>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded-4 border text-center h-100">
+            <i class="bi bi-telephone-fill text-success fs-3 mb-2 d-block"></i>
+            <h6 class="fw-bold text-dark mb-1 fs-8">किसान कॉल सेंटर (KCC)</h6>
+            <a href="tel:18001801551" class="fw-bold text-success fs-7 text-decoration-none d-block">1800-180-1551</a>
+            <small class="text-muted fs-9">24x7 सभी 22 भाषाओं में</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded-4 border text-center h-100">
+            <i class="bi bi-shield-fill-check text-primary fs-3 mb-2 d-block"></i>
+            <h6 class="fw-bold text-dark mb-1 fs-8">PM-KISAN हेल्पलाइन</h6>
+            <a href="tel:155261" class="fw-bold text-primary fs-7 text-decoration-none d-block">155261 / 011-24300606</a>
+            <small class="text-muted fs-9">किस्त व e-KYC सहायता</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded-4 border text-center h-100">
+            <i class="bi bi-umbrella-fill text-warning fs-3 mb-2 d-block"></i>
+            <h6 class="fw-bold text-dark mb-1 fs-8">फसल बीमा हेल्पलाइन (PMFBY)</h6>
+            <a href="tel:14447" class="fw-bold text-warning-emphasis fs-7 text-decoration-none d-block">14447</a>
+            <small class="text-muted fs-9">फसल क्लेम व सर्वे सहायता</small>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-light rounded-4 border text-center h-100">
+            <i class="bi bi-sun-fill text-info fs-3 mb-2 d-block"></i>
+            <h6 class="fw-bold text-dark mb-1 fs-8">PM-KUSUM सोलर हेल्पलाइन</h6>
+            <a href="tel:18001803333" class="fw-bold text-info-emphasis fs-7 text-decoration-none d-block">1800-180-3333</a>
+            <small class="text-muted fs-9">सोलर पंप सब्सिडी मार्गदर्शन</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 6. COMPREHENSIVE SEO FAQ ACCORDION -->
+  <!-- ========================================== -->
+  <section class="py-4 py-md-5">
+    <div class="container max-w-850">
+      
+      <div class="text-center mb-4">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-8 fw-bold mb-3 d-inline-flex align-items-center gap-2">
+          <i class="bi bi-question-circle-fill"></i>
+          <span>अक्सर पूछे जाने वाले सवाल • FAQ</span>
+        </span>
+        <h2 class="fw-bold text-dark mb-2 section-title">
+          सरकारी कृषि योजनाओं से जुड़े मुख्य सवाल-जवाब
+        </h2>
+      </div>
+
+      <div class="accordion accordion-flush custom-faq-accordion" id="schemesFaqAccordion">
+        
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="schFaq1">
+            <button class="accordion-button fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#schCollapse1" aria-expanded="true" aria-controls="schCollapse1">
+              1. PM-KISAN की ₹2,000 की किस्त पाने के लिए e-KYC कैसे करें?
+            </button>
+          </h2>
+          <div id="schCollapse1" class="accordion-collapse collapse show" aria-labelledby="schFaq1" data-bs-parent="#schemesFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              किसान भाई pmkisan.gov.in पोर्टल पर जाकर 'e-KYC' विकल्प चुनें, अपना आधार नंबर दर्ज करें और आधार लिंक मोबाइल पर प्राप्त OTP द्वारा e-KYC पूरी करें। अथवा नजदीकी CSC केंद्र पर बायोमेट्रिक फिंगरप्रिंट द्वारा भी e-KYC कराई जा सकती है।
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="schFaq2">
+            <button class="accordion-button collapsed fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#schCollapse2" aria-expanded="false" aria-controls="schCollapse2">
+              2. क्या एक किसान एक साथ कई योजनाओं (जैसे PM-KISAN, KCC, सोलर पंप) का लाभ ले सकता है?
+            </button>
+          </h2>
+          <div id="schCollapse2" class="accordion-collapse collapse" aria-labelledby="schFaq2" data-bs-parent="#schemesFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              हाँ! एक पात्र किसान PM-KISAN आय सहायता, KCC रियायती ऋण, PMFBY फसल बीमा और PM-KUSUM सोलर पंप सब्सिडी सभी का एक साथ लाभ ले सकता है, क्योंकि ये विभिन्न आवश्यकताओं (आय, ऋण, सुरक्षा व सिंचाई) के लिए अलग-अलग योजनाएं हैं।
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item rounded-3 border mb-3 overflow-hidden">
+          <h2 class="accordion-header" id="schFaq3">
+            <button class="accordion-button collapsed fw-bold text-dark fs-7" type="button" data-bs-toggle="collapse" data-bs-target="#schCollapse3" aria-expanded="false" aria-controls="schCollapse3">
+              3. कृषि यंत्रों पर सब्सिडी प्राप्त करने के लिए टोकन कैसे बुक करें?
+            </button>
+          </h2>
+          <div id="schCollapse3" class="accordion-collapse collapse" aria-labelledby="schFaq3" data-bs-parent="#schemesFaqAccordion">
+            <div class="accordion-body text-muted fs-8 lh-base">
+              कृषि यंत्रों (रोटावेटर, थ्रेशर, कल्टीवेटर) पर सब्सिडी के लिए agrimachinery.nic.in या अपने राज्य के कृषि विभाग पोर्टल पर पंजीकरण करके टोकन जनरेट करना होता है। टोकन प्राप्त होने पर अधिकृत डीलर से यंत्र क्रय करके बिल पोर्टल पर अपलोड करने पर सब्सिडी DBT द्वारा खाते में आ जाती है।
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</div>

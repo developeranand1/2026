@@ -27,6 +27,7 @@ import { NewsListComponent } from './pages/news/news-list.component';
 import { NewsDetailComponent } from './pages/news/news-detail.component';
 import { TeamComponent } from './pages/team/team.component';
 import { AgriCalculatorComponent } from './pages/agri-calculator/agri-calculator.component';
+import { AgriSchemesComponent } from './pages/agri-schemes/agri-schemes.component';
 
 // Route configuration with comprehensive SEO Meta data for KrisiMarg application
 export const routes: Routes = [
@@ -238,6 +239,28 @@ export const routes: Routes = [
     {
         path: 'loan-calculator',
         redirectTo: 'agri-calculator',
+        pathMatch: 'full'
+    },
+    {
+        path: 'schemes',
+        component: AgriSchemesComponent,
+        title: 'Sarkari Krishi Yojana & Subsidy Directory | सरकारी कृषि योजनाएं | KrisiMarg',
+        data: {
+            seo: {
+                title: 'सरकारी कृषि योजनाएं व सब्सिडी डायरेक्टरी (Sarkari Krishi Yojana) | KrisiMarg',
+                description: 'भारत सरकार की सभी प्रमुख कृषि योजनाएं: PM-KISAN, PM-KUSUM 60% सोलर पंप, KCC 4% ऋण, PMFBY फसल बीमा, कृषि यंत्र सब्सिडी व पशुपालन योजनाओं की सम्पूर्ण जानकारी।',
+                keywords: 'Sarkari Krishi Yojana, Government Agriculture Schemes, PM Kisan Samman Nidhi, PM Kusum Solar Subsidy, KCC Loan Scheme, PMFBY Fasal Bima, Krishi Yantra Subsidy, Kisan Pension, Agri Schemes India, Krishi Marg'
+            }
+        }
+    },
+    {
+        path: 'kisan-yojana',
+        redirectTo: 'schemes',
+        pathMatch: 'full'
+    },
+    {
+        path: 'agri-schemes',
+        redirectTo: 'schemes',
         pathMatch: 'full'
     },
 
