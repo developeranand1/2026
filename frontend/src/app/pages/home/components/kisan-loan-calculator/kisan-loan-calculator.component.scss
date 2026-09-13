@@ -1,0 +1,172 @@
+.kisan-calc-section {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+
+  // Custom utilities
+  .fs-7 { font-size: 0.875rem !important; }
+  .fs-8 { font-size: 0.8rem !important; }
+  .fs-9 { font-size: 0.72rem !important; }
+  .letter-spacing-1 { letter-spacing: 0.5px; }
+  .max-w-700 { max-width: 700px; }
+
+  .shadow-xs {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .section-title {
+    letter-spacing: -0.5px;
+    font-size: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  }
+
+  // Loan Type Cards
+  .loan-type-card {
+    background-color: #ffffff;
+    border-color: #e2e8f0 !important;
+    transition: all 0.2s ease;
+    padding: 1.1rem 1rem !important;
+
+    .loan-type-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #f1f5f9;
+      color: #16a34a;
+      font-size: 1.35rem;
+      transition: all 0.2s ease;
+    }
+
+    &:hover {
+      border-color: #86efac !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.1);
+    }
+
+    &.active-loan-type {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 2px solid #16a34a !important;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.15);
+
+      .loan-type-icon {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        color: #ffffff;
+      }
+    }
+  }
+
+  // Main Calculator Card
+  .calc-main-card {
+    border: 1px solid #edf2f7 !important;
+  }
+
+  .amount-input-group {
+    max-width: 180px;
+    .form-control {
+      border-color: #cbd5e1;
+      &:focus {
+        border-color: #16a34a;
+        box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.15);
+      }
+    }
+  }
+
+  // Custom Emerald Range Slider
+  .custom-range {
+    height: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &::-webkit-slider-runnable-track {
+      background: #e2e8f0;
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    &::-webkit-slider-thumb {
+      width: 22px;
+      height: 22px;
+      background: #16a34a;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+      margin-top: -7px;
+      transition: transform 0.15s ease;
+
+      &:hover {
+        transform: scale(1.15);
+      }
+    }
+  }
+
+  .preset-chip {
+    transition: all 0.15s ease;
+    border-color: #cbd5e1 !important;
+    &:hover {
+      background-color: #e2e8f0;
+    }
+  }
+
+  // Results Card
+  .calc-results-card {
+    border-color: #e2e8f0 !important;
+    padding: 1.5rem !important;
+
+    .emi-highlight-box {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border-color: #bbf7d0 !important;
+      padding: 1.4rem 1.25rem !important;
+
+      .emi-number {
+        font-size: 2.2rem;
+        letter-spacing: -0.5px;
+        line-height: 1;
+      }
+    }
+
+    .metric-card {
+      border-color: #e2e8f0 !important;
+      padding: 0.9rem 1rem !important;
+    }
+
+    .advisory-btn {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      border: none;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25) !important;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  // Feature Highlights Bottom Cards
+  .feature-card {
+    border-color: #e2e8f0 !important;
+    padding: 1.35rem 1.4rem !important;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  // Custom Scrollbar
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 4px;
+    }
+  }
+}

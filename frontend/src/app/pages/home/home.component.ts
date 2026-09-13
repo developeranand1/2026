@@ -3,6 +3,7 @@ import { HeroComponent } from './components/hero/hero.component';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { ProductsComponent } from './components/products/products.component';
 import { MandiRatesComponent } from './components/mandi-rates/mandi-rates.component';
+import { KisanLoanCalculatorComponent } from './components/kisan-loan-calculator/kisan-loan-calculator.component';
 import { BenefitsComponent } from './components/benefits/benefits.component';
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
 import { FarmerCtaComponent } from './components/farmer-cta/farmer-cta.component';
@@ -18,6 +19,7 @@ import { SeoService } from '../../core/seo.service';
     CategoriesComponent,
     ProductsComponent,
     MandiRatesComponent,
+    KisanLoanCalculatorComponent,
     HomeNewsComponent,
     BenefitsComponent,
     TestimonialsComponent,
