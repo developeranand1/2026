@@ -1,191 +1,249 @@
-<div class="crop-detail-container container py-4 animate-fade-in">
-  <!-- Back Button & Breadcrumbs -->
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <button type="button" class="btn btn-light border rounded-pill px-3 py-1.5 fs-7 fw-semibold" (click)="goBack()">
-      <i class="bi bi-arrow-left me-1"></i> Back To List
+<div class="crop-page">
+
+  <!-- ============================================== -->
+  <!-- STICKY TOP BAR -->
+  <!-- ============================================== -->
+  <header class="topbar">
+    <div class="topbar__inner">
+      <button type="button" class="icon-btn" title="Go back" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+
+      <nav aria-label="breadcrumb" class="crumb">
+        <a routerLink="/" class="crumb__link">Home</a>
+        <span class="crumb__sep">/</span>
+        <a routerLink="/mandi-rates" class="crumb__link">Mandi Marketplace</a>
+        <span class="crumb__sep">/</span>
+        <span class="crumb__current">{{ cropDetails?.cropName || 'Produce' }}</span>
+      </nav>
+
+      <div class="topbar__actions">
+        <button type="button" class="icon-btn" [class.is-active]="isSaved"
+          [title]="isSaved ? 'Saved to Wishlist' : 'Save to Wishlist'" (click)="toggleSaveCrop()">
+          <i class="bi" [class.bi-heart-fill]="isSaved" [class.bi-heart]="!isSaved"></i>
+        </button>
+        <button type="button" class="icon-btn" title="Share on WhatsApp" (click)="shareOnWhatsApp()">
+          <i class="bi bi-whatsapp"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="crop-page__body">
+
+    <!-- ============================================== -->
+    <!-- LOADING -->
+    <!-- ============================================== -->
+    <div *ngIf="isLoading" class="state-card">
+      <div class="state-card__spinner" role="status"></div>
+      <h5 class="state-card__title">Loading crop details…</h5>
+      <p class="state-card__text">Fetching live mandi specifications and verified seller contact.</p>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- NOT FOUND -->
+    <!-- ============================================== -->
+    <div *ngIf="!isLoading && !cropDetails" class="state-card">
+      <div class="state-card__icon state-card__icon--warn">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h4 class="state-card__title">Crop listing not available</h4>
+      <p class="state-card__text">
+        This listing is unavailable, expired, or has already been traded.
+      </p>
+      <a routerLink="/mandi-rates" class="btn-pill btn-pill--primary">Browse Marketplace</a>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================================== -->
+    <div *ngIf="!isLoading && cropDetails" class="layout">
+
+      <!-- ===== GALLERY ===== -->
+      <section class="gallery">
+        <div class="gallery__hero">
+          <img
+            [src]="(cropDetails.images && cropDetails.images.length > 0) ? cropDetails.images[activeImageIndex] : (cropDetails.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80')"
+            [alt]="cropDetails.cropName" class="gallery__img">
+
+          <span *ngIf="cropDetails.discountPercentage && cropDetails.discountPercentage > 0" class="tag tag--discount">
+            🔥 {{ cropDetails.discountPercentage }}% OFF
+          </span>
+
+          <span class="tag tag--type" [class.tag--buy]="cropDetails.type === 'buy'">
+            {{ cropDetails.type === 'buy' ? '🏬 Buyer Demand' : '🌾 Farmer Produce' }}
+          </span>
+
+          <span *ngIf="cropDetails.images && cropDetails.images.length > 1" class="tag tag--count">
+            <i class="bi bi-images"></i> {{ activeImageIndex + 1 }} / {{ cropDetails.images.length }}
+          </span>
+        </div>
+
+        <div *ngIf="cropDetails.images && cropDetails.images.length > 1" class="gallery__thumbs">
+          <button type="button" *ngFor="let img of cropDetails.images; let idx = index" class="thumb"
+            [class.thumb--active]="activeImageIndex === idx" (click)="setActiveImage(idx)">
+            <img [src]="img" [alt]="'Thumbnail ' + (idx + 1)">
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== INFO COLUMN ===== -->
+      <section class="info">
+
+        <div class="info__badges">
+          <span class="chip chip--muted">
+            <i class="bi bi-tag-fill"></i>{{ cropDetails.category || 'Agricultural Produce' }}
+          </span>
+          <span *ngIf="cropDetails.approvalStatus === 'approved' || cropDetails.isApproved" class="chip chip--success">
+            <i class="bi bi-patch-check-fill"></i>Verified Live
+          </span>
+        </div>
+
+        <h1 class="info__title">{{ cropDetails.cropName }}</h1>
+        <div class="info__meta">
+          <span><i class="bi bi-geo-alt-fill"></i>{{ cropDetails.location }}</span>
+          <span class="dot">•</span>
+          <span class="meta--success"><i class="bi bi-shield-check"></i>Direct Farm Gate</span>
+        </div>
+
+        <!-- Price card -->
+        <div class="price-card">
+          <div class="price-card__row">
+            <span class="price-card__label">Offer Price / भाव</span>
+            <div *ngIf="cropDetails.originalPrice && cropDetails.originalPrice > cropDetails.expectedPrice"
+              class="price-card__compare">
+              <span class="strike">₹{{ cropDetails.originalPrice | number }}</span>
+              <span class="save-badge">Save ₹{{ (cropDetails.originalPrice - cropDetails.expectedPrice) | number
+                }}</span>
+            </div>
+          </div>
+
+          <div class="price-card__main">
+            <span class="price-card__amount">₹{{ cropDetails.expectedPrice | number }}</span>
+            <span class="price-card__unit">/ {{ cropDetails.priceUnit || cropDetails.unit || 'Quintal' }}</span>
+          </div>
+
+          <div *ngIf="cropDetails.quantity && cropDetails.expectedPrice" class="price-card__total">
+            <span>Total batch value (approx.)</span>
+            <strong>₹{{ (cropDetails.quantity * cropDetails.expectedPrice) | number }}</strong>
+          </div>
+        </div>
+
+        <!-- Quick spec chips -->
+        <div class="spec-grid">
+          <div class="spec-chip">
+            <span class="spec-chip__label"><i class="bi bi-stack"></i>Quantity</span>
+            <strong>{{ cropDetails.quantity }} {{ cropDetails.unit || 'Qtl' }}</strong>
+          </div>
+          <div class="spec-chip">
+            <span class="spec-chip__label"><i class="bi bi-award-fill"></i>Variety / Grade</span>
+            <strong>{{ cropDetails.variety || cropDetails.grade || 'Standard' }}</strong>
+          </div>
+          <div class="spec-chip">
+            <span class="spec-chip__label"><i class="bi bi-boxes"></i>Subcategory</span>
+            <strong>{{ cropDetails.subcategory || 'Food Grain' }}</strong>
+          </div>
+          <div class="spec-chip">
+            <span class="spec-chip__label"><i class="bi bi-calendar-event"></i>Listed on</span>
+            <strong>{{ cropDetails.createdAt | date:'mediumDate' }}</strong>
+          </div>
+        </div>
+
+        <!-- Seller strip -->
+        <div class="seller">
+          <div class="seller__who">
+            <div class="seller__avatar"><i class="bi bi-person-fill"></i></div>
+            <div>
+              <h6 class="seller__name">{{ cropDetails.postedByName || 'KisanMarg Farmer' }}</h6>
+              <span class="seller__role"><i class="bi bi-shield-fill-check"></i>Verified {{ cropDetails.postedByRole ===
+                'buyer' ? 'Buyer' : 'Farmer' }}</span>
+            </div>
+          </div>
+          <div class="seller__phone">
+            <span>Mobile (protected)</span>
+            <strong [appMaskPhone]="cropDetails.postedByMobile">
+              +91 {{ cropDetails.postedByMobile | maskPhone:5:'X' }}
+            </strong>
+          </div>
+        </div>
+
+        <!-- Connect to team -->
+        <div class="team-box">
+          <div class="team-box__head">
+            <div class="team-box__icon"><i class="bi bi-headset"></i></div>
+            <div>
+              <h6>Connect to KisanMarg Team</h6>
+              <span>Assisted negotiation, sample test & doorstep transport</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn-pill btn-pill--primary btn-pill--lg btn-block"
+            (click)="connectToKisanMargTeam()">
+            <i class="bi bi-people-fill"></i> Connect to KisanMarg Team
+          </button>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- ===== SPECIFICATIONS & GUARANTEE ===== -->
+      <section class="panel panel--specs">
+        <h6 class="panel__head panel__head--simple"><i class="bi bi-file-earmark-text-fill"></i>Quality Specifications &
+          Delivery Terms</h6>
+
+        <div class="specs-box"
+          [innerHTML]="cropDetails.description || 'Quality certified agricultural produce. Reach out to the KisanMarg team or seller for physical sample inspection, moisture testing, and doorstep freight assistance.'">
+        </div>
+
+        <div class="guarantee">
+          <div class="guarantee__head">
+            <i class="bi bi-shield-fill-check"></i>
+            <strong>KisanMarg Safe Trade Guarantee</strong>
+          </div>
+
+          <div class="guarantee__grid">
+            <div class="guarantee__item">
+              <i class="bi bi-patch-check-fill guarantee__icon guarantee__icon--success"></i>
+              <span>KYC Verified</span>
+            </div>
+            <div class="guarantee__item">
+              <i class="bi bi-box-seam-fill guarantee__icon guarantee__icon--primary"></i>
+              <span>Sample Test</span>
+            </div>
+            <div class="guarantee__item">
+              <i class="bi bi-truck-front-fill guarantee__icon guarantee__icon--warn"></i>
+              <span>Logistics Aid</span>
+            </div>
+            <div class="guarantee__item">
+              <i class="bi bi-currency-rupee guarantee__icon guarantee__icon--success"></i>
+              <span>Fair Rate</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- STICKY MOBILE ACTION BAR -->
+  <!-- ============================================== -->
+  <div *ngIf="!isLoading && cropDetails" class="mobile-bar">
+    <a [href]="'tel:' + kisanMargSupport.phone" class="mobile-bar__btn mobile-bar__btn--outline">
+      <i class="bi bi-telephone-fill"></i>
+      <span>Call</span>
+    </a>
+    <button type="button" class="mobile-bar__btn mobile-bar__btn--outline" (click)="contactSeller()">
+      <i class="bi bi-person-lines-fill"></i>
+      <span>Seller</span>
     </button>
-
-    <nav aria-label="breadcrumb" class="d-none d-md-block">
-      <ol class="breadcrumb mb-0 fs-8">
-        <li class="breadcrumb-item"><a routerLink="/" class="text-decoration-none text-success">Home</a></li>
-        <li class="breadcrumb-item"><a routerLink="/mandi-rates" class="text-decoration-none text-success">Crop Marketplace</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{ cropDetails?.cropName || 'Product Specifications' }}</li>
-      </ol>
-    </nav>
+    <button type="button" class="mobile-bar__btn mobile-bar__btn--primary" (click)="connectToKisanMargTeam()">
+      <i class="bi bi-people-fill"></i>
+      <span>Connect to Team</span>
+    </button>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
-    <div class="spinner-border text-success mx-auto mb-2" role="status"></div>
-    <p class="text-muted small mb-0">Loading product details and quality specifications...</p>
-  </div>
-
-  <!-- Not Found State -->
-  <div *ngIf="!isLoading && !cropDetails" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
-    <i class="bi bi-exclamation-triangle fs-1 text-warning mb-2"></i>
-    <h4 class="fw-bold text-dark">Crop Produce Not Found</h4>
-    <p class="text-muted small mb-3">The requested crop listing details are unavailable or may have been deleted.</p>
-    <div>
-      <button type="button" class="btn btn-success rounded-pill px-4" (click)="goBack()">Go Back</button>
-    </div>
-  </div>
-
-  <!-- CROP DETAILS CONTENT -->
-  <div *ngIf="!isLoading && cropDetails" class="row g-4">
-    <!-- Left Column: Photo Gallery Carousel & Specs -->
-    <div class="col-lg-7">
-      <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white p-3 p-md-4 mb-4">
-        <!-- Main Large Photo View -->
-        <div class="position-relative rounded-4 overflow-hidden border shadow-sm mb-3 bg-light" style="min-height: 320px; max-height: 450px;">
-          <img [src]="(cropDetails.images && cropDetails.images.length > 0) ? cropDetails.images[activeImageIndex] : (cropDetails.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80')" alt="Crop Image" class="w-100 h-100 object-fit-contain" style="max-height: 450px;">
-          
-          <!-- Discount overlay badge -->
-          <span *ngIf="cropDetails.discountPercentage && cropDetails.discountPercentage > 0" class="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-3 py-1.5 fs-7 shadow-sm fw-bold">
-            {{ cropDetails.discountPercentage }}% OFF
-          </span>
-
-          <!-- Type Overlay Badge -->
-          <span class="position-absolute top-0 end-0 m-3 badge bg-dark text-white rounded-pill px-3 py-1.5 fs-7 shadow-sm fw-bold">
-            {{ cropDetails.type === 'buy' ? '🏬 Buyer Purchasing Demand' : '🌾 Farmer Sale Listing' }}
-          </span>
-        </div>
-
-        <!-- Thumbnails Gallery Row -->
-        <div *ngIf="cropDetails.images && cropDetails.images.length > 1" class="d-flex gap-2 overflow-x-auto pb-2">
-          <img *ngFor="let img of cropDetails.images; let idx = index" [src]="img" class="rounded-3 border cursor-pointer object-fit-cover shadow-xs" [class.border-success]="activeImageIndex === idx" [class.border-3]="activeImageIndex === idx" style="width: 75px; height: 75px;" (click)="setActiveImage(idx)">
-        </div>
-      </div>
-
-      <!-- Description & Full Rich Specifications Card -->
-      <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-        <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-          <i class="bi bi-file-text-fill text-success"></i>
-          Quality Specifications & Delivery Terms
-        </h5>
-
-        <div class="p-3 bg-light rounded-3 border fs-7 text-secondary lh-lg" [innerHTML]="cropDetails.description || 'No detailed specifications added for this produce.'"></div>
-      </div>
-    </div>
-
-    <!-- Right Column: Price Card & Seller Contact Info -->
-    <div class="col-lg-5">
-      <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4 position-sticky" style="top: 90px;">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 fs-8">{{ cropDetails.category }}</span>
-          
-          <!-- Live Approval Status Badge -->
-          <span *ngIf="cropDetails.approvalStatus === 'approved' || cropDetails.isApproved" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-8 fw-bold">
-            <i class="bi bi-check-circle-fill me-1"></i>Approved & Live ✅
-          </span>
-          <span *ngIf="cropDetails.approvalStatus === 'pending' && !cropDetails.isApproved" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1 fs-8 fw-bold">
-            <i class="bi bi-clock-history me-1"></i>Pending Admin Review ⏳
-          </span>
-          <span *ngIf="cropDetails.approvalStatus === 'rejected'" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fs-8 fw-bold">
-            <i class="bi bi-x-circle-fill me-1"></i>Admin Rejected ❌
-          </span>
-        </div>
-
-        <h3 class="fw-bold text-dark mb-1">{{ cropDetails.cropName }}</h3>
-        <p class="text-muted fs-8 mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ cropDetails.location }}</p>
-
-        <!-- Pricing Card -->
-        <div class="p-3.5 bg-success-subtle bg-opacity-25 rounded-4 mb-4 border border-success-subtle">
-          <div class="d-flex align-items-baseline justify-content-between">
-            <div>
-              <span class="fs-8 text-muted d-block text-uppercase fw-semibold">Offer Rate</span>
-              <h2 class="fw-bold text-success mb-0">₹{{ cropDetails.expectedPrice | number }} <small class="fs-6 text-muted">/ {{ cropDetails.priceUnit || 'Quintal' }}</small></h2>
-            </div>
-            <div *ngIf="cropDetails.originalPrice && cropDetails.originalPrice > cropDetails.expectedPrice" class="text-end">
-              <span class="fs-8 text-muted d-block">Original Rate</span>
-              <span class="fs-6 text-muted text-decoration-line-through">₹{{ cropDetails.originalPrice | number }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Spec Highlights List -->
-        <div class="mb-4">
-          <h6 class="fw-bold text-dark fs-7 mb-2 text-uppercase">Trade Parameters:</h6>
-          <div class="row g-2">
-            <div class="col-6">
-              <div class="p-2.5 bg-light rounded-3 border">
-                <span class="fs-8 text-muted d-block">Quantity</span>
-                <strong class="text-dark fs-7">{{ cropDetails.quantity }} {{ cropDetails.unit }}</strong>
-              </div>
-            </div>
-
-            <div class="col-6">
-              <div class="p-2.5 bg-light rounded-3 border">
-                <span class="fs-8 text-muted d-block">Variety / Grade</span>
-                <strong class="text-dark fs-7">{{ cropDetails.variety || 'Grade A' }}</strong>
-              </div>
-            </div>
-
-            <div class="col-6">
-              <div class="p-2.5 bg-light rounded-3 border">
-                <span class="fs-8 text-muted d-block">Subcategory</span>
-                <strong class="text-dark fs-7">{{ cropDetails.subcategory || 'Standard' }}</strong>
-              </div>
-            </div>
-
-            <div class="col-6">
-              <div class="p-2.5 bg-light rounded-3 border">
-                <span class="fs-8 text-muted d-block">Posted On</span>
-                <strong class="text-dark fs-7">{{ cropDetails.createdAt | date:'mediumDate' }}</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Contact Trader Card -->
-        <div class="p-3 bg-light rounded-4 border mb-4">
-          <div class="d-flex align-items-center gap-3">
-            <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">
-              <i class="bi bi-person-circle"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold text-dark mb-0">{{ cropDetails.postedByName || 'KrisiMarg Farmer' }}</h6>
-              <span class="fs-8 text-muted d-block"><i class="bi bi-patch-check-fill text-success me-1"></i>Verified {{ cropDetails.postedByRole === 'buyer' ? 'Wholesale Buyer' : 'Farmer' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Direct Action Buttons -->
-        <div class="d-grid gap-2 mb-3">
-          <button type="button" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" (click)="contactSeller()">
-            <i class="bi bi-telephone-fill"></i> Contact {{ cropDetails.postedByRole === 'buyer' ? 'Buyer' : 'Farmer' }} Now
-          </button>
-
-          <!-- WhatsApp Share Button with Graphic Card Preview -->
-          <button type="button" class="btn btn-outline-success rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-xs" (click)="shareOnWhatsApp()">
-            <i class="bi bi-whatsapp fs-5 text-success"></i> Share on WhatsApp (With Photo & Price)
-          </button>
-        </div>
-
-        <!-- Social Share Pills -->
-        <div class="p-3 bg-light rounded-4 border text-center">
-          <span class="fs-8 text-muted d-block mb-2 fw-semibold text-uppercase">Share this Produce:</span>
-          <div class="d-flex align-items-center justify-content-center gap-2">
-            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Share on Facebook" (click)="shareOnSocial('facebook')">
-              <i class="bi bi-facebook text-primary"></i>
-            </button>
-            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Share on Twitter" (click)="shareOnSocial('twitter')">
-              <i class="bi bi-twitter-x text-dark"></i>
-            </button>
-            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Share on Telegram" (click)="shareOnSocial('telegram')">
-              <i class="bi bi-telegram text-info"></i>
-            </button>
-            <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 38px; height: 38px;" title="Copy Produce Link" (click)="shareOnSocial('copy')">
-              <i class="bi bi-link-45deg text-secondary fs-5"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="mt-3 text-center">
-          <button type="button" class="btn btn-link text-decoration-none text-muted py-1 fs-8" (click)="goBack()">
-            <i class="bi bi-arrow-left me-1"></i> Return to Crop Marketplace
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
