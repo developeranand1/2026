@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
-import { AdminDashboardService } from '../../core/admin-dashboard.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,7 +14,6 @@ import Swal from 'sweetalert2';
 })
 export class AdminLoginComponent implements OnInit {
   private authService = inject(AuthService);
-  private adminDashboardService = inject(AdminDashboardService);
   private router = inject(Router);
 
   mobile = '';
@@ -31,35 +29,6 @@ export class AdminLoginComponent implements OnInit {
         this.router.navigate(['/admin/dashboard']);
       }
     }
-  }
-
-  fillAdminCredentials(): void {
-    this.mobile = '9999999999';
-    this.password = 'admin123';
-  }
-
-  seedAdminUser(): void {
-    this.isLoading = true;
-    this.adminDashboardService.seedAdminUser().subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        this.fillAdminCredentials();
-        Swal.fire({
-          title: 'Admin Created!',
-          text: 'Default Admin user has been seeded into Database. Credentials filled.',
-          icon: 'success',
-          confirmButtonColor: '#2E7D32'
-        });
-      },
-      error: (err) => {
-        this.isLoading = false;
-        Swal.fire({
-          title: 'Seed Error',
-          text: err.error?.message || 'Failed to seed admin user',
-          icon: 'error'
-        });
-      }
-    });
   }
 
   onSubmitAdminLogin(): void {

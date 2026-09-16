@@ -1,0 +1,717 @@
+<div class="training-admin-container">
+  <!-- Floating Toast Alert -->
+  <div *ngIf="toastMessage" class="toast-floating alert" [ngClass]="'alert-' + toastType" role="alert">
+    <i class="bi" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill me-2' : 'bi-exclamation-triangle-fill me-2'"></i>
+    {{ toastMessage }}
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VIEW 1: DASHBOARD & TRAININGS LIST -->
+  <!-- ========================================== -->
+  <div *ngIf="viewMode === 'list'">
+    <!-- Page Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <h2 class="page-title d-flex align-items-center gap-2 mb-1">
+          <i class="bi bi-mortarboard-fill text-success fs-3"></i>
+          <span>Farmer Trainings & Workshops (किसान प्रशिक्षण एवं कार्यशालाएं)</span>
+        </h2>
+        <p class="page-subtitle text-muted mb-0">
+          Manage upcoming farmer training camps, upload village event photos, track attendee lists & publish successful workshops.
+        </p>
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="seedDemoData()">
+          <i class="bi bi-database-fill-gear me-1"></i> Seed Demo Camps
+        </button>
+        <button class="btn btn-success btn-sm rounded-pill px-3.5 shadow-sm fw-bold" (click)="navigateToCreate()">
+          <i class="bi bi-plus-lg me-1"></i> + Schedule New Training
+        </button>
+      </div>
+    </div>
+
+    <!-- Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-total" (click)="filterByStatus('All')" [class.active-stat]="selectedStatusFilter === 'All'">
+          <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+            <i class="bi bi-easel-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.total }}</span>
+            <span class="stat-label">Total Trainings</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-upcoming" (click)="filterByStatus('Upcoming')" [class.active-stat]="selectedStatusFilter === 'Upcoming'">
+          <div class="stat-icon-wrapper bg-success-subtle text-success">
+            <i class="bi bi-calendar2-check-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.upcoming }}</span>
+            <span class="stat-label">Upcoming Camps</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-completed" (click)="filterByStatus('Completed')" [class.active-stat]="selectedStatusFilter === 'Completed'">
+          <div class="stat-icon-wrapper bg-warning-subtle text-warning">
+            <i class="bi bi-award-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.completed }}</span>
+            <span class="stat-label">Successful Sessions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card stat-farmers">
+          <div class="stat-icon-wrapper bg-info-subtle text-info">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stats.totalFarmersTrained || 240 }}</span>
+            <span class="stat-label">Farmers Trained</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+      <div class="card-body p-3">
+        <div class="row g-3 align-items-center">
+          <!-- Status Tabs -->
+          <div class="col-12 col-lg-auto">
+            <div class="status-tab-group d-flex flex-wrap gap-1">
+              <button
+                *ngFor="let tab of ['All', 'Upcoming', 'Ongoing', 'Completed']"
+                class="btn btn-sm rounded-pill px-3"
+                [ngClass]="selectedStatusFilter === tab ? 'btn-success fw-bold' : 'btn-light text-secondary'"
+                (click)="filterByStatus(tab)">
+                {{ tab === 'All' ? 'All Sessions' : tab === 'Upcoming' ? '📅 Upcoming' : tab === 'Completed' ? '🏆 Successful' : tab }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Dropdown -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <select class="form-select form-select-sm rounded-pill" [(ngModel)]="selectedCategoryFilter" (change)="onFilterChange()">
+              <option value="All">All Topic Categories</option>
+              <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+
+          <!-- Search Input -->
+          <div class="col-12 col-sm-6 col-lg-auto ms-lg-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
+              <input
+                type="text"
+                class="form-control bg-light border-start-0 rounded-end-pill"
+                placeholder="Search title, village, trainer..."
+                [(ngModel)]="searchQuery"
+                (input)="onFilterChange()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="text-muted mt-2">Loading training events...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && trainings.length === 0" class="card shadow-sm border-0 rounded-4 text-center py-5">
+      <div class="card-body">
+        <i class="bi bi-mortarboard text-muted" style="font-size: 3.5rem;"></i>
+        <h5 class="fw-bold mt-3 text-dark">No Training Sessions Found</h5>
+        <p class="text-muted mb-3">No trainings match your current filter criteria.</p>
+        <button class="btn btn-success btn-sm rounded-pill px-4" (click)="navigateToCreate()">
+          <i class="bi bi-plus-lg me-1"></i> Create First Training
+        </button>
+      </div>
+    </div>
+
+    <!-- Trainings Grid -->
+    <div *ngIf="!isLoading && trainings.length > 0" class="row g-3">
+      <div class="col-12 col-md-6 col-xl-4" *ngFor="let item of trainings">
+        <div class="card h-100 border-0 shadow-sm rounded-4 training-admin-card overflow-hidden">
+          <!-- Image Banner -->
+          <div class="card-img-wrapper position-relative cursor-pointer" (click)="navigateToDetails(item._id)">
+            <img [src]="item.coverImage || 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=600&q=80'" alt="Cover" class="card-img-top object-fit-cover" style="height: 180px;">
+            
+            <!-- Category Pill -->
+            <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1.5 small backdrop-blur">
+              {{ item.category }}
+            </span>
+
+            <!-- Status Badge -->
+            <span class="badge position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1.5 shadow-sm fw-bold"
+              [ngClass]="{
+                'bg-success text-white': item.status === 'Upcoming',
+                'bg-warning text-dark': item.status === 'Ongoing',
+                'bg-primary text-white': item.status === 'Completed',
+                'bg-danger text-white': item.status === 'Cancelled'
+              }">
+              <i class="bi" [ngClass]="{
+                'bi-calendar-event': item.status === 'Upcoming',
+                'bi-hourglass-split': item.status === 'Ongoing',
+                'bi-trophy-fill': item.status === 'Completed',
+                'bi-x-circle': item.status === 'Cancelled'
+              }"></i>
+              {{ item.status === 'Completed' ? 'Successful' : item.status }}
+            </span>
+
+            <!-- Photos Count Pill -->
+            <span *ngIf="item.galleryImages && item.galleryImages.length > 0" class="badge bg-black bg-opacity-60 text-white position-absolute bottom-0 end-0 m-2 rounded-pill px-2 py-1 small">
+              <i class="bi bi-camera-fill me-1"></i> {{ item.galleryImages.length }} Photos
+            </span>
+          </div>
+
+          <div class="card-body p-3.5 d-flex flex-column">
+            <!-- Title -->
+            <h5 class="fw-bold text-dark mb-2 title-clamp cursor-pointer" (click)="navigateToDetails(item._id)" [title]="item.title">
+              {{ item.title }}
+            </h5>
+
+            <!-- Village & Venue Location -->
+            <div class="location-pill mb-2 p-2 rounded-3 bg-light d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt-fill text-danger fs-6"></i>
+              <div class="small text-truncate">
+                <strong class="text-dark">{{ item.village }}</strong>, {{ item.district }}
+                <div class="text-muted text-truncate" style="font-size: 11px;">{{ item.fullAddress }}</div>
+              </div>
+            </div>
+
+            <!-- Date & Time Info -->
+            <div class="row g-2 mb-3 small">
+              <div class="col-6">
+                <span class="text-muted d-block" style="font-size: 11px;">TRAINING DATE</span>
+                <strong class="text-success"><i class="bi bi-calendar3 me-1"></i>{{ item.startDate | date:'mediumDate' }}</strong>
+              </div>
+              <div class="col-6">
+                <span class="text-muted d-block" style="font-size: 11px;">TIME & DURATION</span>
+                <span class="text-dark"><i class="bi bi-clock me-1"></i>{{ item.time }}</span>
+              </div>
+            </div>
+
+            <!-- Trainer & Registered Attendees -->
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto small">
+              <div>
+                <span class="text-muted d-block" style="font-size: 11px;">TRAINER / EXPERT</span>
+                <span class="fw-semibold text-dark text-truncate d-inline-block" style="max-width: 140px;">
+                  <i class="bi bi-person-badge me-1 text-primary"></i>{{ item.trainerName }}
+                </span>
+              </div>
+              <div class="text-end">
+                <span class="text-muted d-block" style="font-size: 11px;">ATTENDEES</span>
+                <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold">
+                  <i class="bi bi-people-fill me-1"></i>{{ item.participants?.length || item.registeredCount || 0 }} / {{ item.maxCapacity || 50 }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Buttons Bar -->
+            <div class="d-flex align-items-center justify-content-between gap-2 pt-3 border-top mt-3">
+              <button class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold flex-grow-1" (click)="navigateToDetails(item._id)">
+                <i class="bi bi-eye me-1"></i> Details & Members
+              </button>
+
+              <div class="d-flex gap-1">
+                <button class="btn btn-light btn-sm rounded-circle p-1.5" (click)="navigateToEdit(item._id)" title="Edit Training">
+                  <i class="bi bi-pencil-fill text-secondary"></i>
+                </button>
+                <button class="btn btn-light btn-sm rounded-circle p-1.5" (click)="deleteTraining(item)" title="Delete Training">
+                  <i class="bi bi-trash3-fill text-danger"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VIEW 2: DEDICATED FULL-PAGE CREATE / EDIT FORM -->
+  <!-- ========================================== -->
+  <div *ngIf="viewMode === 'form'">
+    <!-- Top Header with Back Button -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" (click)="navigateToList()">
+          <i class="bi bi-arrow-left me-1"></i> Back to Trainings List
+        </button>
+        <div>
+          <h3 class="fw-bold text-dark mb-0">
+            <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square text-primary' : 'bi-plus-circle-fill text-success'"></i>
+            {{ isEditMode ? 'Edit Training Session' : 'Schedule New Farmer Training Camp' }}
+          </h3>
+          <small class="text-muted">Fill in the event details, venue address, agenda topics, and upload cover & gallery photos.</small>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-light rounded-pill px-4" (click)="navigateToList()">Cancel</button>
+        <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" (click)="saveTraining()" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!isSaving" class="bi bi-check2 me-1"></i>
+          {{ isEditMode ? 'Update Training' : 'Save & Publish Training' }}
+        </button>
+      </div>
+    </div>
+
+    <form (ngSubmit)="saveTraining()">
+      <div class="row g-4">
+        <!-- Left Main Column -->
+        <div class="col-12 col-lg-8">
+          <!-- Card 1: Core Information -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h5 class="fw-bold text-success mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-info-circle-fill"></i>
+              1. Training Information & Topics (प्रशिक्षण विवरण)
+            </h5>
+
+            <div class="row g-3">
+              <!-- Title -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Training Title (प्रशिक्षण का विषय/शीर्षक) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-lg fs-6" placeholder="उदा. उन्नत जैविक खेती एवं वर्मीकम्पोस्ट निर्माण व्यावहारिक प्रशिक्षण" [(ngModel)]="formData.title" name="title" required>
+              </div>
+
+              <!-- Category -->
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Topic Category (श्रेणी) <span class="text-danger">*</span></label>
+                <select class="form-select" [(ngModel)]="formData.category" name="category" required>
+                  <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                </select>
+              </div>
+
+              <!-- Status -->
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Training Status (स्थिति) <span class="text-danger">*</span></label>
+                <select class="form-select" [(ngModel)]="formData.status" name="status">
+                  <option value="Upcoming">📅 Upcoming (आगामी शिविर)</option>
+                  <option value="Ongoing">⏳ Ongoing (चल रहा है)</option>
+                  <option value="Completed">🏆 Completed / Successful (सफलतापूर्वक संपन्न)</option>
+                  <option value="Cancelled">❌ Cancelled (रद्द)</option>
+                </select>
+              </div>
+
+              <!-- Description -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Training Description & Syllabus (प्रशिक्षण का पूर्ण विवरण)</label>
+                <textarea class="form-control" rows="4" placeholder="इस प्रशिक्षण शिविर में किसान भाइयों को क्या सिखाया जाएगा..." [(ngModel)]="formData.description" name="description"></textarea>
+              </div>
+
+              <!-- Topics Covered -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Key Topics Covered (मुख्य सीखने योग्य बिंदु - कॉमा से अलग करें)</label>
+                <input type="text" class="form-control" placeholder="उदा. जीवामृत निर्माण, वर्मीकम्पोस्ट बेड स्थापना, प्राकृतिक कीट नियंत्रक, 80% सरकारी सब्सिडी" [(ngModel)]="formData.topicsInput" name="topicsInput">
+                <small class="text-muted">Separate multiple topics with a comma.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Location & Venue -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h5 class="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt-fill"></i>
+              2. Venue & Location Address (स्थान व पता)
+            </h5>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">Village / Gaon (गांव/ग्राम पंचायत) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="उदा. मगहर (Maghar)" [(ngModel)]="formData.village" name="village" required>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">District (ज़िला) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="उदा. संत कबीर नगर" [(ngModel)]="formData.district" name="district" required>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">State (राज्य)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.state" name="state">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Full Address & Landmark (सटीक पता व स्थल) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="उदा. किसान सेवा केंद्र, निकट कबीर समाधि स्थल, मगहर ब्लॉक" [(ngModel)]="formData.fullAddress" name="fullAddress" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Date, Timing & Capacity -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-calendar-event-fill text-warning"></i>
+              3. Schedule, Timing & Capacity (दिनांक व समय)
+            </h5>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold">Start Date (दिनांक) <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" [(ngModel)]="formData.startDate" name="startDate" required>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold">End Date</label>
+                <input type="date" class="form-control" [(ngModel)]="formData.endDate" name="endDate">
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold">Time (समय)</label>
+                <input type="text" class="form-control" placeholder="10:00 AM - 02:00 PM" [(ngModel)]="formData.time" name="time">
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold">Duration (अवधि)</label>
+                <input type="text" class="form-control" placeholder="1 Day (4 Hours)" [(ngModel)]="formData.duration" name="duration">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Max Capacity (सीट क्षमता)</label>
+                <input type="number" class="form-control" [(ngModel)]="formData.maxCapacity" name="maxCapacity">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Registration Fee (शुल्क)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.fee" name="fee">
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Success Report (Visible if Completed) -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-start border-4 border-warning" *ngIf="formData.status === 'Completed'">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-trophy-fill text-warning"></i>
+              4. Successful Execution Report (सफल सत्र रिपोर्ट)
+            </h5>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label fw-semibold">Success Summary (सफलता सारांश)</label>
+                <textarea class="form-control" rows="3" placeholder="सत्र में कितने किसानों ने भाग लिया, क्या परिणाम रहे..." [(ngModel)]="formData.successSummary" name="successSummary"></textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Key Achievements (उपलब्धियां - कॉमा से अलग करें)</label>
+                <input type="text" class="form-control" placeholder="उदा. 55 किसानों को प्रमाण पत्र, 12 ऑन-स्पॉट किट बुकिंग, 100% बाय-बैक अनुबंध" [(ngModel)]="formData.keyAchievementsInput" name="keyAchievementsInput">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side Column -->
+        <div class="col-12 col-lg-4">
+          <!-- Card 5: Trainer & Organizer Details -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-person-badge-fill text-primary"></i>
+              Trainer & Expert Details
+            </h5>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label fw-semibold">Trainer Name (प्रशिक्षक का नाम) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="उदा. डॉ. आर. के. वर्मा" [(ngModel)]="formData.trainerName" name="trainerName" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Trainer Designation / KVK</label>
+                <input type="text" class="form-control" placeholder="उदा. KVK वैज्ञानिक व जैविक सलाहकार" [(ngModel)]="formData.trainerDesignation" name="trainerDesignation">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Organizing Body</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.organizer" name="organizer">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Coordinator Name</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.contactPerson" name="contactPerson">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Helpline / WhatsApp No.</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.contactPhone" name="contactPhone">
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6: Cover Image & Gallery Photos -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-image-fill text-success"></i>
+              Images & Event Photos
+            </h5>
+
+            <!-- Cover Image -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Cover Banner Image (मुख्य बैनर फ़ोटो)</label>
+              <input type="file" class="form-control mb-2" accept="image/*" (change)="onCoverImageSelected($event)">
+              <input type="text" class="form-control form-control-sm" placeholder="या इमेज URL पेस्ट करें" [(ngModel)]="formData.coverImage" name="coverImage">
+
+              <div *ngIf="formData.coverImage" class="mt-2 text-center">
+                <img [src]="formData.coverImage" alt="Cover preview" class="rounded-3 shadow-sm object-fit-cover w-100" style="height: 140px;">
+              </div>
+            </div>
+
+            <!-- Gallery Images -->
+            <div class="border-top pt-3">
+              <label class="form-label fw-semibold d-flex justify-content-between align-items-center">
+                <span>Event Gallery Photos</span>
+                <span class="badge bg-secondary rounded-pill">{{ formData.galleryImages.length }} Photos</span>
+              </label>
+
+              <input type="file" class="form-control form-control-sm mb-2" multiple accept="image/*" (change)="onGalleryFileSelected($event)">
+              
+              <div class="input-group input-group-sm mb-2">
+                <input type="text" class="form-control" placeholder="Add Photo URL" [(ngModel)]="formData.newGalleryUrl" name="newGalleryUrl">
+                <button type="button" class="btn btn-outline-success" (click)="addGalleryUrl()">+ Add</button>
+              </div>
+
+              <!-- Gallery Preview Grid -->
+              <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="formData.galleryImages.length > 0">
+                <div class="position-relative" *ngFor="let img of formData.galleryImages; let i = index">
+                  <img [src]="img" class="rounded-3 object-fit-cover shadow-sm" style="width: 75px; height: 55px;">
+                  <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 p-0 d-flex align-items-center justify-content-center" style="width: 18px; height: 18px; transform: translate(30%, -30%);" (click)="removeGalleryImage(i)">
+                    <i class="bi bi-x" style="font-size: 11px;"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Bottom Action Bar -->
+      <div class="d-flex justify-content-end gap-2 p-3 bg-white rounded-4 shadow-sm border mt-3">
+        <button type="button" class="btn btn-light rounded-pill px-4" (click)="navigateToList()">Cancel</button>
+        <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!isSaving" class="bi bi-check2 me-1"></i>
+          {{ isEditMode ? 'Update Training Session' : 'Save & Publish Training Session' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VIEW 3: DEDICATED FULL-PAGE DETAILS & ATTENDEES VIEW -->
+  <!-- ========================================== -->
+  <div *ngIf="viewMode === 'details' && activeTraining">
+    <!-- Top Action Bar -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" (click)="navigateToList()">
+          <i class="bi bi-arrow-left me-1"></i> Back to All Trainings
+        </button>
+        <div>
+          <span class="badge rounded-pill px-3 py-1 mb-1 fw-bold"
+            [ngClass]="{
+              'bg-success text-white': activeTraining.status === 'Upcoming',
+              'bg-warning text-dark': activeTraining.status === 'Ongoing',
+              'bg-primary text-white': activeTraining.status === 'Completed',
+              'bg-danger text-white': activeTraining.status === 'Cancelled'
+            }">
+            {{ activeTraining.status === 'Completed' ? '🏆 Successful Session' : activeTraining.status }}
+          </span>
+          <h3 class="fw-bold text-dark mb-0">{{ activeTraining.title }}</h3>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Status Dropdown Switcher -->
+        <div class="dropdown">
+          <button class="btn btn-outline-dark btn-sm rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
+            Change Status ({{ activeTraining.status }})
+          </button>
+          <ul class="dropdown-menu shadow border-0">
+            <li><a class="dropdown-item" (click)="changeActiveTrainingStatus('Upcoming')">📅 Mark as Upcoming</a></li>
+            <li><a class="dropdown-item" (click)="changeActiveTrainingStatus('Ongoing')">⏳ Mark as Ongoing</a></li>
+            <li><a class="dropdown-item text-success fw-bold" (click)="changeActiveTrainingStatus('Completed')">🏆 Mark as Successfully Completed</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" (click)="changeActiveTrainingStatus('Cancelled')">❌ Mark as Cancelled</a></li>
+          </ul>
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" (click)="printAttendeeList()">
+          <i class="bi bi-printer me-1"></i> Print Roster
+        </button>
+
+        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3.5 shadow-sm fw-bold" (click)="navigateToEdit(activeTraining._id)">
+          <i class="bi bi-pencil-square me-1"></i> Edit Training
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Left Column: Details & Photo Gallery -->
+      <div class="col-12 col-lg-7">
+        <!-- Banner & Core Details Card -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
+          <img [src]="activeTraining.coverImage || 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1000&q=80'" alt="Cover" class="w-100 object-fit-cover" style="height: 240px;">
+          
+          <div class="card-body p-4">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1.5 fw-bold">{{ activeTraining.category }}</span>
+              <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5"><i class="bi bi-calendar3 me-1 text-success"></i>{{ activeTraining.startDate | date:'fullDate' }}</span>
+              <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5"><i class="bi bi-clock me-1 text-warning"></i>{{ activeTraining.time }}</span>
+            </div>
+
+            <h5 class="fw-bold text-dark mb-2">Training Agenda & Description:</h5>
+            <p class="text-secondary mb-4">{{ activeTraining.description }}</p>
+
+            <!-- Topics List -->
+            <div *ngIf="activeTraining.topics && activeTraining.topics.length > 0" class="mb-4">
+              <h6 class="fw-bold text-dark mb-2">Topics Covered (पाठ्यक्रम बिंदु):</h6>
+              <ul class="list-group list-group-flush rounded-3 border">
+                <li class="list-group-item d-flex align-items-center gap-2 small" *ngFor="let top of activeTraining.topics">
+                  <i class="bi bi-check2-circle text-success fs-6"></i>
+                  <span>{{ top }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Venue & Trainer Info -->
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                  <small class="text-muted text-uppercase fw-bold d-block mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Venue & Address:</small>
+                  <strong class="text-dark d-block">{{ activeTraining.village }}, {{ activeTraining.district }}</strong>
+                  <span class="text-secondary small">{{ activeTraining.fullAddress }}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                  <small class="text-muted text-uppercase fw-bold d-block mb-1"><i class="bi bi-person-badge text-primary me-1"></i>Trainer & Expert:</small>
+                  <strong class="text-dark d-block">{{ activeTraining.trainerName }}</strong>
+                  <span class="text-secondary small">{{ activeTraining.trainerDesignation }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Photo Gallery Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-images text-success"></i>
+              Event & Demonstration Photo Gallery
+            </h5>
+            
+            <label class="btn btn-outline-success btn-sm rounded-pill px-3 mb-0 cursor-pointer">
+              <i class="bi bi-camera-fill me-1"></i> + Upload Photo
+              <input type="file" hidden accept="image/*" (change)="onDetailGalleryPhotoSelected($event)">
+            </label>
+          </div>
+
+          <div class="row g-2" *ngIf="activeTraining.galleryImages && activeTraining.galleryImages.length > 0">
+            <div class="col-4 col-sm-3" *ngFor="let img of activeTraining.galleryImages">
+              <a [href]="img" target="_blank">
+                <img [src]="img" class="rounded-3 shadow-sm object-fit-cover w-100" style="height: 100px;">
+              </a>
+            </div>
+          </div>
+
+          <div *ngIf="!activeTraining.galleryImages || activeTraining.galleryImages.length === 0" class="text-center py-4 bg-light rounded-3">
+            <i class="bi bi-camera text-muted fs-3"></i>
+            <p class="text-muted small mb-0 mt-1">No event photos uploaded yet. Click '+ Upload Photo' to add.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Registered Farmers / Attendees Roster -->
+      <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-people-fill text-success"></i>
+                Enrolled Farmers List
+              </h5>
+              <small class="text-muted">Total: {{ activeTraining.participants?.length || 0 }} / {{ activeTraining.maxCapacity || 50 }}</small>
+            </div>
+            <span class="badge bg-success rounded-pill px-3 py-1.5 fw-bold">
+              {{ activeTraining.participants?.length || 0 }} Enrolled
+            </span>
+          </div>
+
+          <!-- Add Manual Farmer Form -->
+          <div class="card border rounded-3 p-3 mb-3 bg-light">
+            <h6 class="fw-bold text-success mb-2 small text-uppercase">+ Add Offline / Walk-in Farmer</h6>
+            <div class="row g-2">
+              <div class="col-12">
+                <input type="text" class="form-control form-control-sm" placeholder="Farmer Full Name *" [(ngModel)]="newParticipant.name">
+              </div>
+              <div class="col-6">
+                <input type="tel" class="form-control form-control-sm" placeholder="Mobile No. *" [(ngModel)]="newParticipant.phone">
+              </div>
+              <div class="col-6">
+                <input type="text" class="form-control form-control-sm" placeholder="Village / Gaon" [(ngModel)]="newParticipant.village">
+              </div>
+              <div class="col-12">
+                <button type="button" class="btn btn-success btn-sm w-100 rounded-pill fw-bold" (click)="addManualParticipant()">
+                  <i class="bi bi-plus-lg me-1"></i> Add Farmer to Roster
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attendees Table -->
+          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light sticky-top">
+                <tr class="small text-muted">
+                  <th>#</th>
+                  <th>Farmer</th>
+                  <th>Mobile</th>
+                  <th>Status</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of activeTraining.participants; let idx = index">
+                  <td>{{ idx + 1 }}</td>
+                  <td>
+                    <strong class="text-dark d-block">{{ p.name }}</strong>
+                    <small class="text-muted">{{ p.village || 'N/A' }}</small>
+                  </td>
+                  <td><i class="bi bi-telephone text-muted me-1 small"></i>{{ p.phone }}</td>
+                  <td>
+                    <span class="badge rounded-pill px-2 py-1"
+                      [ngClass]="p.status === 'Certified' ? 'bg-primary' : p.status === 'Attended' ? 'bg-success' : 'bg-warning text-dark'">
+                      {{ p.status }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-1" (click)="removeParticipant(p._id)" title="Remove attendee">
+                      <i class="bi bi-trash" style="font-size: 11px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!activeTraining.participants || activeTraining.participants.length === 0">
+                  <td colspan="5" class="text-center py-4 text-muted small">
+                    No farmers registered yet for this session.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

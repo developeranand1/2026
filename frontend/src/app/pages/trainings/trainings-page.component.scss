@@ -1,0 +1,152 @@
+.trainings-page-wrapper {
+  background-color: #f8fafc;
+  min-height: 100vh;
+
+  .trainings-hero {
+    background: linear-gradient(135deg, #1b4d3e 0%, #2e7d32 50%, #155724 100%);
+    position: relative;
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-title {
+      line-height: 1.25;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-callout-card {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  .nav-pills-custom {
+    .tab-btn {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid transparent;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+      &:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+
+      &.active-tab {
+        background: #2e7d32;
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(46, 125, 50, 0.35);
+      }
+    }
+  }
+
+  .training-card,
+  .successful-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .camp-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 1.15rem;
+      min-height: 2.9rem;
+    }
+
+    .text-truncate-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .min-h-200 {
+      min-height: 220px;
+    }
+
+    .date-badge-overlay {
+      min-width: 60px;
+    }
+  }
+
+  .gallery-thumb {
+    transition: transform 0.2s ease;
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  // Modals & Lightbox
+  .modal-backdrop-custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1050;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .modal-dialog-custom {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92%;
+    max-width: 520px;
+    z-index: 1055;
+    animation: zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &.modal-lg {
+      max-width: 800px;
+    }
+  }
+
+  .lightbox-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1060;
+
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      animation: zoomIn 0.25s ease-out;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}

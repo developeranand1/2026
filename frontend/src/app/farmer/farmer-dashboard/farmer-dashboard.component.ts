@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { MandiRateService } from '../../pages/home/mandi-rate.service';
+import { TrainingService, Training } from '../../core/training.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,16 +17,19 @@ import Swal from 'sweetalert2';
 export class FarmerDashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private mandiRateService = inject(MandiRateService);
+  private trainingService = inject(TrainingService);
   private router = inject(Router);
 
   isLoggedIn = false;
   farmerUser: any = null;
   isLoadingRates = false;
   isLoadingCrops = false;
+  isLoadingTrainings = false;
 
   myCropsList: any[] = [];
   dbCategories: any[] = [];
   availableSubcategories: any[] = [];
+  upcomingTrainings: Training[] = [];
 
   mandiRates: Array<{ crop: string; rate: number; unit: string; icon: string }> = [
     { crop: 'Wheat (गेहूं)', rate: 2120, unit: 'Quintal', icon: '🌾' },
@@ -65,6 +69,56 @@ export class FarmerDashboardComponent implements OnInit {
     this.fetchLiveMandiRates();
     this.loadDbCategories();
     this.loadMyFarmerCrops();
+    this.loadUpcomingTrainings();
+  }
+
+  loadUpcomingTrainings(): void {
+    this.isLoadingTrainings = true;
+    this.trainingService.getUpcomingTrainings(4).subscribe({
+      next: (res) => {
+        this.isLoadingTrainings = false;
+        if (res.success) {
+          this.upcomingTrainings = res.data || [];
+        }
+      },
+      error: () => {
+        this.isLoadingTrainings = false;
+      }
+    });
+  }
+
+  quickEnrollTraining(training: Training): void {
+    const farmerName = this.farmerUser?.name || 'Kisan Brother';
+    const farmerPhone = this.farmerUser?.mobile || '';
+    const farmerVillage = this.farmerUser?.village || this.farmerUser?.district || '';
+
+    if (!farmerPhone) {
+      this.router.navigate(['/trainings']);
+      return;
+    }
+
+    if (!training._id) return;
+
+    this.trainingService.registerFarmer(training._id, {
+      name: farmerName,
+      phone: farmerPhone,
+      village: farmerVillage
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          Swal.fire({
+            title: '🎉 पंजीकरण सफल!',
+            text: `बधाई हो! ${training.title} के लिए आपकी सीट सुरक्षित कर ली गई है।`,
+            icon: 'success',
+            confirmButtonColor: '#2E7D32'
+          });
+          this.loadUpcomingTrainings();
+        }
+      },
+      error: (err) => {
+        Swal.fire('सूचना', err.error?.message || 'पंजीकरण पूरा नहीं हो सका', 'info');
+      }
+    });
   }
 
   checkUser(): void {

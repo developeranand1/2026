@@ -8,6 +8,7 @@ import { CropManagementComponent } from './admin/crops/crop-management.component
 import { UserManagementComponent } from './admin/users/user-management.component';
 import { ContactManagementComponent } from './admin/contact/contact-management.component';
 import { NewsManagementComponent } from './admin/news/news-management.component';
+import { TrainingManagementComponent } from './admin/trainings/training-management.component';
 
 export const routes: Routes = [
   {
@@ -48,6 +49,22 @@ export const routes: Routes = [
       {
         path: 'crops/edit/:id',
         component: CropManagementComponent
+      },
+      {
+        path: 'trainings',
+        component: TrainingManagementComponent
+      },
+      {
+        path: 'trainings/create',
+        component: TrainingManagementComponent
+      },
+      {
+        path: 'trainings/edit/:id',
+        component: TrainingManagementComponent
+      },
+      {
+        path: 'trainings/view/:id',
+        component: TrainingManagementComponent
       },
       {
         path: 'users',

@@ -73,6 +73,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" routerLink="/trainings" routerLinkActive="active">
+                        Trainings <span class="badge bg-warning text-dark rounded-pill px-1.5 py-0.5 ms-1"
+                            style="font-size: 10px;">Free Camp</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" routerLink="/news" routerLinkActive="active">
                         News & Updates
                     </a>
@@ -222,6 +228,17 @@
                         <span class="fw-semibold text-dark">Mandi Rates (मंडी भाव)</span>
                         <span class="badge bg-success text-white rounded-pill px-2 py-0.5"
                             style="font-size: 10px;">Live</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/trainings"
+                    routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                    <span class="mobile-nav-icon bg-light text-success"><i class="bi bi-mortarboard-fill"></i></span>
+                    <div class="d-flex justify-content-between align-items-center flex-grow-1">
+                        <span class="fw-semibold text-dark">Trainings & Camps (प्रशिक्षण शिविर)</span>
+                        <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5"
+                            style="font-size: 10px;">Free</span>
                     </div>
                 </a>
             </li>

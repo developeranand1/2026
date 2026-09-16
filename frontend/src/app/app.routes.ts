@@ -28,6 +28,7 @@ import { NewsDetailComponent } from './pages/news/news-detail.component';
 import { TeamComponent } from './pages/team/team.component';
 import { AgriCalculatorComponent } from './pages/agri-calculator/agri-calculator.component';
 import { AgriSchemesComponent } from './pages/agri-schemes/agri-schemes.component';
+import { TrainingsPageComponent } from './pages/trainings/trainings-page.component';
 
 // Route configuration with comprehensive SEO Meta data for KrisiMarg application
 export const routes: Routes = [
@@ -40,6 +41,18 @@ export const routes: Routes = [
                 title: 'KrisiMarg - भारत का डिजिटल कृषि बाज़ार | Mandi Bhav & Direct Farm Produce',
                 description: 'KrisiMarg भारत का अग्रणी डिजिटल कृषि मंच है। लाइव मंडी भाव (APMC Mandi Rates), फसल खरीद-बिक्री (Direct Farm Gate Procurement), कृषि मौसम और ताज़ा समाचार पाएं।',
                 keywords: 'KrisiMarg, Mandi Bhav, APMC Mandi Rates, Kisan Marketplace, Gehu Bhav, Chana Rate, Soybean Price, Direct Farm Produce, Agriculture News India, Mausam Forecast, Barish Alert'
+            }
+        }
+    },
+    {
+        path: 'trainings',
+        component: TrainingsPageComponent,
+        title: 'किसान प्रशिक्षण एवं कार्यशालाएं (Farmer Training & Workshops) | KrisiMarg',
+        data: {
+            seo: {
+                title: 'किसान प्रशिक्षण एवं कृषि कार्यशालाएं (Farmer Training & Camps) | KrisiMarg',
+                description: 'वैज्ञानिक खेती, जैविक खाद निर्माण, टपक सिंचाई, सौर पंप व उन्नत तकनीकों पर निःशुल्क किसान प्रशिक्षण शिविर में भाग लें व प्रमाण पत्र पाएं।',
+                keywords: 'Krishi Prashikshan, Farmer Training India, Organic Farming Workshop, KVK Training, Kisan Mela, Drip Irrigation Workshop, KrisiMarg Training'
             }
         }
     },

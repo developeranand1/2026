@@ -208,6 +208,71 @@
     }
   </div>
 
+  <!-- UPCOMING FARMER TRAINING CAMPS (किसान प्रशिक्षण शिविर) -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4 border-start border-4 border-success">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div>
+        <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-mortarboard-fill text-success"></i>
+          Nearby Farmer Training Camps (आगामी प्रशिक्षण शिविर)
+        </h5>
+        <small class="text-muted">वैज्ञानिक व जैविक खेती, सौर पंप व टपक सिंचाई का निःशुल्क व्यावहारिक प्रशिक्षण</small>
+      </div>
+      <a routerLink="/trainings" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold">
+        View All Training Camps (सभी शिविर) <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    @if (isLoadingTrainings) {
+      <div class="text-center py-4">
+        <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+        <span class="text-muted small">प्रशिक्षण शिविर लोड हो रहे हैं...</span>
+      </div>
+    } @else if (upcomingTrainings.length === 0) {
+      <div class="text-center py-3 bg-light rounded-3">
+        <p class="text-muted small mb-0">फिलहाल कोई नया प्रशिक्षण शिविर निर्धारित नहीं है।</p>
+      </div>
+    } @else {
+      <div class="row g-3">
+        @for (camp of upcomingTrainings; track camp._id) {
+          <div class="col-12 col-md-6">
+            <div class="card border rounded-3 p-3 bg-light h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-bold">
+                    {{ camp.category }}
+                  </span>
+                  <span class="badge bg-dark text-white rounded-pill px-2 py-1 small">
+                    <i class="bi bi-calendar3 me-1"></i>{{ camp.startDate | date:'mediumDate' }}
+                  </span>
+                </div>
+
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 15px;">{{ camp.title }}</h6>
+                <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>{{ camp.village }}</strong>, {{ camp.district }} ({{ camp.time }})</p>
+                <div class="small text-secondary mb-3"><i class="bi bi-person-badge text-primary me-1"></i>प्रशिक्षक: {{ camp.trainerName }}</div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <span class="small text-success fw-semibold">
+                  <i class="bi bi-people-fill me-1"></i>{{ camp.participants?.length || camp.registeredCount || 0 }}/{{ camp.maxCapacity || 50 }} सीटें भरी
+                </span>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" (click)="quickEnrollTraining(camp)">
+                    <i class="bi bi-check2-circle me-1"></i> 1-क्लिक सीट बुक
+                  </button>
+                  <a routerLink="/trainings" class="btn btn-outline-secondary btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;" title="विवरण देखें">
+                    <i class="bi bi-arrow-up-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
   <!-- Quick Action Navigation -->
   <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
     <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
@@ -225,16 +290,16 @@
       </div>
 
       <div class="col-6 col-md-4 col-lg-3">
-        <a routerLink="/farmer/profile" class="card border text-decoration-none shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100">
-          <span class="fs-2 text-success mb-2 d-block"><i class="bi bi-person-badge-fill"></i></span>
-          <strong class="text-dark small d-block mb-1">My Profile (प्रोफ़ाइल)</strong>
-          <small class="text-muted">Update Land & Bank A/C</small>
+        <a routerLink="/trainings" class="card border text-decoration-none shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100">
+          <span class="fs-2 text-warning mb-2 d-block"><i class="bi bi-mortarboard-fill"></i></span>
+          <strong class="text-dark small d-block mb-1">Kisan Trainings (प्रशिक्षण)</strong>
+          <small class="text-muted">Free Camps & Certificates</small>
         </a>
       </div>
 
       <div class="col-6 col-md-4 col-lg-3">
         <a routerLink="/farmer/product" class="card border text-decoration-none shadow-sm text-center p-3 rounded-3 bg-light hover-elevate h-100">
-          <span class="fs-2 text-warning mb-2 d-block"><i class="bi bi-box-seam"></i></span>
+          <span class="fs-2 text-success mb-2 d-block"><i class="bi bi-box-seam"></i></span>
           <strong class="text-dark small d-block mb-1">My Crop Listings</strong>
           <small class="text-muted">{{ myCropsList.length }} Produce Listed</small>
         </a>
