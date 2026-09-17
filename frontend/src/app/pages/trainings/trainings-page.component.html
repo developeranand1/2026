@@ -5,9 +5,10 @@
     <div class="container position-relative py-4">
       <div class="row align-items-center g-4">
         <div class="col-lg-8">
-          <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-white bg-opacity-20 border border-white border-opacity-25 mb-3 backdrop-blur">
-            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-0.5">निशुल्क प्रशिक्षण</span>
-            <span class="small fw-semibold">KrisiMarg किसान विकास एवं कार्यशाला मिशन</span>
+          <div
+            class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill  bg-opacity-20 mb-3 backdrop-blur">
+            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-0.5">100% निःशुल्क</span>
+            <span class="small fw-semibold">KrisiMarg किसान कौशल विकास एवं कार्यशाला मिशन</span>
           </div>
 
           <h1 class="display-6 fw-bold mb-3 hero-title">
@@ -16,7 +17,8 @@
           </h1>
 
           <p class="lead opacity-90 mb-4 fs-6" style="max-width: 650px;">
-            वैज्ञानिक खेती, जैविक खाद (जीवामृत/वर्मीकम्पोस्ट) निर्माण, सौर पंप व टपक सिंचाई का प्रायोगिक प्रशिक्षण अपने निकटतम गांव में प्राप्त करें। 100% निःशुल्क सीट आरक्षण व सरकारी प्रमाण पत्र।
+            वैज्ञानिक खेती, जैविक खाद (जीवामृत/वर्मीकम्पोस्ट) निर्माण, सौर पंप व टपक सिंचाई का प्रायोगिक प्रशिक्षण अपने
+            निकटतम गांव में प्राप्त करें। निःशुल्क सीट आरक्षण व सरकारी प्रमाण पत्र।
           </p>
 
           <!-- Quick Metrics Bar -->
@@ -37,13 +39,15 @@
         </div>
 
         <div class="col-lg-4 d-none d-lg-block text-end">
-          <div class="hero-callout-card p-4 rounded-4 bg-white text-dark shadow-lg text-start border-top border-4 border-success">
+          <div
+            class="hero-callout-card p-4 rounded-4 bg-white text-dark shadow-lg text-start border-top border-4 border-success">
             <div class="d-flex align-items-center gap-2 mb-2 text-success">
               <i class="bi bi-patch-check-fill fs-4"></i>
               <h6 class="fw-bold mb-0">KVK प्रमाणित विशेषज्ञ</h6>
             </div>
             <p class="small text-secondary mb-3">
-              हमारे सभी प्रशिक्षण शिविर राज्य कृषि विश्वविद्यालयों व KVK वैज्ञानिकों के मार्गदर्शन में आयोजित किए जाते हैं।
+              हमारे सभी प्रशिक्षण शिविर राज्य कृषि विश्वविद्यालयों व KVK वैज्ञानिकों के मार्गदर्शन में आयोजित किए जाते
+              हैं।
             </p>
             <a href="tel:+919125955106" class="btn btn-outline-success btn-sm w-100 rounded-pill fw-bold">
               <i class="bi bi-telephone-fill me-1"></i> हेल्पलाइन: +91 9125955106
@@ -54,48 +58,54 @@
     </div>
   </section>
 
-  <!-- Navigation Tabs & Filters Bar -->
+  <!-- Modern Navigation Tabs & Filters Bar -->
   <section class="container mt-n4 position-relative z-3">
-    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+    <div class="card border-0 shadow rounded-4 p-3 bg-white">
       <div class="row g-3 align-items-center justify-content-between">
-        <!-- Main Dual Tabs -->
-        <div class="col-12 col-md-auto">
-          <div class="nav-pills-custom d-flex gap-2">
-            <button
-              class="tab-btn btn rounded-pill px-4 py-2.5 fw-bold d-flex align-items-center gap-2"
-              [class.active-tab]="activeTab === 'upcoming'"
-              (click)="setTab('upcoming')">
-              <i class="bi bi-calendar2-check-fill"></i>
-              <span>📅 आगामी प्रशिक्षण (Upcoming Camps)</span>
+        <!-- Dual Segmented Tabs -->
+        <div class="col-12 col-lg-auto">
+          <div class="tab-pill-container d-inline-flex p-1 rounded-pill bg-light border">
+            <!-- Tab 1: Upcoming -->
+            <button class="tab-pill-btn btn rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 text-nowrap"
+              [class.active-pill]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+              <i class="bi bi-calendar-event-fill"></i>
+              <span>Upcoming</span>
+              <span class="tab-count-badge badge rounded-pill" [class.bg-success]="activeTab === 'upcoming'"
+                [class.text-white]="activeTab === 'upcoming'" [class.bg-white]="activeTab !== 'upcoming'"
+                [class.text-dark]="activeTab !== 'upcoming'">
+                {{ upcomingCount }}
+              </span>
             </button>
 
-            <button
-              class="tab-btn btn rounded-pill px-4 py-2.5 fw-bold d-flex align-items-center gap-2"
-              [class.active-tab]="activeTab === 'completed'"
-              (click)="setTab('completed')">
-              <i class="bi bi-trophy-fill text-warning"></i>
-              <span>🏆 सफल प्रशिक्षण व परिणाम (Successful Sessions)</span>
+            <!-- Tab 2: Completed -->
+            <button class="tab-pill-btn btn rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 text-nowrap"
+              [class.active-pill]="activeTab === 'completed'" (click)="setTab('completed')">
+              <i class="bi bi-patch-check-fill text-warning"></i>
+              <span>Completed</span>
+              <span class="tab-count-badge badge rounded-pill" [class.bg-success]="activeTab === 'completed'"
+                [class.text-white]="activeTab === 'completed'" [class.bg-white]="activeTab !== 'completed'"
+                [class.text-dark]="activeTab !== 'completed'">
+                {{ completedCount }}
+              </span>
             </button>
           </div>
         </div>
 
         <!-- Filters & Search -->
-        <div class="col-12 col-md-auto d-flex flex-wrap gap-2 align-items-center">
+        <div class="col-12 col-lg-auto d-flex flex-wrap gap-2 align-items-center">
           <!-- Category Filter -->
-          <select class="form-select form-select-sm rounded-pill border-secondary-subtle" style="width: 200px;" [(ngModel)]="selectedCategory" (change)="onFilterChange()">
+          <select class="form-select form-select-sm rounded-pill border-secondary-subtle" style="width: 210px;"
+            [(ngModel)]="selectedCategory" (change)="onFilterChange()">
             <option value="All">सभी विषय (All Topics)</option>
             <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
           </select>
 
           <!-- Search Input -->
           <div class="input-group input-group-sm" style="width: 220px;">
-            <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
-            <input
-              type="text"
-              class="form-control bg-light border-start-0 rounded-end-pill"
-              placeholder="गांव, जिला या विषय खोजें..."
-              [(ngModel)]="searchQuery"
-              (input)="onFilterChange()">
+            <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i
+                class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control bg-light border-start-0 rounded-end-pill"
+              placeholder="गांव, जिला या विषय..." [(ngModel)]="searchQuery" (input)="onFilterChange()">
           </div>
         </div>
       </div>
@@ -104,7 +114,7 @@
 
   <!-- Content Section -->
   <main class="container mt-4">
-    <!-- Loading State -->
+    <!-- Loading State (Only for initial fetch) -->
     <div *ngIf="isLoading" class="text-center py-5">
       <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;"></div>
       <p class="text-secondary mt-3 fw-semibold">कृषि प्रशिक्षण सत्र लोड हो रहे हैं...</p>
@@ -112,315 +122,154 @@
 
     <!-- Empty State -->
     <div *ngIf="!isLoading && trainings.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm p-5 border">
-      <div class="empty-icon-box bg-success-subtle text-success mx-auto rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2.2rem;">
+      <div
+        class="empty-icon-box bg-success-subtle text-success mx-auto rounded-circle d-flex align-items-center justify-content-center mb-3"
+        style="width: 80px; height: 80px; font-size: 2.2rem;">
         <i class="bi bi-calendar-x"></i>
       </div>
       <h4 class="fw-bold text-dark">वर्तमान में कोई प्रशिक्षण उपलब्ध नहीं है</h4>
       <p class="text-muted" style="max-width: 480px; margin: 0 auto;">
-        चयनित श्रेणी या स्थान के लिए अभी कोई प्रशिक्षण शिविर निर्धारित नहीं है। आप अन्य श्रेणी चुन सकते हैं या जल्द नए सत्रों के लिए पुनः देखें।
+        चयनित श्रेणी या स्थान के लिए अभी कोई प्रशिक्षण शिविर निर्धारित नहीं है। आप अन्य श्रेणी चुन सकते हैं या जल्द नए
+        सत्रों के लिए पुनः देखें।
       </p>
     </div>
 
-    <!-- TAB 1: UPCOMING TRAININGS GRID -->
-    <div *ngIf="!isLoading && activeTab === 'upcoming' && trainings.length > 0" class="row g-4">
-      <div class="col-12 col-lg-6" *ngFor="let camp of trainings">
-        <div class="card border-0 shadow-sm rounded-4 h-100 training-card overflow-hidden bg-white">
-          <div class="row g-0 h-100">
-            <!-- Left Image & Date Tag -->
-            <div class="col-sm-5 position-relative">
-              <img [src]="camp.coverImage || 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=600&q=80'" alt="Training Camp" class="h-100 w-100 object-fit-cover min-h-200">
-              
-              <!-- Date Badge -->
-              <div class="date-badge-overlay position-absolute top-0 start-0 m-3 p-2 bg-success text-white rounded-3 text-center shadow">
-                <span class="d-block fw-bold fs-4 lh-1">{{ camp.startDate | date:'dd' }}</span>
-                <span class="d-block text-uppercase small fw-semibold" style="font-size: 11px;">{{ camp.startDate | date:'MMM yyyy' }}</span>
-              </div>
+    <!-- TAB 1: UPCOMING TRAININGS - PREMIUM COMPACT CARDS WITH BEST DATE UI -->
+    <div *ngIf="!isLoading && activeTab === 'upcoming' && trainings.length > 0" class="row g-4 animate-fade-in">
+      <div class="col-12 col-md-6 col-lg-4" *ngFor="let camp of trainings">
+        <div
+          class="card border-0 shadow-sm rounded-4 h-100 training-compact-card overflow-hidden bg-white cursor-pointer"
+          (click)="goToDetail(camp)">
 
-              <!-- Category Tag -->
-              <span class="badge bg-dark bg-opacity-75 text-white position-absolute bottom-0 start-0 m-2 rounded-pill px-2.5 py-1 small">
-                {{ camp.category }}
+          <!-- IMAGE & CALENDAR DATE BADGE OVERLAY -->
+          <div class="card-img-wrapper position-relative overflow-hidden" style="height: 200px;">
+            <img
+              [src]="camp.coverImage || 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=600&q=80'"
+              [alt]="camp.title" class="w-100 h-100 object-fit-cover card-img-zoom">
+
+            <!-- BEST DATE UI: Floating Calendar Badge -->
+            <div
+              class="calendar-badge position-absolute top-0 start-0 m-3 shadow rounded-3 overflow-hidden text-center">
+              <div class="cal-month text-uppercase fw-bold">{{ camp.startDate | date:'MMM' }}</div>
+              <div class="cal-day fw-bold">{{ camp.startDate | date:'dd' }}</div>
+            </div>
+
+            <!-- Free Badge -->
+            <span
+              class="badge bg-warning text-dark fw-bold position-absolute top-0 end-0 m-3 rounded-pill px-2.5 py-1 small shadow-sm">
+              निःशुल्क
+            </span>
+
+            <!-- Category Tag at bottom of image -->
+            <span
+              class="badge bg-dark bg-opacity-75 text-white position-absolute bottom-0 start-0 m-2.5 rounded-pill px-2.5 py-1 small">
+              {{ camp.category }}
+            </span>
+          </div>
+
+          <!-- CARD BODY: Title, Location, Date & Time Pill -->
+          <div class="card-body p-3.5 d-flex flex-column">
+            <!-- TITLE -->
+            <h5 class="fw-bold text-dark mb-2 card-title-clamp" [title]="camp.title">
+              {{ camp.title }}
+            </h5>
+
+            <!-- LOCATION -->
+            <div class="d-flex align-items-center gap-1.5 text-danger small mb-2.5 fw-semibold">
+              <i class="bi bi-geo-alt-fill flex-shrink-0"></i>
+              <span class="text-truncate text-dark">{{ camp.village }}, {{ camp.district }}</span>
+            </div>
+
+            <!-- DATE & TIME PILL (BEST UI) -->
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+              <span
+                class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1.5 small fw-bold">
+                <i class="bi bi-calendar3 me-1"></i> {{ camp.startDate | date:'dd MMM yyyy' }}
+              </span>
+              <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1.5 small fw-medium">
+                <i class="bi bi-clock-fill text-warning me-1"></i> {{ camp.time }}
               </span>
             </div>
 
-            <!-- Right Content -->
-            <div class="col-sm-7 p-3.5 d-flex flex-column">
-              <!-- Village & District Pill -->
-              <div class="d-flex align-items-center gap-1.5 text-danger mb-1 small fw-bold">
-                <i class="bi bi-geo-alt-fill"></i>
-                <span class="text-truncate">{{ camp.village }}, {{ camp.district }}</span>
-              </div>
-
-              <!-- Title -->
-              <h5 class="fw-bold text-dark mb-2 camp-title" [title]="camp.title">
-                {{ camp.title }}
-              </h5>
-
-              <!-- Address text -->
-              <p class="text-muted small mb-2 text-truncate-2" style="font-size: 12px;">
-                <i class="bi bi-pin-map text-success me-1"></i>{{ camp.fullAddress }}
-              </p>
-
-              <!-- Trainer & Timing -->
-              <div class="bg-light p-2 rounded-3 mb-3 small">
-                <div class="d-flex justify-content-between mb-1">
-                  <span class="text-muted"><i class="bi bi-person-badge text-primary me-1"></i>प्रशिक्षक:</span>
-                  <strong class="text-dark">{{ camp.trainerName }}</strong>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-muted"><i class="bi bi-clock text-warning me-1"></i>समय:</span>
-                  <span class="text-dark fw-semibold">{{ camp.time }}</span>
-                </div>
-              </div>
-
-              <!-- Seat Availability Progress -->
-              <div class="mb-3 mt-auto">
-                <div class="d-flex justify-content-between align-items-center small mb-1">
-                  <span class="text-muted" style="font-size: 11px;">सीट उपलब्धता (Seats):</span>
-                  <span class="fw-bold text-success" style="font-size: 11px;">
-                    {{ camp.participants?.length || camp.registeredCount || 0 }} / {{ camp.maxCapacity || 50 }} बुक
-                  </span>
-                </div>
-                <div class="progress" style="height: 6px;">
-                  <div class="progress-bar bg-success" role="progressbar" [style.width.%]="(((camp.participants?.length || camp.registeredCount || 0) / (camp.maxCapacity || 50)) * 100)"></div>
-                </div>
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="d-flex gap-2">
-                <button type="button" class="btn btn-success btn-sm flex-grow-1 rounded-pill fw-bold shadow-sm py-2" (click)="openRegisterModal(camp)">
-                  <i class="bi bi-check2-circle me-1"></i> मुफ्त सीट बुक करें
-                </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" (click)="openDetailModal(camp)" title="विवरण देखें">
-                  <i class="bi bi-info-circle"></i>
-                </button>
-                <button type="button" class="btn btn-outline-success btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" (click)="shareOnWhatsApp(camp)" title="WhatsApp पर शेयर करें">
-                  <i class="bi bi-whatsapp"></i>
-                </button>
-              </div>
+            <!-- ACTION: DETAIL & REGISTER LINK -->
+            <div class="mt-auto pt-2.5 border-top d-flex justify-content-between align-items-center">
+              <span class="text-success fw-bold small">पूरा विवरण व निःशुल्क सीट</span>
+              <span class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold">
+                देखें <i class="bi bi-arrow-right ms-1"></i>
+              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: SUCCESSFUL / COMPLETED TRAININGS GRID -->
-    <div *ngIf="!isLoading && activeTab === 'completed' && trainings.length > 0" class="row g-4">
-      <div class="col-12 col-lg-6" *ngFor="let session of trainings">
-        <div class="card border-0 shadow-sm rounded-4 h-100 successful-card overflow-hidden bg-white">
-          <!-- Photo Gallery Banner -->
-          <div class="position-relative">
-            <img [src]="session.coverImage || 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80'" alt="Success" class="w-100 object-fit-cover" style="height: 220px;">
-            
-            <!-- Success Stamp Badge -->
-            <div class="success-badge position-absolute top-0 end-0 m-3 px-3 py-1.5 rounded-pill bg-warning text-dark fw-bold shadow small d-flex align-items-center gap-1">
-              <i class="bi bi-trophy-fill"></i> सफलतापूर्वक संपन्न
+    <!-- TAB 2: COMPLETED TRAININGS - PREMIUM COMPACT CARDS WITH BEST DATE UI -->
+    <div *ngIf="!isLoading && activeTab === 'completed' && trainings.length > 0" class="row g-4 animate-fade-in">
+      <div class="col-12 col-md-6 col-lg-4" *ngFor="let session of trainings">
+        <div
+          class="card border-0 shadow-sm rounded-4 h-100 training-compact-card overflow-hidden bg-white cursor-pointer"
+          (click)="goToDetail(session)">
+
+          <!-- IMAGE & CALENDAR DATE BADGE OVERLAY -->
+          <div class="card-img-wrapper position-relative overflow-hidden" style="height: 200px;">
+            <img
+              [src]="session.coverImage || 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80'"
+              [alt]="session.title" class="w-100 h-100 object-fit-cover card-img-zoom">
+
+            <!-- BEST DATE UI: Floating Calendar Badge (Completed) -->
+            <div
+              class="calendar-badge position-absolute top-0 start-0 m-3 shadow rounded-3 overflow-hidden text-center">
+              <div class="cal-month completed-month text-uppercase fw-bold">{{ session.startDate | date:'MMM' }}</div>
+              <div class="cal-day fw-bold">{{ session.startDate | date:'dd' }}</div>
             </div>
 
-            <!-- Village Location Tag -->
-            <div class="position-absolute bottom-0 start-0 m-3 px-3 py-1 rounded-pill bg-black bg-opacity-70 text-white small backdrop-blur">
-              <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ session.village }}, {{ session.district }}
-            </div>
+            <span
+              class="badge bg-success position-absolute top-0 end-0 m-3 rounded-pill px-2.5 py-1 small fw-bold shadow-sm">
+              <i class="bi bi-check-circle-fill me-1"></i> संपन्न
+            </span>
+
+            <span
+              class="badge bg-dark bg-opacity-75 text-white position-absolute bottom-0 start-0 m-2.5 rounded-pill px-2.5 py-1 small">
+              {{ session.category }}
+            </span>
           </div>
 
-          <div class="card-body p-4 d-flex flex-column">
-            <!-- Title -->
-            <h5 class="fw-bold text-dark mb-2">
+          <!-- CARD BODY: Title, Location, Date & Action -->
+          <div class="card-body p-3.5 d-flex flex-column">
+            <!-- TITLE -->
+            <h5 class="fw-bold text-dark mb-2 card-title-clamp" [title]="session.title">
               {{ session.title }}
             </h5>
 
-            <p class="text-muted small mb-3">
-              {{ session.description }}
-            </p>
-
-            <!-- Success Summary Box -->
-            <div class="success-summary-box p-3 rounded-3 bg-success-subtle border border-success-subtle mb-3">
-              <h6 class="fw-bold text-success mb-1 small text-uppercase d-flex align-items-center gap-1">
-                <i class="bi bi-check-circle-fill"></i> परिणाम एवं उपलब्धियां (Outcomes):
-              </h6>
-              <p class="mb-2 text-dark small">
-                {{ session.successSummary || 'सभी उपस्थित किसान भाइयों को प्रायोगिक प्रशिक्षण व प्रमाण पत्र वितरित किए गए।' }}
-              </p>
-
-              <!-- Key Achievements Badges -->
-              <div class="d-flex flex-wrap gap-1" *ngIf="session.keyAchievements && session.keyAchievements.length > 0">
-                <span *ngFor="let ach of session.keyAchievements" class="badge bg-white text-success border border-success-subtle rounded-pill px-2.5 py-1 small">
-                  ✓ {{ ach }}
-                </span>
-              </div>
+            <!-- LOCATION -->
+            <div class="d-flex align-items-center gap-1.5 text-danger small mb-2.5 fw-semibold">
+              <i class="bi bi-geo-alt-fill flex-shrink-0"></i>
+              <span class="text-truncate text-dark">{{ session.village }}, {{ session.district }}</span>
             </div>
 
-            <!-- Event Photo Gallery Thumbnails -->
-            <div *ngIf="session.galleryImages && session.galleryImages.length > 0" class="mb-3">
-              <span class="d-block small text-muted fw-semibold mb-1.5"><i class="bi bi-camera-fill text-primary me-1"></i>सत्र की तस्वीरें (Photo Gallery):</span>
-              <div class="d-flex gap-2 flex-wrap">
-                <div *ngFor="let photo of session.galleryImages" class="gallery-thumb rounded-3 overflow-hidden shadow-sm cursor-pointer" (click)="openLightbox(photo)">
-                  <img [src]="photo" alt="Demo photo" class="object-fit-cover" style="width: 75px; height: 55px;">
-                </div>
-              </div>
+            <!-- DATE PILL (BEST UI) -->
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+              <span
+                class="badge bg-secondary-subtle text-dark border border-secondary-subtle rounded-pill px-2.5 py-1.5 small fw-bold">
+                <i class="bi bi-calendar-check-fill text-success me-1"></i> संपन्न: {{ session.startDate | date:'dd MMM
+                yyyy' }}
+              </span>
+              <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1.5 small fw-medium"
+                *ngIf="session.time">
+                <i class="bi bi-clock text-muted me-1"></i> {{ session.time }}
+              </span>
             </div>
 
-            <!-- Footer Stats: Farmers Trained & Date -->
-            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto small">
-              <div class="d-flex align-items-center gap-2">
-                <span class="avatar-sm rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                  <i class="bi bi-people-fill"></i>
-                </span>
-                <div>
-                  <strong class="text-dark d-block">{{ session.participants?.length || session.registeredCount || 45 }} किसान</strong>
-                  <span class="text-muted" style="font-size: 11px;">सफलतापूर्वक प्रमाणित</span>
-                </div>
-              </div>
-
-              <div class="text-end">
-                <span class="text-muted d-block" style="font-size: 11px;">सत्र दिनांक</span>
-                <strong class="text-dark">{{ session.startDate | date:'mediumDate' }}</strong>
-              </div>
+            <!-- ACTION: REPORT LINK -->
+            <div class="mt-auto pt-2.5 border-top d-flex justify-content-between align-items-center">
+              <span class="text-secondary fw-semibold small">सत्र रिपोर्ट व परिणाम</span>
+              <span class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold">
+                विवरण देखें <i class="bi bi-arrow-right ms-1"></i>
+              </span>
             </div>
-
-            <button type="button" class="btn btn-outline-success btn-sm w-100 rounded-pill mt-3 fw-bold" (click)="openDetailModal(session)">
-              <i class="bi bi-info-circle me-1"></i> पूरा विवरण व किसान सूची देखें
-            </button>
           </div>
         </div>
       </div>
     </div>
   </main>
-
-  <!-- MODAL 1: FARMER REGISTRATION MODAL -->
-  <div class="modal-backdrop-custom" *ngIf="isRegisterModalOpen" (click)="closeRegisterModal()"></div>
-  <div class="modal-dialog-custom modal-md" *ngIf="isRegisterModalOpen && selectedTrainingForRegister">
-    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-      <div class="modal-header bg-success text-white px-4 py-3">
-        <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
-          <i class="bi bi-person-plus-fill"></i>
-          निःशुल्क प्रशिक्षण पंजीकरण (Free Seat Booking)
-        </h5>
-        <button type="button" class="btn-close btn-close-white" (click)="closeRegisterModal()"></button>
-      </div>
-
-      <div class="modal-body p-4">
-        <!-- Event Quick Info -->
-        <div class="p-3 bg-light rounded-3 mb-3 border">
-          <h6 class="fw-bold text-dark mb-1">{{ selectedTrainingForRegister.title }}</h6>
-          <small class="text-muted d-block"><i class="bi bi-geo-alt-fill text-danger me-1"></i>स्थान: {{ selectedTrainingForRegister.village }}, {{ selectedTrainingForRegister.district }}</small>
-          <small class="text-success fw-semibold"><i class="bi bi-calendar3 me-1"></i>दिनांक: {{ selectedTrainingForRegister.startDate | date:'mediumDate' }} ({{ selectedTrainingForRegister.time }})</small>
-        </div>
-
-        <form (ngSubmit)="submitRegistration()">
-          <div class="mb-3">
-            <label class="form-label fw-semibold small">किसान का पूरा नाम (Farmer Name) <span class="text-danger">*</span></label>
-            <input type="text" class="form-control rounded-3" placeholder="अपना नाम लिखें" [(ngModel)]="registrationForm.name" name="name" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold small">मोबाइल नंबर (WhatsApp No.) <span class="text-danger">*</span></label>
-            <div class="input-group">
-              <span class="input-group-text bg-light">+91</span>
-              <input type="tel" maxlength="10" class="form-control rounded-end-3" placeholder="10 अंकों का मोबाइल नंबर" [(ngModel)]="registrationForm.phone" name="phone" required>
-            </div>
-            <small class="text-muted" style="font-size: 11px;">सत्र का स्थान व समय विवरण इस नंबर पर भेजा जाएगा।</small>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold small">आपका गांव / ग्राम पंचायत (Village)</label>
-            <input type="text" class="form-control rounded-3" placeholder="उदा. मगहर" [(ngModel)]="registrationForm.village" name="village">
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label fw-semibold small">आप कौन सी फसलें उगाते हैं? (Crops Grown)</label>
-            <input type="text" class="form-control rounded-3" placeholder="उदा. गेहूं, धान, सब्जियां, सरसों" [(ngModel)]="registrationForm.cropsGrown" name="cropsGrown">
-          </div>
-
-          <button type="submit" class="btn btn-success w-100 rounded-pill py-2.5 fw-bold shadow-sm" [disabled]="isSubmittingRegistration">
-            <span *ngIf="isSubmittingRegistration" class="spinner-border spinner-border-sm me-2"></span>
-            <i *ngIf="!isSubmittingRegistration" class="bi bi-check-circle-fill me-1"></i>
-            {{ isSubmittingRegistration ? 'पंजीकरण हो रहा है...' : 'पंजीकरण सुरक्षित करें (Confirm Booking)' }}
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 2: DETAIL VIEW MODAL -->
-  <div class="modal-backdrop-custom" *ngIf="isDetailModalOpen" (click)="closeDetailModal()"></div>
-  <div class="modal-dialog-custom modal-lg" *ngIf="isDetailModalOpen && activeTrainingDetail">
-    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-      <div class="modal-header bg-dark text-white px-4 py-3">
-        <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
-          <i class="bi bi-mortarboard-fill text-warning"></i>
-          प्रशिक्षण विवरण एवं कार्यशाला एजेंडा
-        </h5>
-        <button type="button" class="btn-close btn-close-white" (click)="closeDetailModal()"></button>
-      </div>
-
-      <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
-        <h4 class="fw-bold text-dark mb-2">{{ activeTrainingDetail.title }}</h4>
-
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1.5 fw-bold">{{ activeTrainingDetail.category }}</span>
-          <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5"><i class="bi bi-calendar3 me-1 text-success"></i>{{ activeTrainingDetail.startDate | date:'fullDate' }}</span>
-          <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5"><i class="bi bi-clock me-1 text-warning"></i>{{ activeTrainingDetail.time }}</span>
-        </div>
-
-        <!-- Venue & Trainer Grid -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <div class="p-3 bg-light rounded-3 h-100 border">
-              <span class="text-muted d-block small text-uppercase fw-bold mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>प्रशिक्षण स्थल (Venue):</span>
-              <strong class="text-dark d-block">{{ activeTrainingDetail.village }}, {{ activeTrainingDetail.district }} ({{ activeTrainingDetail.state || 'UP' }})</strong>
-              <small class="text-secondary">{{ activeTrainingDetail.fullAddress }}</small>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="p-3 bg-light rounded-3 h-100 border">
-              <span class="text-muted d-block small text-uppercase fw-bold mb-1"><i class="bi bi-person-badge text-primary me-1"></i>प्रशिक्षक / वैज्ञानिक:</span>
-              <strong class="text-dark d-block">{{ activeTrainingDetail.trainerName }}</strong>
-              <small class="text-secondary">{{ activeTrainingDetail.trainerDesignation || 'कृषि विशेषज्ञ' }}</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- Description -->
-        <h6 class="fw-bold text-dark mb-2">सत्र का उद्देश्य व विवरण:</h6>
-        <p class="text-secondary mb-3">{{ activeTrainingDetail.description }}</p>
-
-        <!-- Topics Covered -->
-        <div *ngIf="activeTrainingDetail.topics && activeTrainingDetail.topics.length > 0" class="mb-4">
-          <h6 class="fw-bold text-dark mb-2">मुख्य सीखने योग्य विषय (Topics Covered):</h6>
-          <ul class="list-group list-group-flush rounded-3 border">
-            <li class="list-group-item d-flex align-items-center gap-2 small" *ngFor="let top of activeTrainingDetail.topics">
-              <i class="bi bi-check2-circle text-success fs-6"></i>
-              <span>{{ top }}</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Photos if available -->
-        <div *ngIf="activeTrainingDetail.galleryImages && activeTrainingDetail.galleryImages.length > 0" class="mb-4">
-          <h6 class="fw-bold text-dark mb-2">फ़ोटो गैलरी (Event Photos):</h6>
-          <div class="d-flex gap-2 flex-wrap">
-            <img *ngFor="let img of activeTrainingDetail.galleryImages" [src]="img" class="rounded-3 shadow-sm object-fit-cover cursor-pointer" style="width: 100px; height: 75px;" (click)="openLightbox(img)">
-          </div>
-        </div>
-
-        <!-- Action inside detail modal -->
-        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-          <button type="button" class="btn btn-light rounded-pill px-4" (click)="closeDetailModal()">बंद करें</button>
-          
-          <button *ngIf="activeTrainingDetail.status !== 'Completed'" type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" (click)="closeDetailModal(); openRegisterModal(activeTrainingDetail)">
-            <i class="bi bi-check2-circle me-1"></i> निःशुल्क सीट बुक करें
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LIGHTBOX MODAL FOR IMAGES -->
-  <div class="modal-backdrop-custom" *ngIf="isLightboxOpen" (click)="closeLightbox()"></div>
-  <div class="lightbox-container" *ngIf="isLightboxOpen" (click)="closeLightbox()">
-    <img [src]="activeLightboxImage" alt="Zoomed" class="lightbox-img shadow-lg rounded-4">
-    <button type="button" class="btn btn-light rounded-circle position-absolute top-0 end-0 m-4 p-2 shadow" (click)="closeLightbox()">
-      <i class="bi bi-x-lg fs-5"></i>
-    </button>
-  </div>
 </div>

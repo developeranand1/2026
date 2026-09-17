@@ -1,0 +1,107 @@
+.training-detail-page {
+  min-height: 80vh;
+}
+
+.detail-hero {
+  background-color: #1b3815;
+
+  .hero-bg-img {
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.35);
+  }
+
+  .hero-gradient-overlay {
+    background: linear-gradient(135deg, rgba(16, 44, 18, 0.92) 0%, rgba(20, 60, 24, 0.75) 100%);
+  }
+
+  .hero-title {
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    letter-spacing: -0.01em;
+  }
+
+  .icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+}
+
+.gallery-card {
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  img {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+
+    img {
+      transform: scale(1.06);
+    }
+
+    .gallery-hover-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.gallery-hover-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* Lightbox Modal */
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1050;
+  backdrop-filter: blur(4px);
+}
+
+.lightbox-container {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.sticky-sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 95px;
+  z-index: 20;
+
+  @media (max-width: 991px) {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .border-start-md {
+    border-left: 1px solid #e9ecef;
+  }
+}

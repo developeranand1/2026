@@ -29,6 +29,7 @@ import { TeamComponent } from './pages/team/team.component';
 import { AgriCalculatorComponent } from './pages/agri-calculator/agri-calculator.component';
 import { AgriSchemesComponent } from './pages/agri-schemes/agri-schemes.component';
 import { TrainingsPageComponent } from './pages/trainings/trainings-page.component';
+import { TrainingDetailComponent } from './pages/trainings/training-detail/training-detail.component';
 
 // Route configuration with comprehensive SEO Meta data for KrisiMarg application
 export const routes: Routes = [
@@ -55,6 +56,11 @@ export const routes: Routes = [
                 keywords: 'Krishi Prashikshan, Farmer Training India, Organic Farming Workshop, KVK Training, Kisan Mela, Drip Irrigation Workshop, KrisiMarg Training'
             }
         }
+    },
+    {
+        path: 'trainings/:id',
+        component: TrainingDetailComponent,
+        title: 'प्रशिक्षण शिविर विवरण (Training Details) | KrisiMarg'
     },
     {
         path: 'login',

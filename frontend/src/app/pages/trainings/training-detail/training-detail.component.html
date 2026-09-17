@@ -1,0 +1,470 @@
+<div class="training-detail-page bg-light pb-5">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-success" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
+    <p class="text-secondary mt-3 fw-semibold">प्रशिक्षण विवरण लोड हो रहा है...</p>
+  </div>
+
+  <!-- Not Found / Error State -->
+  <div *ngIf="!isLoading && !training" class="container py-5 text-center">
+    <div class="card border-0 shadow-sm rounded-4 p-5 mx-auto bg-white" style="max-width: 520px;">
+      <div class="rounded-circle bg-warning-subtle text-warning mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">प्रशिक्षण सत्र नहीं मिला</h4>
+      <p class="text-muted mb-4 small">यह प्रशिक्षण सत्र डेटाबेस में उपलब्ध नहीं है या हटा दिया गया है।</p>
+      <a routerLink="/trainings" class="btn btn-success rounded-pill fw-bold px-4 py-2">
+        <i class="bi bi-arrow-left me-1"></i> सभी प्रशिक्षण देखें
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && training" class="animate-fade-in">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="bg-white border-bottom py-2">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0 py-1 small">
+            <li class="breadcrumb-item"><a routerLink="/" class="text-decoration-none text-muted">होम</a></li>
+            <li class="breadcrumb-item"><a routerLink="/trainings" class="text-decoration-none text-success fw-semibold">किसान प्रशिक्षण</a></li>
+            <li class="breadcrumb-item active text-truncate text-dark fw-bold" style="max-width: 350px;" aria-current="page">{{ training.title }}</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Hero Header Banner -->
+    <header class="detail-hero position-relative text-white overflow-hidden py-5">
+      <div class="hero-bg-img position-absolute top-0 start-0 w-100 h-100"
+           [style.background-image]="'url(' + (training.coverImage || 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1200&q=80') + ')'">
+      </div>
+      <div class="hero-gradient-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+
+      <div class="container position-relative z-2 py-3">
+        <div class="row align-items-center">
+          <div class="col-lg-9">
+            <!-- Badges -->
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+              <span class="badge bg-warning text-dark fw-bold px-3 py-1.5 rounded-pill fs-6 shadow-sm">
+                {{ training.fee || '100% निःशुल्क' }}
+              </span>
+              <span class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-25 px-3 py-1.5 rounded-pill">
+                <i class="bi bi-tag-fill me-1 text-warning"></i> {{ training.category }}
+              </span>
+              <span *ngIf="training.status === 'Completed'" class="badge bg-success text-white px-3 py-1.5 rounded-pill shadow-sm">
+                <i class="bi bi-check-circle-fill me-1"></i> सफलतापूर्वक संपन्न
+              </span>
+              <span *ngIf="training.status !== 'Completed'" class="badge bg-danger text-white px-3 py-1.5 rounded-pill shadow-sm">
+                <i class="bi bi-broadcast me-1"></i> आगामी सत्र (Upcoming)
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="display-6 fw-bold mb-3 hero-title lh-sm text-white">
+              {{ training.title }}
+            </h1>
+
+            <!-- Quick Meta Row -->
+            <div class="d-flex flex-wrap gap-3 gap-md-4 text-white-90 fs-6 mt-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-circle bg-white bg-opacity-20 text-warning"><i class="bi bi-calendar3"></i></span>
+                <div>
+                  <small class="d-block text-white-50" style="font-size: 11px;">दिनांक (Date)</small>
+                  <strong>{{ training.startDate | date:'fullDate' }}</strong>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-circle bg-white bg-opacity-20 text-warning"><i class="bi bi-clock"></i></span>
+                <div>
+                  <small class="d-block text-white-50" style="font-size: 11px;">समय (Time)</small>
+                  <strong>{{ training.time }}</strong>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <span class="icon-circle bg-white bg-opacity-20 text-warning"><i class="bi bi-geo-alt-fill"></i></span>
+                <div>
+                  <small class="d-block text-white-50" style="font-size: 11px;">स्थान (Location)</small>
+                  <strong>{{ training.village }}, {{ training.district }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Share on WhatsApp button in Hero -->
+          <div class="col-lg-3 text-lg-end mt-4 mt-lg-0">
+            <button (click)="shareOnWhatsApp()" class="btn btn-success rounded-pill px-4 py-2.5 shadow fw-bold d-inline-flex align-items-center gap-2">
+              <i class="bi bi-whatsapp fs-5"></i>
+              <span>शेयर करें (Share)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="container my-4">
+      <div class="row g-4">
+        <!-- LEFT COLUMN: ALL TRAINING DETAILS -->
+        <div class="col-lg-8">
+          <!-- Overview Card -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-info-circle-fill text-success"></i>
+              प्रशिक्षण का उद्देश्य एवं विवरण (Training Overview)
+            </h4>
+            <p class="text-secondary fs-6 lh-lg mb-0" style="white-space: pre-line;">
+              {{ training.description }}
+            </p>
+          </div>
+
+          <!-- ATTENDANCE & PARTICIPATION SUMMARY (Only numbers/counts shown - NO individual farmer names) -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" *ngIf="training.status === 'Completed'">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-people-fill text-success"></i>
+              सत्र उपस्थिति एवं प्रभाव (Attendance & Impact)
+            </h4>
+            <div class="row g-3">
+              <div class="col-sm-6 col-md-4">
+                <div class="p-3 bg-success-subtle rounded-3 text-center border border-success-subtle h-100">
+                  <span class="display-6 fw-bold text-success d-block mb-1">
+                    {{ training.registeredCount || training.participants?.length || 55 }}+
+                  </span>
+                  <strong class="text-dark d-block">कुल उपस्थित किसान भाई</strong>
+                  <small class="text-muted" style="font-size: 11px;">सक्रिय सहभागिता</small>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-4">
+                <div class="p-3 bg-primary-subtle rounded-3 text-center border border-primary-subtle h-100">
+                  <span class="display-6 fw-bold text-primary d-block mb-1">
+                    {{ training.registeredCount || training.participants?.length || 55 }}
+                  </span>
+                  <strong class="text-dark d-block">KVK प्रमाणित किसान</strong>
+                  <small class="text-muted" style="font-size: 11px;">सर्टिफिकेट वितरित</small>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-4">
+                <div class="p-3 bg-warning-subtle rounded-3 text-center border border-warning-subtle h-100">
+                  <span class="display-6 fw-bold text-dark d-block mb-1">100%</span>
+                  <strong class="text-dark d-block">प्रायोगिक संतुष्टि दर</strong>
+                  <small class="text-muted" style="font-size: 11px;">लाइव डेमो व फील्ड विजिट</small>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 p-2.5 bg-light rounded-3 text-muted small d-flex align-items-center gap-2 border">
+              <i class="bi bi-shield-check text-success fs-5 flex-shrink-0"></i>
+              <span style="font-size: 12px;">गोपनीयता नीति के तहत सभी उपस्थित किसान भाइयों का विवरण सुरक्षित रखा गया है।</span>
+            </div>
+          </div>
+
+          <!-- Topics Covered Card -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" *ngIf="training.topics && training.topics.length > 0">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-journal-check text-success"></i>
+              मुख्य सीखने योग्य विषय (Key Topics & Practical Demos)
+            </h4>
+            <div class="row g-2">
+              <div class="col-md-6" *ngFor="let topic of training.topics; let i = index">
+                <div class="p-3 bg-light rounded-3 h-100 border border-light-subtle d-flex align-items-start gap-2.5">
+                  <span class="badge bg-success text-white rounded-circle p-1 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 24px; height: 24px; font-size: 11px;">
+                    {{ i + 1 }}
+                  </span>
+                  <span class="text-dark fw-medium small">{{ topic }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trainer & Coordinator Profile -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-person-workspace text-success"></i>
+              प्रशिक्षक एवं विशेषज्ञ (Trainer & Organization)
+            </h4>
+            <div class="row g-3 align-items-center">
+              <div class="col-md-7">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="trainer-avatar rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center fw-bold fs-3 shadow-sm" style="width: 65px; height: 65px;">
+                    <i class="bi bi-person-fill"></i>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold text-dark mb-1">{{ training.trainerName }}</h5>
+                    <p class="text-muted small mb-1">{{ training.trainerDesignation || 'वरिष्ठ कृषि विशेषज्ञ' }}</p>
+                    <span class="badge bg-light text-secondary border rounded-pill">{{ training.organizer || 'KrisiMarg किसान विकास मिशन' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-5 border-start-md ps-md-4">
+                <div class="p-3 bg-light rounded-3 border">
+                  <span class="small text-muted d-block fw-semibold mb-1"><i class="bi bi-headset text-success me-1"></i>शिविर समन्वयक / सहायता:</span>
+                  <strong class="text-dark d-block mb-1">{{ training.contactPerson || 'KrisiMarg सहायता डेस्क' }}</strong>
+                  <a [href]="'tel:' + (training.contactPhone || '+919125955106')" class="btn btn-sm btn-outline-success rounded-pill fw-bold">
+                    <i class="bi bi-telephone-fill me-1"></i> {{ training.contactPhone || '+91 9125955106' }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Venue & Address with Google Maps link -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-geo-alt-fill text-danger"></i>
+              शिविर स्थल एवं पता (Venue Details)
+            </h4>
+            <div class="bg-light p-3.5 rounded-3 border">
+              <div class="row align-items-center g-3">
+                <div class="col-md-8">
+                  <strong class="text-dark fs-6 d-block mb-1">{{ training.village }}, {{ training.district }}, {{ training.state || 'उत्तर प्रदेश' }}</strong>
+                  <p class="text-secondary small mb-0"><i class="bi bi-signpost-2 text-success me-1"></i>{{ training.fullAddress }}</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                  <a [href]="getGoogleMapsUrl()" target="_blank" class="btn btn-outline-primary rounded-pill btn-sm fw-bold px-3 py-2">
+                    <i class="bi bi-map-fill me-1"></i> Google Maps पर देखें
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- If COMPLETED: Outcomes & Achievements -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" *ngIf="training.status === 'Completed'">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-trophy-fill text-warning"></i>
+              सफलतापूर्वक संपन्न: परिणाम व उपलब्धियां (Session Outcomes)
+            </h4>
+            <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle mb-3">
+              <p class="mb-0 text-dark small fw-medium">
+                {{ training.successSummary || 'यह प्रशिक्षण सत्र सफलतापूर्वक संपन्न हुआ जिसमें क्षेत्र के प्रगतिशील किसानों ने भाग लिया तथा व्यावहारिक तकनीकें सीखीं।' }}
+              </p>
+            </div>
+
+            <!-- Key Achievements -->
+            <div *ngIf="training.keyAchievements && training.keyAchievements.length > 0" class="mb-3">
+              <h6 class="fw-bold text-dark mb-2 small text-uppercase">मुख्य उपलब्धियां:</h6>
+              <div class="d-flex flex-wrap gap-2">
+                <span *ngFor="let ach of training.keyAchievements" class="badge bg-white text-success border border-success-subtle rounded-pill px-3 py-2 shadow-sm">
+                  <i class="bi bi-check-circle-fill text-success me-1"></i> {{ ach }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gallery Images (if available) -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" *ngIf="training.galleryImages && training.galleryImages.length > 0">
+            <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2 border-bottom pb-2">
+              <i class="bi bi-images text-success"></i>
+              प्रशिक्षण की तस्वीरें (Photo Gallery)
+            </h4>
+            <div class="row g-3">
+              <div class="col-6 col-md-4 col-lg-3" *ngFor="let img of training.galleryImages">
+                <div class="gallery-card rounded-3 overflow-hidden shadow-sm cursor-pointer position-relative ratio ratio-4x3" (click)="openLightbox(img)">
+                  <img [src]="img" alt="Gallery photo" class="img-fluid object-fit-cover w-100 h-100">
+                  <div class="gallery-hover-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-white">
+                    <i class="bi bi-zoom-in fs-4"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: REGISTRATION FORM (FOR UPCOMING) OR NEXT BATCH INQUIRY (FOR COMPLETED) -->
+        <div class="col-lg-4">
+          <div class="sticky-sidebar">
+            <!-- CASE 1: UPCOMING - REGISTRATION FORM -->
+            <div *ngIf="training.status !== 'Completed'" class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4 bg-white">
+              <div class="card-header bg-success text-white p-3.5 text-center">
+                <div class="d-inline-flex p-2 bg-white bg-opacity-20 rounded-circle mb-2">
+                  <i class="bi bi-person-check-fill fs-3 text-white"></i>
+                </div>
+                <h5 class="fw-bold mb-1 text-white">निःशुल्क सीट आरक्षित करें</h5>
+                <small class="text-white-75">100% Free Registration - Zero Fee</small>
+              </div>
+
+              <div class="card-body p-4">
+                <!-- Seat Progress Counter -->
+                <div class="bg-light p-3 rounded-3 mb-3 border">
+                  <div class="d-flex justify-content-between align-items-center mb-1 small">
+                    <span class="text-muted fw-semibold">कुल सीटें / बुक:</span>
+                    <strong class="text-success">{{ training.registeredCount || 38 }} / {{ training.maxCapacity || 60 }} बुक</strong>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         [style.width.%]="(((training.registeredCount || 38) / (training.maxCapacity || 60)) * 100)">
+                    </div>
+                  </div>
+                  <small class="text-danger fw-bold d-block mt-1 text-end" style="font-size: 11px;">
+                    <i class="bi bi-fire me-1"></i>सीमित सीटें शेष! जल्दी करें
+                  </small>
+                </div>
+
+                <!-- SUCCESS MESSAGE IF REGISTERED -->
+                <div *ngIf="isRegisteredSuccess" class="alert alert-success rounded-3 p-3 text-center mb-0">
+                  <i class="bi bi-check-circle-fill fs-2 text-success d-block mb-1"></i>
+                  <h6 class="fw-bold mb-1">आपकी सीट आरक्षित हो चुकी है!</h6>
+                  <p class="small text-muted mb-0">शिविर से संबंधित सभी सूचनाएं आपके मोबाइल नंबर पर भेज दी जाएंगी।</p>
+                </div>
+
+                <!-- REGISTRATION FORM -->
+                <form *ngIf="!isRegisteredSuccess" (ngSubmit)="submitRegistration()">
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">
+                      किसान का पूरा नाम (Farmer Name) <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control rounded-3"
+                           placeholder="उदा. रमेश कुमार यादव"
+                           [(ngModel)]="registrationForm.name"
+                           name="farmerName"
+                           required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">
+                      मोबाइल नंबर (WhatsApp No.) <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light fw-bold text-secondary">+91</span>
+                      <input type="tel"
+                             maxlength="10"
+                             class="form-control rounded-end-3"
+                             placeholder="10 अंकों का फोन नंबर"
+                             [(ngModel)]="registrationForm.phone"
+                             name="farmerPhone"
+                             required>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">
+                      गांव / ग्राम पंचायत (Village)
+                    </label>
+                    <input type="text"
+                           class="form-control rounded-3"
+                           placeholder="उदा. महुली"
+                           [(ngModel)]="registrationForm.village"
+                           name="farmerVillage">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">
+                      प्रमुख फसलें (Crops Grown)
+                    </label>
+                    <input type="text"
+                           class="form-control rounded-3"
+                           placeholder="उदा. गेहूं, धान, आलू, सरसों"
+                           [(ngModel)]="registrationForm.cropsGrown"
+                           name="farmerCrops">
+                  </div>
+
+                  <button type="submit"
+                          class="btn btn-success w-100 rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                          [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+                    <i *ngIf="!isSubmitting" class="bi bi-check2-circle fs-5"></i>
+                    <span>{{ isSubmitting ? 'पंजीकरण हो रहा है...' : 'निःशुल्क सीट बुक करें' }}</span>
+                  </button>
+
+                  <div class="text-center mt-3">
+                    <small class="text-muted d-inline-flex align-items-center gap-1">
+                      <i class="bi bi-shield-check text-success"></i> 100% सुरक्षित एवं सरकारी KVK प्रमाणित
+                    </small>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- CASE 2: COMPLETED SESSION SIDEBAR CARD (Session summary + Next Batch Alert) -->
+            <div *ngIf="training.status === 'Completed'" class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4 bg-white">
+              <div class="card-header bg-dark text-white p-3.5 text-center">
+                <i class="bi bi-patch-check-fill text-warning fs-2 mb-1 d-block"></i>
+                <h5 class="fw-bold mb-0 text-white">सत्र संपन्न हो चुका है</h5>
+                <small class="text-white-50">Session Successfully Completed</small>
+              </div>
+
+              <div class="card-body p-4 text-center">
+                <!-- Attended Count Metric -->
+                <div class="p-3 bg-success-subtle rounded-3 mb-3 border border-success-subtle">
+                  <h2 class="display-6 fw-bold text-success mb-0">{{ training.registeredCount || 55 }}+</h2>
+                  <p class="text-dark small fw-bold mb-0">किसान भाइयों ने भाग लिया व प्रमाण पत्र प्राप्त किया</p>
+                </div>
+
+                <!-- Next Batch Notification Form -->
+                <div class="border rounded-3 p-3 text-start bg-light mb-3">
+                  <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1">
+                    <i class="bi bi-bell-fill text-warning"></i> अगले बैच की सूचना पाएं
+                  </h6>
+                  <p class="text-muted small mb-2" style="font-size: 11px;">
+                    जब इस विषय पर आपके जिले में नया सत्र आयोजित होगा, आपको WhatsApp पर सूचना मिल जाएगी।
+                  </p>
+
+                  <div *ngIf="isRegisteredSuccess" class="alert alert-success py-2 px-3 small rounded-3 mb-0">
+                    <i class="bi bi-check-circle-fill me-1"></i> आपका नंबर दर्ज कर लिया गया है।
+                  </div>
+
+                  <form *ngIf="!isRegisteredSuccess" (ngSubmit)="submitRegistration()">
+                    <div class="mb-2">
+                      <input type="text"
+                             class="form-control form-control-sm rounded-2"
+                             placeholder="आपका नाम"
+                             [(ngModel)]="registrationForm.name"
+                             name="nextBatchName"
+                             required>
+                    </div>
+                    <div class="mb-2">
+                      <input type="tel"
+                             maxlength="10"
+                             class="form-control form-control-sm rounded-2"
+                             placeholder="10 अंकों का WhatsApp नंबर"
+                             [(ngModel)]="registrationForm.phone"
+                             name="nextBatchPhone"
+                             required>
+                    </div>
+                    <button type="submit"
+                            class="btn btn-outline-success btn-sm w-100 rounded-pill fw-bold"
+                            [disabled]="isSubmitting">
+                      <i class="bi bi-send-fill me-1"></i> मुझे सूचित करें (Notify Me)
+                    </button>
+                  </form>
+                </div>
+
+                <a routerLink="/trainings" class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm">
+                  <i class="bi bi-calendar-event me-1"></i> अन्य आगामी प्रशिक्षण देखें
+                </a>
+              </div>
+            </div>
+
+            <!-- Helpline Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center fs-4" style="width: 50px; height: 50px;">
+                  <i class="bi bi-telephone-inbound-fill"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block fw-bold text-uppercase" style="font-size: 11px;">किसान प्रशिक्षण सहायता</small>
+                  <a [href]="'tel:' + (training.contactPhone || '+919125955106')" class="fw-bold text-dark text-decoration-none fs-6">
+                    {{ training.contactPhone || '+91 9125955106' }}
+                  </a>
+                  <span class="d-block small text-muted">सुबह 9:00 से शाम 7:00 तक</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- LIGHTBOX MODAL FOR ZOOMING IMAGES -->
+  <div class="modal-backdrop-custom" *ngIf="isLightboxOpen" (click)="closeLightbox()"></div>
+  <div class="lightbox-container" *ngIf="isLightboxOpen" (click)="closeLightbox()">
+    <img [src]="activeLightboxImg" alt="Enlarged view" class="lightbox-img shadow-lg rounded-4">
+    <button type="button" class="btn btn-light rounded-circle position-absolute top-0 end-0 m-4 p-2 shadow" (click)="closeLightbox()">
+      <i class="bi bi-x-lg fs-5"></i>
+    </button>
+  </div>
+</div>

@@ -1,9 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TrainingService, Training } from '../../core/training.service';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-trainings-page',
@@ -14,18 +13,20 @@ import Swal from 'sweetalert2';
 })
 export class TrainingsPageComponent implements OnInit {
   private trainingService = inject(TrainingService);
+  private router = inject(Router);
 
   activeTab: 'upcoming' | 'completed' = 'upcoming';
   isLoading = true;
   trainings: Training[] = [];
+
   selectedCategory = 'All';
   searchQuery = '';
 
   stats = {
-    totalTrainings: 24,
-    upcomingCount: 6,
-    completedCount: 18,
-    farmersTrained: 5420
+    totalTrainings: 0,
+    upcomingCount: 0,
+    completedCount: 0,
+    farmersTrained: 0
   };
 
   categories = [
@@ -40,24 +41,13 @@ export class TrainingsPageComponent implements OnInit {
     'General Training'
   ];
 
-  // Registration Modal State
-  isRegisterModalOpen = false;
-  selectedTrainingForRegister: Training | null = null;
-  registrationForm = {
-    name: '',
-    phone: '',
-    village: '',
-    cropsGrown: ''
-  };
-  isSubmittingRegistration = false;
+  get upcomingCount(): number {
+    return this.stats.upcomingCount || (this.activeTab === 'upcoming' ? this.trainings.length : 0);
+  }
 
-  // Detail Modal State
-  isDetailModalOpen = false;
-  activeTrainingDetail: Training | null = null;
-
-  // Photo Lightbox State
-  isLightboxOpen = false;
-  activeLightboxImage = '';
+  get completedCount(): number {
+    return this.stats.completedCount || (this.activeTab === 'completed' ? this.trainings.length : 0);
+  }
 
   ngOnInit(): void {
     this.loadTrainings();
@@ -72,16 +62,18 @@ export class TrainingsPageComponent implements OnInit {
   loadStats(): void {
     this.trainingService.getTrainingStats().subscribe({
       next: (res) => {
-        if (res.success && res.data) {
+        if (res && res.success && res.data) {
           this.stats = {
-            totalTrainings: res.data.total || 24,
-            upcomingCount: res.data.upcoming || 6,
-            completedCount: res.data.completed || 18,
-            farmersTrained: res.data.totalCertified ? res.data.totalCertified * 25 : 5420
+            totalTrainings: res.data.total || 0,
+            upcomingCount: res.data.upcoming || 0,
+            completedCount: res.data.completed || 0,
+            farmersTrained: res.data.totalCertified ? res.data.totalCertified * 25 : (res.data.totalFarmersTrained || 0)
           };
         }
       },
-      error: () => {}
+      error: (err) => {
+        console.error('Error fetching training stats:', err);
+      }
     });
   }
 
@@ -96,12 +88,15 @@ export class TrainingsPageComponent implements OnInit {
     ).subscribe({
       next: (res) => {
         this.isLoading = false;
-        if (res.success) {
+        if (res && res.success) {
           this.trainings = res.data || [];
+        } else {
+          this.trainings = [];
         }
       },
       error: (err) => {
         this.isLoading = false;
+        this.trainings = [];
         console.error('Error fetching trainings:', err);
       }
     });
@@ -111,86 +106,10 @@ export class TrainingsPageComponent implements OnInit {
     this.loadTrainings();
   }
 
-  // Registration modal triggers
-  openRegisterModal(training: Training): void {
-    this.selectedTrainingForRegister = training;
-    this.registrationForm = {
-      name: '',
-      phone: '',
-      village: training.village || '',
-      cropsGrown: ''
-    };
-    this.isRegisterModalOpen = true;
-  }
-
-  closeRegisterModal(): void {
-    this.isRegisterModalOpen = false;
-    this.selectedTrainingForRegister = null;
-  }
-
-  submitRegistration(): void {
-    if (!this.selectedTrainingForRegister || !this.selectedTrainingForRegister._id) return;
-
-    if (!this.registrationForm.name || !this.registrationForm.phone) {
-      Swal.fire('अधूरी जानकारी', 'कृपया अपना नाम और मोबाइल नंबर अवश्य दर्ज करें।', 'warning');
-      return;
+  goToDetail(training: Training): void {
+    const targetId = training.slug || training._id;
+    if (targetId) {
+      this.router.navigate(['/trainings', targetId]);
     }
-
-    if (this.registrationForm.phone.length < 10) {
-      Swal.fire('गलत नंबर', 'कृपया 10 अंकों का वैध मोबाइल नंबर दर्ज करें।', 'warning');
-      return;
-    }
-
-    this.isSubmittingRegistration = true;
-
-    this.trainingService.registerFarmer(this.selectedTrainingForRegister._id, this.registrationForm).subscribe({
-      next: (res) => {
-        this.isSubmittingRegistration = false;
-        if (res.success) {
-          Swal.fire({
-            title: '🎉 बधाई हो! पंजीकरण सफल रहा',
-            html: `प्रिय <b>${this.registrationForm.name}</b> जी, <b>${this.selectedTrainingForRegister?.village}</b> में होने वाले प्रशिक्षण के लिए आपकी निःशुल्क सीट आरक्षित कर ली गई है। विवरण आपके मोबाइल <b>${this.registrationForm.phone}</b> पर भेज दिया गया है।`,
-            icon: 'success',
-            confirmButtonColor: '#2E7D32',
-            confirmButtonText: 'ठीक है (OK)'
-          });
-          this.closeRegisterModal();
-          this.loadTrainings();
-        }
-      },
-      error: (err) => {
-        this.isSubmittingRegistration = false;
-        Swal.fire('त्रुटि', err.error?.message || 'पंजीकरण में समस्या आई। कृपया पुनः प्रयास करें।', 'error');
-      }
-    });
-  }
-
-  // Detail modal triggers
-  openDetailModal(training: Training): void {
-    this.activeTrainingDetail = training;
-    this.isDetailModalOpen = true;
-  }
-
-  closeDetailModal(): void {
-    this.isDetailModalOpen = false;
-    this.activeTrainingDetail = null;
-  }
-
-  // Photo lightbox
-  openLightbox(imageUrl: string): void {
-    this.activeLightboxImage = imageUrl;
-    this.isLightboxOpen = true;
-  }
-
-  closeLightbox(): void {
-    this.isLightboxOpen = false;
-    this.activeLightboxImage = '';
-  }
-
-  // WhatsApp Share
-  shareOnWhatsApp(training: Training): void {
-    const text = `🌾 *KrisiMarg किसान प्रशिक्षण शिविर सूचना* 🌾\n\n📌 *विषय:* ${training.title}\n📍 *स्थान / गांव:* ${training.village}, ${training.district} (${training.fullAddress})\n📅 *दिनांक:* ${new Date(training.startDate).toLocaleDateString('hi-IN')}\n⏰ *समय:* ${training.time}\n👨‍🏫 *प्रशिक्षक:* ${training.trainerName}\n\nनिःशुल्क पंजीकरण हेतु यहाँ क्लिक करें: https://krisimarg.com/trainings`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
   }
 }
