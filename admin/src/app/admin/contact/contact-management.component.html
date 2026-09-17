@@ -141,12 +141,12 @@
               </div>
             </td>
             <td>
-              <span class="badge rounded-pill px-2.5 py-1.5 fs-7" [ngClass]="getStatusBadgeClass(item.status)">
+              <span class="badge rounded-pill px-3 py-1 fs-7" [ngClass]="getStatusBadgeClass(item.status)">
                 {{ item.status }}
               </span>
             </td>
             <td>
-              <div *ngIf="item.adminRemark" class="remark-snippet text-truncate fs-7 text-dark bg-light p-1.5 rounded border" style="max-width: 220px;" [title]="item.adminRemark">
+              <div *ngIf="item.adminRemark" class="remark-snippet text-truncate fs-7 text-dark bg-light p-2 rounded border" style="max-width: 220px;" [title]="item.adminRemark">
                 <i class="bi bi-chat-left-text text-success me-1"></i>{{ item.adminRemark }}
               </div>
               <span *ngIf="!item.adminRemark" class="text-muted fs-7 fst-italic">No remark added</span>

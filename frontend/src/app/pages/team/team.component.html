@@ -16,7 +16,7 @@
         <div class="container position-relative py-4 text-white">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
-                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold mb-3 d-inline-flex align-items-center gap-1 shadow-sm">
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold mb-3 d-inline-flex align-items-center gap-1 shadow-sm">
                         <i class="bi bi-people-fill"></i>
                         The Visionaries Behind KrisiMarg
                     </span>
@@ -109,7 +109,7 @@
                                     </h6>
                                     <ul class="list-unstyled mb-0">
                                         @for (item of member.responsibilities; track item) {
-                                            <li class="d-flex align-items-start gap-2 text-muted small mb-1.5">
+                                            <li class="d-flex align-items-start gap-2 text-muted small mb-2">
                                                 <i class="bi bi-patch-check-fill text-success mt-1 flex-shrink-0"></i>
                                                 <span>{{ item }}</span>
                                             </li>
@@ -119,9 +119,9 @@
 
                                 <!-- Expertise Tags -->
                                 <div class="mb-4">
-                                    <div class="d-flex flex-wrap gap-1.5">
+                                    <div class="d-flex flex-wrap gap-2">
                                         @for (skill of member.skills; track skill) {
-                                            <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1" style="font-size: 11px;">
+                                            <span class="badge bg-light text-secondary border rounded-pill px-3 py-1" style="font-size: 11px;">
                                                 {{ skill }}
                                             </span>
                                         }

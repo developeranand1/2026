@@ -52,7 +52,7 @@
                 <div class="d-flex align-items-center justify-content-between mb-3 px-1">
                     <div class="d-flex align-items-center gap-2">
                         <span
-                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
+                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1">
                             <i class="bi bi-arrow-repeat text-success pulse-icon" [class.spin]="!isPaused"></i>
                             {{ isPaused ? 'Paused on Hover' : 'Live Continuous 3-Card Loop' }}
                         </span>
@@ -80,7 +80,7 @@
                         @for (rate of mandiRates; track rate.commodity; let idx = $index) {
                         <div class="carousel-slide flex-shrink-0 px-2">
                             <div
-                                class="card premium-mandi-card border-0 shadow-sm rounded-4 bg-white h-100 d-flex flex-column justify-content-between p-3.5 transition-hover">
+                                class="card premium-mandi-card border-0 shadow-sm rounded-4 bg-white h-100 d-flex flex-column justify-content-between p-3 transition-hover">
 
                                 <div>
                                     <!-- Header: Avatar + Title + Trend Pill -->
@@ -98,7 +98,7 @@
                                             </div>
                                         </div>
 
-                                        <span class="badge rounded-pill px-2.5 py-1.5 small fw-bold shadow-2xs"
+                                        <span class="badge rounded-pill px-3 py-1 small fw-bold shadow-2xs"
                                             [class.bg-success-subtle]="rate.isUp" [class.text-success]="rate.isUp"
                                             [class.bg-danger-subtle]="!rate.isUp" [class.text-danger]="!rate.isUp">
                                             <i class="bi me-1" [class.bi-arrow-up-right-circle-fill]="rate.isUp"
@@ -135,7 +135,7 @@
                                 <div>
                                     <div
                                         class="d-flex justify-content-between align-items-center text-muted small pt-2 mb-3 border-top">
-                                        <span class="badge bg-light text-secondary border fw-normal px-2.5 py-1">
+                                        <span class="badge bg-light text-secondary border fw-normal px-3 py-1">
                                             <i class="bi bi-patch-check-fill text-success me-1"></i> Variety: {{
                                             rate.variety || 'Standard' }}
                                         </span>
@@ -161,7 +161,7 @@
 
                 <!-- Slide Dots Indicator Row -->
                 @if (dotsList.length > 1) {
-                <div class="d-flex align-items-center justify-content-center gap-1.5 mt-3">
+                <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
                     @for (dot of dotsList; track dot) {
                     <button type="button" class="carousel-dot border-0 transition-all"
                         [class.active]="dot === activeSlideIndex" (click)="goToSlide(dot)"
@@ -176,7 +176,7 @@
             <!-- View All Rates Link Button -->
             <div class="text-center mt-4 pt-3">
                 <a routerLink="/mandi-rates"
-                    class="btn btn-success rounded-pill px-4 py-2.5 fw-bold shadow-sm fs-6 d-inline-flex align-items-center gap-2">
+                    class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm fs-6 d-inline-flex align-items-center gap-2">
                     <span>Explore All Mandi Rates & Crop Intelligence</span>
                     <i class="bi bi-arrow-right-circle-fill"></i>
                 </a>

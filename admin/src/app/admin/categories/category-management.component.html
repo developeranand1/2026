@@ -76,7 +76,7 @@
           
           <div class="image-gradient-overlay position-absolute inset-0 d-flex flex-column justify-content-between p-3">
             <div class="d-flex align-items-center justify-content-between">
-              <span class="badge rounded-pill px-3 py-1.5 fs-7 shadow-sm" [ngClass]="cat.isActive ? 'bg-success text-white' : 'bg-secondary text-white'">
+              <span class="badge rounded-pill px-3 py-1 fs-7 shadow-sm" [ngClass]="cat.isActive ? 'bg-success text-white' : 'bg-secondary text-white'">
                 {{ cat.isActive ? 'Active' : 'Disabled' }}
               </span>
               <div class="action-btns d-flex gap-1">
@@ -111,8 +111,8 @@
               </button>
             </div>
 
-            <div class="d-flex flex-wrap gap-1.5">
-              <span *ngFor="let sub of cat.subcategories" class="subcategory-pill badge bg-light text-dark border rounded-pill px-2.5 py-1 fs-7 d-inline-flex align-items-center gap-1">
+            <div class="d-flex flex-wrap gap-2">
+              <span *ngFor="let sub of cat.subcategories" class="subcategory-pill badge bg-light text-dark border rounded-pill px-3 py-1 fs-7 d-inline-flex align-items-center gap-1">
                 {{ sub.name }}
                 <i (click)="openEditSubcategoryModal(sub, cat)" class="bi bi-pencil-fill text-warning cursor-pointer ms-1" title="Edit Subcategory"></i>
                 <i (click)="deleteSubcategory(sub._id!)" class="bi bi-x-circle-fill text-danger cursor-pointer ms-1" title="Delete Subcategory"></i>

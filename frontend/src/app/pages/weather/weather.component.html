@@ -88,10 +88,10 @@
                     <!-- Left: Location & Condition -->
                     <div class="col-lg-6">
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge bg-white-20 backdrop-blur rounded-pill px-3 py-1.5 fw-semibold">
+                            <span class="badge bg-white-20 backdrop-blur rounded-pill px-3 py-1 fw-semibold">
                                 <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ weatherData.location.city }}, {{ weatherData.location.state }}
                             </span>
-                            <span class="badge bg-white-20 backdrop-blur rounded-pill px-3 py-1.5 fw-semibold">
+                            <span class="badge bg-white-20 backdrop-blur rounded-pill px-3 py-1 fw-semibold">
                                 Updated: {{ weatherData.updatedAt }}
                             </span>
                         </div>
@@ -206,7 +206,7 @@
             <!-- Scrollable Hourly Timeline Strip -->
             <div class="hourly-timeline-container d-flex gap-2 overflow-auto pb-2">
                 @for (hr of weatherData.hourlyForecast; track hr.time) {
-                <div class="hourly-item-card text-center p-2.5 rounded-3 border transition-all cursor-pointer"
+                <div class="hourly-item-card text-center p-3 rounded-3 border transition-all cursor-pointer"
                     [class.active-hour]="selectedHourlyItem?.time === hr.time"
                     [class.has-rain-hour]="hr.rainProb >= 40"
                     (click)="selectHour(hr)">
@@ -277,7 +277,7 @@
                 @for (day of weatherData.dailyForecast; track day.date) {
                 <div class="col-6 col-md-4 col-lg">
                     <div class="daily-forecast-card p-3 rounded-3 border bg-light text-center h-100 transition-hover">
-                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-bold mb-2">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 small fw-bold mb-2">
                             {{ day.dayLabel }}
                         </span>
                         <small class="text-muted d-block mb-1">{{ day.dateFormatted }}</small>
@@ -286,13 +286,13 @@
                             [class.text-warning]="day.rainProbMax < 40"
                             [class.text-primary]="day.rainProbMax >= 40"></i>
 
-                        <div class="d-flex justify-content-center align-items-baseline gap-1.5 my-2">
+                        <div class="d-flex justify-content-center align-items-baseline gap-2 my-2">
                             <strong class="text-dark fs-5">{{ day.maxTemp }}°</strong>
                             <span class="text-muted small">/ {{ day.minTemp }}°</span>
                         </div>
 
                         <!-- Rain Chance Pill -->
-                        <div class="rain-chance-chip d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill small mb-2"
+                        <div class="rain-chance-chip d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill small mb-2"
                             [class.bg-info-subtle]="day.rainProbMax >= 30"
                             [class.text-info]="day.rainProbMax >= 30"
                             [class.bg-light]="day.rainProbMax < 30"

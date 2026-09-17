@@ -2,7 +2,7 @@
 <div class="topbar">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2 topbar-left">
-            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-0.5"
+            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-1"
                 style="font-size: 10px;">LIVE</span>
             <span class="topbar-text">
                 <i class="bi bi-truck me-1"></i>
@@ -68,13 +68,13 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/mandi-rates" routerLinkActive="active">
-                        Mandi Rates <span class="badge bg-success-subtle text-success rounded-pill px-1.5 py-0.5 ms-1"
+                        Mandi Rates <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 ms-1"
                             style="font-size: 10px;">Live</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/trainings" routerLinkActive="active">
-                        Trainings <span class="badge bg-warning text-dark rounded-pill px-1.5 py-0.5 ms-1"
+                        Trainings <span class="badge bg-warning text-dark rounded-pill px-2 py-1 ms-1"
                             style="font-size: 10px;">Free Camp</span>
                     </a>
                 </li>
@@ -109,7 +109,7 @@
                     [queryParams]="{mode: 'login'}">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Login
                 </a>
-                <a class="btn btn-success btn-sm rounded-pill px-3.5 fw-bold shadow-sm" routerLink="/login"
+                <a class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" routerLink="/login"
                     [queryParams]="{mode: 'register'}">
                     <i class="bi bi-person-plus-fill me-1"></i> Register
                 </a>
@@ -173,7 +173,7 @@
                 </span>
                 <div class="overflow-hidden">
                     <h6 class="fw-bold text-dark mb-0 text-truncate">{{ userName }}</h6>
-                    <span class="badge bg-success text-white rounded-pill px-2 py-0.5 mt-1" style="font-size: 10px;">
+                    <span class="badge bg-success text-white rounded-pill px-2 py-1 mt-1" style="font-size: 10px;">
                         @if (userRole === 'farmer') { 🌾 Kisan Partner } @else { 🏬 Verified Buyer }
                     </span>
                 </div>
@@ -213,7 +213,7 @@
     <div class="drawer-nav p-3">
         <ul class="nav flex-column gap-1">
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/"
                     routerLinkActive="active-mobile-link" [routerLinkActiveOptions]="{exact: true}"
                     (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-success"><i class="bi bi-house-door-fill"></i></span>
@@ -221,57 +221,57 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/mandi-rates"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/mandi-rates"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-primary"><i class="bi bi-graph-up-arrow"></i></span>
                     <div class="d-flex justify-content-between align-items-center flex-grow-1">
                         <span class="fw-semibold text-dark">Mandi Rates (मंडी भाव)</span>
-                        <span class="badge bg-success text-white rounded-pill px-2 py-0.5"
+                        <span class="badge bg-success text-white rounded-pill px-2 py-1"
                             style="font-size: 10px;">Live</span>
                     </div>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/trainings"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/trainings"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-success"><i class="bi bi-mortarboard-fill"></i></span>
                     <div class="d-flex justify-content-between align-items-center flex-grow-1">
                         <span class="fw-semibold text-dark">Trainings & Camps (प्रशिक्षण शिविर)</span>
-                        <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5"
+                        <span class="badge bg-warning text-dark rounded-pill px-2 py-1"
                             style="font-size: 10px;">Free</span>
                     </div>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/news"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/news"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-warning"><i class="bi bi-newspaper"></i></span>
                     <span class="fw-semibold text-dark">News & Updates (समाचार)</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/about"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/about"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-info"><i class="bi bi-info-circle-fill"></i></span>
                     <span class="fw-semibold text-dark">About Us (हमारे बारे में)</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/team"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/team"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-success"><i class="bi bi-people-fill"></i></span>
                     <span class="fw-semibold text-dark">Leadership & Team (हमारी टीम)</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/contact"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/contact"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-danger"><i class="bi bi-telephone-fill"></i></span>
                     <span class="fw-semibold text-dark">Contact Us (संपर्क करें)</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="mobile-nav-link d-flex align-items-center gap-3 p-2.5 rounded-3" routerLink="/faq"
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/faq"
                     routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
                     <span class="mobile-nav-icon bg-light text-secondary"><i
                             class="bi bi-question-circle-fill"></i></span>

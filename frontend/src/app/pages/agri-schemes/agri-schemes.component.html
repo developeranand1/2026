@@ -120,7 +120,7 @@
       <!-- Category Filter Pills -->
       <div class="d-flex gap-2 overflow-x-auto pt-3 pb-1 custom-scrollbar">
         <button type="button" *ngFor="let cat of categories"
-          class="btn btn-sm rounded-pill px-3 py-2 fw-semibold flex-shrink-0 category-pill-btn d-flex align-items-center gap-1.5"
+          class="btn btn-sm rounded-pill px-3 py-2 fw-semibold flex-shrink-0 category-pill-btn d-flex align-items-center gap-2"
           [class.btn-success]="selectedCategory === cat.id"
           [class.btn-light]="selectedCategory !== cat.id"
           (click)="setCategory(cat.id)">
@@ -155,11 +155,11 @@
             
             <!-- Card Header: Category & Badge -->
             <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-              <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1 fs-9 d-flex align-items-center gap-1">
+              <span class="badge bg-light text-muted border rounded-pill px-3 py-1 fs-9 d-flex align-items-center gap-1">
                 <i class="bi {{ scheme.icon }} text-success"></i>
                 <span>{{ scheme.categoryLabelHi }}</span>
               </span>
-              <span class="badge bg-{{ scheme.badgeColor }}-subtle text-{{ scheme.badgeColor }} border border-{{ scheme.badgeColor }}-subtle rounded-pill px-2.5 py-1 fs-9 fw-bold">
+              <span class="badge bg-{{ scheme.badgeColor }}-subtle text-{{ scheme.badgeColor }} border border-{{ scheme.badgeColor }}-subtle rounded-pill px-3 py-1 fs-9 fw-bold">
                 {{ scheme.badge }}
               </span>
             </div>
@@ -174,9 +174,9 @@
             </p>
 
             <!-- Benefit Box -->
-            <div class="p-2.5 bg-light rounded-3 border mb-3">
+            <div class="p-3 bg-light rounded-3 border mb-3">
               <div class="d-flex align-items-start gap-2">
-                <i class="bi bi-gift-fill text-success fs-6 flex-shrink-0 mt-0.5"></i>
+                <i class="bi bi-gift-fill text-success fs-6 flex-shrink-0 mt-1"></i>
                 <div class="fs-8 text-dark">
                   <strong>मुख्य लाभ:</strong> {{ scheme.benefitAmount }}
                 </div>
@@ -218,7 +218,7 @@
             <i class="bi {{ selectedScheme.icon }} fs-4"></i>
           </div>
           <div>
-            <span class="badge bg-{{ selectedScheme.badgeColor }} text-white rounded-pill px-2.5 py-1 fs-9 mb-1">
+            <span class="badge bg-{{ selectedScheme.badgeColor }} text-white rounded-pill px-3 py-1 fs-9 mb-1">
               {{ selectedScheme.badge }}
             </span>
             <h5 class="fw-bold text-dark mb-0">{{ selectedScheme.nameHi }}</h5>
@@ -261,7 +261,7 @@
             <span>पात्रता मानदंड (Eligibility Criteria):</span>
           </h6>
           <ul class="list-unstyled mb-0 fs-8 text-dark">
-            <li *ngFor="let elig of selectedScheme.eligibility" class="mb-1.5 d-flex align-items-start gap-2">
+            <li *ngFor="let elig of selectedScheme.eligibility" class="mb-2 d-flex align-items-start gap-2">
               <i class="bi bi-check-circle-fill text-success flex-shrink-0 mt-1"></i>
               <span>{{ elig }}</span>
             </li>
@@ -291,7 +291,7 @@
             <span>आवेदन कैसे करें (Step-by-Step Application Process):</span>
           </h6>
           <ol class="mb-0 fs-8 text-dark ps-3">
-            <li *ngFor="let step of selectedScheme.applicationProcess" class="mb-1.5">
+            <li *ngFor="let step of selectedScheme.applicationProcess" class="mb-2">
               {{ step }}
             </li>
           </ol>

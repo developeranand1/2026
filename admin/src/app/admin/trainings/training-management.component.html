@@ -24,7 +24,7 @@
         <button class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="seedDemoData()">
           <i class="bi bi-database-fill-gear me-1"></i> Seed Demo Camps
         </button>
-        <button class="btn btn-success btn-sm rounded-pill px-3.5 shadow-sm fw-bold" (click)="navigateToCreate()">
+        <button class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold" (click)="navigateToCreate()">
           <i class="bi bi-plus-lg me-1"></i> + Schedule New Training
         </button>
       </div>
@@ -149,12 +149,12 @@
             <img [src]="item.coverImage || 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=600&q=80'" alt="Cover" class="card-img-top object-fit-cover" style="height: 180px;">
             
             <!-- Category Pill -->
-            <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1.5 small backdrop-blur">
+            <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 small backdrop-blur">
               {{ item.category }}
             </span>
 
             <!-- Status Badge -->
-            <span class="badge position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1.5 shadow-sm fw-bold"
+            <span class="badge position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1 shadow-sm fw-bold"
               [ngClass]="{
                 'bg-success text-white': item.status === 'Upcoming',
                 'bg-warning text-dark': item.status === 'Ongoing',
@@ -176,7 +176,7 @@
             </span>
           </div>
 
-          <div class="card-body p-3.5 d-flex flex-column">
+          <div class="card-body p-3 d-flex flex-column">
             <!-- Title -->
             <h5 class="fw-bold text-dark mb-2 title-clamp cursor-pointer" (click)="navigateToDetails(item._id)" [title]="item.title">
               {{ item.title }}
@@ -213,7 +213,7 @@
               </div>
               <div class="text-end">
                 <span class="text-muted d-block" style="font-size: 11px;">ATTENDEES</span>
-                <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold">
+                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">
                   <i class="bi bi-people-fill me-1"></i>{{ item.participants?.length || item.registeredCount || 0 }} / {{ item.maxCapacity || 50 }}
                 </span>
               </div>
@@ -226,10 +226,10 @@
               </button>
 
               <div class="d-flex gap-1">
-                <button class="btn btn-light btn-sm rounded-circle p-1.5" (click)="navigateToEdit(item._id)" title="Edit Training">
+                <button class="btn btn-light btn-sm rounded-circle p-2" (click)="navigateToEdit(item._id)" title="Edit Training">
                   <i class="bi bi-pencil-fill text-secondary"></i>
                 </button>
-                <button class="btn btn-light btn-sm rounded-circle p-1.5" (click)="deleteTraining(item)" title="Delete Training">
+                <button class="btn btn-light btn-sm rounded-circle p-2" (click)="deleteTraining(item)" title="Delete Training">
                   <i class="bi bi-trash3-fill text-danger"></i>
                 </button>
               </div>
@@ -550,7 +550,7 @@
           <i class="bi bi-printer me-1"></i> Print Roster
         </button>
 
-        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3.5 shadow-sm fw-bold" (click)="navigateToEdit(activeTraining._id)">
+        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm fw-bold" (click)="navigateToEdit(activeTraining._id)">
           <i class="bi bi-pencil-square me-1"></i> Edit Training
         </button>
       </div>
@@ -565,9 +565,9 @@
           
           <div class="card-body p-4">
             <div class="d-flex flex-wrap gap-2 mb-3">
-              <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1.5 fw-bold">{{ activeTraining.category }}</span>
-              <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5"><i class="bi bi-calendar3 me-1 text-success"></i>{{ activeTraining.startDate | date:'fullDate' }}</span>
-              <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5"><i class="bi bi-clock me-1 text-warning"></i>{{ activeTraining.time }}</span>
+              <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">{{ activeTraining.category }}</span>
+              <span class="badge bg-light text-dark border rounded-pill px-3 py-1"><i class="bi bi-calendar3 me-1 text-success"></i>{{ activeTraining.startDate | date:'fullDate' }}</span>
+              <span class="badge bg-light text-dark border rounded-pill px-3 py-1"><i class="bi bi-clock me-1 text-warning"></i>{{ activeTraining.time }}</span>
             </div>
 
             <h5 class="fw-bold text-dark mb-2">Training Agenda & Description:</h5>
@@ -644,7 +644,7 @@
               </h5>
               <small class="text-muted">Total: {{ activeTraining.participants?.length || 0 }} / {{ activeTraining.maxCapacity || 50 }}</small>
             </div>
-            <span class="badge bg-success rounded-pill px-3 py-1.5 fw-bold">
+            <span class="badge bg-success rounded-pill px-3 py-1 fw-bold">
               {{ activeTraining.participants?.length || 0 }} Enrolled
             </span>
           </div>

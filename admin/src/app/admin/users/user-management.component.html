@@ -162,7 +162,7 @@
               </td>
               <td>
                 <span 
-                  class="badge rounded-pill px-3 py-1.5 fs-7 border"
+                  class="badge rounded-pill px-3 py-1 fs-7 border"
                   [ngClass]="{
                     'bg-success-subtle text-success border-success-subtle': user.role === 'farmer',
                     'bg-info-subtle text-info border-info-subtle': user.role === 'buyer',
@@ -185,15 +185,15 @@
                 </div>
               </td>
               <td>
-                <span *ngIf="user.isVerified" class="badge bg-success text-white rounded-pill px-2.5 py-1 fs-7">
+                <span *ngIf="user.isVerified" class="badge bg-success text-white rounded-pill px-3 py-1 fs-7">
                   <i class="bi bi-patch-check-fill me-1"></i>Verified
                 </span>
-                <span *ngIf="!user.isVerified" class="badge bg-light text-muted border rounded-pill px-2.5 py-1 fs-7">
+                <span *ngIf="!user.isVerified" class="badge bg-light text-muted border rounded-pill px-3 py-1 fs-7">
                   <i class="bi bi-clock-history me-1"></i>Unverified
                 </span>
               </td>
               <td>
-                <span class="badge rounded-pill px-2.5 py-1 fs-7" [ngClass]="user.status === 'active' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger text-white'">
+                <span class="badge rounded-pill px-3 py-1 fs-7" [ngClass]="user.status === 'active' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger text-white'">
                   {{ user.status | titlecase }}
                 </span>
               </td>
@@ -330,7 +330,7 @@
               <div class="col-md-6">
                 <div class="p-3 rounded-3 bg-light border">
                   <span class="text-muted fs-8 d-block mb-1">Current Status:</span>
-                  <span class="badge rounded-pill px-3 py-1.5 fs-7" [ngClass]="selectedUser.status === 'active' ? 'bg-success text-white' : 'bg-danger text-white'">
+                  <span class="badge rounded-pill px-3 py-1 fs-7" [ngClass]="selectedUser.status === 'active' ? 'bg-success text-white' : 'bg-danger text-white'">
                     {{ selectedUser.status | uppercase }}
                   </span>
                 </div>
@@ -338,10 +338,10 @@
               <div class="col-md-6">
                 <div class="p-3 rounded-3 bg-light border">
                   <span class="text-muted fs-8 d-block mb-1">Verification Badge:</span>
-                  <span *ngIf="selectedUser.isVerified" class="badge bg-success text-white rounded-pill px-3 py-1.5 fs-7">
+                  <span *ngIf="selectedUser.isVerified" class="badge bg-success text-white rounded-pill px-3 py-1 fs-7">
                     <i class="bi bi-patch-check-fill me-1"></i>Verified Account
                   </span>
-                  <span *ngIf="!selectedUser.isVerified" class="badge bg-secondary text-white rounded-pill px-3 py-1.5 fs-7">
+                  <span *ngIf="!selectedUser.isVerified" class="badge bg-secondary text-white rounded-pill px-3 py-1 fs-7">
                     Unverified Account
                   </span>
                 </div>

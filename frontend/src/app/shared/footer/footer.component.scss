@@ -1,78 +1,133 @@
 .footer {
-    background: #082b16;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 12px;
-}
+    background: linear-gradient(180deg, #0d3b20 0%, #061c0f 100%);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.85rem;
 
-.footer h3 {
-    color: white;
-    font-size: 20px;
-}
+    .footer-desc {
+        font-size: 0.82rem;
+        line-height: 1.65;
+        max-width: 360px;
+    }
 
-.footer h3 span {
-    color: var(--gb-yellow);
-}
+    .footer-heading {
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        position: relative;
+        padding-bottom: 8px;
 
-.footer h6 {
-    margin-bottom: 14px;
-    color: white;
-    font-size: 13px;
-}
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 28px;
+            height: 2px;
+            background: #ffc107;
+            border-radius: 2px;
+        }
+    }
 
-.footer p {
-    max-width: 340px;
-    line-height: 1.7;
-}
+    // Trust strip icons
+    .trust-icon-box {
+        width: 40px;
+        height: 40px;
+        transition: transform 0.25s ease;
+    }
 
-.footer ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
+    .footer-trust-strip .col-6:hover .trust-icon-box {
+        transform: scale(1.1);
+    }
 
-.footer li {
-    margin-bottom: 8px;
-}
+    // Navigation Links
+    .footer-links {
+        li {
+            margin-bottom: 9px;
 
-.footer a {
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-}
+            a {
+                color: rgba(255, 255, 255, 0.72);
+                text-decoration: none;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                font-size: 0.82rem;
 
-.footer a:hover {
-    color: var(--gb-yellow);
-}
+                i {
+                    font-size: 10px;
+                    opacity: 0.5;
+                    transition: transform 0.2s ease, opacity 0.2s ease;
+                }
 
-.social-links {
-    display: flex;
-    gap: 8px;
-}
+                &:hover {
+                    color: #ffc107;
+                    transform: translateX(3px);
 
-.social-links a {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
+                    i {
+                        opacity: 1;
+                        transform: translateX(2px);
+                    }
+                }
+            }
+        }
+    }
 
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 15px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
+    // Social buttons
+    .social-links {
+        .social-btn {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.25s ease;
 
-.footer-bottom div {
-    display: flex;
-    gap: 15px;
-}
+            &:hover {
+                background: #198754;
+                color: #ffffff;
+                transform: translateY(-3px);
+                box-shadow: 0 6px 14px rgba(25, 135, 84, 0.35);
+            }
 
-@media (max-width: 767px) {
-    .footer-bottom {
-        flex-direction: column;
+            &.whatsapp-btn:hover {
+                background: #25d366;
+                box-shadow: 0 6px 14px rgba(37, 211, 102, 0.35);
+            }
+        }
+    }
+
+    // Address Cards
+    .footer-address-card {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(8px);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.25) !important;
+        }
+    }
+
+    // Contact Pills
+    .footer-contact-pill {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #ffc107 !important;
+            transform: translateY(-2px);
+        }
+    }
+
+    // Bottom Legal Links
+    .footer-legal-links a:hover {
+        color: #ffc107 !important;
+        text-decoration: underline !important;
     }
 }

@@ -137,14 +137,14 @@
                     style="width: 52px; height: 52px;">
                   <div>
                     <h6 class="fw-bold text-dark mb-0 fs-6">{{ crop.cropName }}</h6>
-                    <div class="d-flex align-items-center gap-1 flex-wrap mt-0.5">
-                      <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-0.5 fs-8">
+                    <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+                      <span class="badge bg-light text-secondary border rounded-pill px-3 py-1 fs-8">
                         {{ crop.category }}
                       </span>
-                      <span *ngIf="crop.subcategory" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 fs-8">
+                      <span *ngIf="crop.subcategory" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 fs-8">
                         {{ crop.subcategory }}
                       </span>
-                      <span *ngIf="crop.variety" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5 fs-8">
+                      <span *ngIf="crop.variety" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1 fs-8">
                         {{ crop.variety }}
                       </span>
                     </div>
@@ -153,7 +153,7 @@
               </td>
               <td>
                 <span 
-                  class="badge rounded-pill px-3 py-1.5 fs-7 border"
+                  class="badge rounded-pill px-3 py-1 fs-7 border"
                   [ngClass]="{
                     'bg-success-subtle text-success border-success-subtle': crop.postedByRole === 'farmer',
                     'bg-info-subtle text-info border-info-subtle': crop.postedByRole === 'buyer',
@@ -169,7 +169,7 @@
               </td>
               <td>
                 <span 
-                  class="badge rounded-pill px-2.5 py-1 fs-7"
+                  class="badge rounded-pill px-3 py-1 fs-7"
                   [ngClass]="crop.type === 'sell' ? 'bg-success text-white' : 'bg-primary text-white'">
                   {{ crop.type === 'sell' ? 'FOR SALE 🌾' : 'BUY DEMAND 🏬' }}
                 </span>
@@ -180,14 +180,14 @@
                   <span class="fs-8 text-muted">/ {{ crop.priceUnit }}</span>
                 </div>
 
-                <div *ngIf="crop.originalPrice && crop.originalPrice > crop.expectedPrice" class="d-flex align-items-center gap-1.5 mt-0.5">
+                <div *ngIf="crop.originalPrice && crop.originalPrice > crop.expectedPrice" class="d-flex align-items-center gap-2 mt-1">
                   <del class="text-muted fs-8">₹{{ crop.originalPrice | number }}</del>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle fs-8 px-1.5 py-0.5 rounded">
+                  <span class="badge bg-success-subtle text-success border border-success-subtle fs-8 px-2 py-1 rounded">
                     {{ crop.discountPercentage || 10 }}% OFF
                   </span>
                 </div>
 
-                <div class="fs-8 text-secondary mt-0.5">Qty: <strong>{{ crop.quantity }} {{ crop.unit }}</strong></div>
+                <div class="fs-8 text-secondary mt-1">Qty: <strong>{{ crop.quantity }} {{ crop.unit }}</strong></div>
               </td>
               <td class="fs-7 text-secondary">
                 <div class="fw-semibold text-dark mb-0">{{ crop.postedByName || 'KrisiMarg User' }}</div>
@@ -196,19 +196,19 @@
               </td>
               <td>
                 <!-- Approval Status Badges -->
-                <span *ngIf="crop.approvalStatus === 'approved' || crop.isApproved" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fs-7">
+                <span *ngIf="crop.approvalStatus === 'approved' || crop.isApproved" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-7">
                   <i class="bi bi-check-circle-fill me-1"></i>Approved
                 </span>
-                <span *ngIf="crop.approvalStatus === 'pending' && !crop.isApproved" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fs-7">
+                <span *ngIf="crop.approvalStatus === 'pending' && !crop.isApproved" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1 fs-7">
                   <i class="bi bi-clock-history me-1"></i>Pending
                 </span>
-                <span *ngIf="crop.approvalStatus === 'rejected'" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fs-7">
+                <span *ngIf="crop.approvalStatus === 'rejected'" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fs-7">
                   <i class="bi bi-x-circle-fill me-1"></i>Rejected
                 </span>
               </td>
               <td>
                 <span 
-                  class="badge rounded-pill px-2 py-0.5 fs-8"
+                  class="badge rounded-pill px-2 py-1 fs-8"
                   [ngClass]="{
                     'bg-success text-white': crop.status === 'active',
                     'bg-warning text-dark': crop.status === 'sold',
@@ -220,7 +220,7 @@
               <td class="text-end pe-3">
                 <button 
                   *ngIf="crop.approvalStatus !== 'approved'" 
-                  class="btn btn-sm btn-success me-1 py-0.5 px-2" 
+                  class="btn btn-sm btn-success me-1 py-1 px-2" 
                   title="Approve Listing" 
                   (click)="toggleCropApproval(crop, 'approved', $event)">
                   <i class="bi bi-check-lg"></i>
@@ -228,17 +228,17 @@
 
                 <button 
                   *ngIf="crop.approvalStatus === 'approved'" 
-                  class="btn btn-sm btn-outline-warning me-1 py-0.5 px-2" 
+                  class="btn btn-sm btn-outline-warning me-1 py-1 px-2" 
                   title="Hold / Unapprove Listing" 
                   (click)="toggleCropApproval(crop, 'pending', $event)">
                   <i class="bi bi-dash-circle"></i>
                 </button>
 
-                <button class="btn btn-sm btn-light text-primary me-1 py-0.5 px-2" title="Edit Listing" (click)="openEditPage(crop)">
+                <button class="btn btn-sm btn-light text-primary me-1 py-1 px-2" title="Edit Listing" (click)="openEditPage(crop)">
                   <i class="bi bi-pencil-square"></i>
                 </button>
 
-                <button class="btn btn-sm btn-light text-danger py-0.5 px-2" title="Delete Listing" (click)="deleteCrop(crop)">
+                <button class="btn btn-sm btn-light text-danger py-1 px-2" title="Delete Listing" (click)="deleteCrop(crop)">
                   <i class="bi bi-trash"></i>
                 </button>
               </td>

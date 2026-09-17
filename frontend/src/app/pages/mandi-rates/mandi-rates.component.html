@@ -99,12 +99,12 @@
 
             <!-- Popular Mandis in Selected State -->
             @if (popularMandisList && popularMandisList.length > 0) {
-            <div class="d-flex flex-wrap align-items-center gap-1.5 pt-3 mt-3 border-top">
+            <div class="d-flex flex-wrap align-items-center gap-2 pt-3 mt-3 border-top">
                 <span class="small text-muted fw-bold me-1 text-nowrap">
                     <i class="bi bi-shop text-success me-1"></i> Key APMC Mandis:
                 </span>
                 @for (mandi of popularMandisList; track mandi) {
-                <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1.5 btn hover-elevate small" (click)="selectQuickMandi(mandi)" title="Filter by {{ mandi }}">
+                <button type="button" class="badge bg-light text-dark border rounded-pill px-3 py-1 btn hover-elevate small" (click)="selectQuickMandi(mandi)" title="Filter by {{ mandi }}">
                     <i class="bi bi-search text-muted me-1" style="font-size: 10px;"></i> {{ mandi }}
                 </button>
                 }

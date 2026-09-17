@@ -135,17 +135,17 @@
                     <div class="pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
                         <div class="keywords-list d-flex align-items-center flex-wrap gap-1">
                             <span class="fs-7 fw-bold text-dark me-1"><i class="bi bi-tags-fill text-success me-1"></i>Tags:</span>
-                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fs-7">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fs-7">
                                 {{ getNewsTypeName(article.newsType) }}
                             </span>
                             <ng-container *ngIf="article.metaKeywords">
-                                <span *ngFor="let kw of article.metaKeywords.split(',')" class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-7">
+                                <span *ngFor="let kw of article.metaKeywords.split(',')" class="badge bg-light text-dark border rounded-pill px-3 py-1 fs-7">
                                     {{ kw.trim() }}
                                 </span>
                             </ng-container>
                             <ng-container *ngIf="!article.metaKeywords">
-                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-7">KrisiMarg</span>
-                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-7">Agri Updates</span>
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1 fs-7">KrisiMarg</span>
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1 fs-7">Agri Updates</span>
                             </ng-container>
                         </div>
 
