@@ -32,6 +32,20 @@ const farmerProfileSchema = new mongoose.Schema(
         totalEarnings: {
             type: Number,
             default: 0
+        },
+
+        hasPaidListingFee: {
+            type: Boolean,
+            default: false
+        },
+
+        listingFeePaymentId: {
+            type: String,
+            default: ""
+        },
+
+        listingFeePaidAt: {
+            type: Date
         }
     },
     { timestamps: true }

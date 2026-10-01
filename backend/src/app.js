@@ -16,6 +16,7 @@ const weatherRoutes = require("./routes/weather.routes");
 const trainingRoutes = require("./routes/training.routes");
 const sitemapRoutes = require("./routes/sitemap.routes");
 const ogRoutes = require("./routes/og.routes");
+const paymentRoutes = require("./routes/payment.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -57,6 +58,8 @@ app.use("/api/news", newsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/trainings", trainingRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // Also mount routes on /api/v1 to support v1 endpoints seamlessly
 app.use("/api/v1/auth", authRoutes);
@@ -70,6 +73,8 @@ app.use("/api/v1/news", newsRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/weather", weatherRoutes);
 app.use("/api/v1/trainings", trainingRoutes);
+app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/payments", paymentRoutes);
 
 app.use(errorMiddleware);
 

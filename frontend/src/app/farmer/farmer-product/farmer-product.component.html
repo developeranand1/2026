@@ -14,9 +14,15 @@
         </div>
       </div>
 
-      <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" (click)="openCreateModal()">
-        <i class="bi bi-plus-circle-fill fs-6"></i> + List New Crop Produce
-      </button>
+      <div class="d-flex align-items-center gap-2">
+        <span *ngIf="hasPaidListingFee" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-7 d-none d-sm-inline-flex align-items-center gap-1 shadow-xs">
+          <i class="bi bi-patch-check-fill text-success"></i> Unlimited Listings Active
+        </span>
+        <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" (click)="openCreateModal()">
+          <i class="bi bi-plus-circle-fill fs-6"></i>
+          <span>{{ hasPaidListingFee ? '+ List New Crop Produce' : '+ List Crop Produce (Pay ₹99)' }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Filter Tabs Bar -->
@@ -68,10 +74,10 @@
   <div *ngIf="!isLoading && filteredCrops.length === 0" class="card border-0 shadow-sm rounded-4 bg-white p-5 text-center">
     <i class="bi bi-box-seam fs-1 text-success opacity-50 mb-3 d-block"></i>
     <h5 class="fw-bold text-dark mb-1">No Crop Listings Found</h5>
-    <p class="text-muted small mb-4">List your harvested crop produce to connect directly with wholesale buyers!</p>
+    <p class="text-muted small mb-4">List your harvested crop produce (₹99 listing fee) to connect directly with wholesale buyers!</p>
     <div>
       <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm" (click)="openCreateModal()">
-        + List Crop Produce Now
+        + List Crop Produce Now (₹99)
       </button>
     </div>
   </div>
@@ -88,16 +94,21 @@
             {{ item.discountPercentage }}% OFF
           </span>
 
-          <!-- Approval Badge overlay -->
-          <span *ngIf="item.approvalStatus === 'approved' || item.isApproved" class="position-absolute top-0 end-0 m-3 badge bg-success text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
-            ✅ Approved
-          </span>
-          <span *ngIf="item.approvalStatus === 'pending' && !item.isApproved" class="position-absolute top-0 end-0 m-3 badge bg-warning text-dark rounded-pill px-3 py-1 fs-8 shadow-sm">
-            ⏳ Pending Review
-          </span>
-          <span *ngIf="item.approvalStatus === 'rejected'" class="position-absolute top-0 end-0 m-3 badge bg-danger text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
-            ❌ Rejected
-          </span>
+          <!-- Top-End Badges -->
+          <div class="position-absolute top-0 end-0 m-3 d-flex flex-column align-items-end gap-1">
+            <span *ngIf="item.isPaid || item.paymentStatus === 'paid'" class="badge bg-primary text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
+              <i class="bi bi-patch-check-fill me-1"></i> ₹99 Paid
+            </span>
+            <span *ngIf="item.approvalStatus === 'approved' || item.isApproved" class="badge bg-success text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
+              ✅ Approved
+            </span>
+            <span *ngIf="item.approvalStatus === 'pending' && !item.isApproved" class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-8 shadow-sm">
+              ⏳ Pending Review
+            </span>
+            <span *ngIf="item.approvalStatus === 'rejected'" class="badge bg-danger text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
+              ❌ Rejected
+            </span>
+          </div>
         </div>
 
         <div class="card-body p-3 d-flex flex-column">
@@ -132,7 +143,73 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
+
+
+
+<!-- UNLIMITED LISTINGS ACTIVATION MODAL (₹99) -->
+<div *ngIf="showActivationModal" class="modal-backdrop fade show"></div>
+<div *ngIf="showActivationModal" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+            <!-- Modal Header Banner -->
+            <div class="text-white p-4 text-center position-relative" style="background: linear-gradient(135deg, #198754 0%, #0d5032 100%);">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" (click)="closeActivationModal()"></button>
+                <div class="bg-white text-success rounded-circle d-inline-flex align-items-center justify-content-center shadow mb-3" style="width: 65px; height: 65px;">
+                    <i class="bi bi-patch-check-fill fs-1"></i>
+                </div>
+                <h4 class="fw-bold mb-1">Unlock Unlimited Listings 🌾</h4>
+                <p class="mb-0 text-white-50 fs-8">One-time seller activation fee to list and sell produce directly to wholesale buyers</p>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body p-4">
+                <!-- Price Display Card -->
+                <div class="card border border-success-subtle bg-success bg-opacity-10 rounded-4 p-3 text-center mb-3">
+                    <span class="text-uppercase text-success fw-bold fs-8 tracking-wider">One-Time Platform Fee</span>
+                    <div class="d-flex align-items-baseline justify-content-center gap-1 mt-1">
+                        <span class="fs-4 fw-bold text-success">₹</span>
+                        <span class="display-5 fw-bold text-success">99</span>
+                        <span class="text-muted fs-8">/ Lifetime Unlimited</span>
+                    </div>
+                    <small class="text-secondary mt-1 d-block fs-8">Pay once, list unlimited crop produce forever!</small>
+                </div>
+
+                <!-- Features list -->
+                <div class="d-flex flex-column gap-2.5 mb-4">
+                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
+                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
+                        <span><strong>Unlimited Crop Listings:</strong> Add as many products as you want</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
+                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
+                        <span><strong>Direct Wholesale Buyers:</strong> Receive direct calls & WhatsApp inquiries</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
+                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
+                        <span><strong>Live Mandi Rates:</strong> Compare market prices in real-time</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
+                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
+                        <span><strong>Verified Farmer Badge:</strong> Increases buyer trust & quick deal closing</span>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button type="button" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 fs-6" (click)="payActivationFee()" [disabled]="isActivatingFee">
+                    <span *ngIf="isActivatingFee" class="spinner-border spinner-border-sm"></span>
+                    <i *ngIf="!isActivatingFee" class="bi bi-credit-card-2-front-fill"></i>
+                    <span>{{ isActivatingFee ? 'Opening Razorpay Payment...' : 'Pay ₹99 & Unlock Now' }}</span>
+                </button>
+
+                <!-- Trust footer -->
+                <div class="text-center mt-3 text-muted fs-8 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-shield-check text-success"></i>
+                    <span>Secured by <strong>Razorpay</strong> • UPI / GPay / PhonePe / QR / Cards</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -153,6 +230,24 @@
 
             <!-- Modal Body -->
             <div class="modal-body p-4" style="max-height: 80vh; overflow-y: auto;">
+                <!-- Unlimited Access Active Banner -->
+                <div class="card border border-success-subtle bg-success bg-opacity-10 rounded-4 p-3 mb-4 shadow-none">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px; min-width: 42px;">
+                                <i class="bi bi-patch-check-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-success-emphasis mb-0">Unlimited Product Listings Active ✅</h6>
+                                <small class="text-secondary">Fill in your produce specifications. Your listing will be submitted directly for admin approval.</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-success text-white px-3 py-1.5 fs-8 rounded-pill shadow-xs">
+                            Verified Seller
+                        </span>
+                    </div>
+                </div>
+
                 <div class="row g-3">
                     <!-- Contact Person Info -->
                     <div class="col-md-6">
@@ -306,14 +401,21 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer bg-light py-3 px-4">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeCreateModal()">
-                    Cancel
-                </button>
-                <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold" (click)="submitCropListing()" [disabled]="isSubmitting">
-                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
-                    Submit For Admin Approval
-                </button>
+            <div class="modal-footer bg-light py-3 px-4 d-flex justify-content-between align-items-center">
+                <div class="text-success fs-8 fw-semibold d-flex align-items-center gap-1">
+                    <i class="bi bi-shield-check fs-6"></i>
+                    <span>Unlimited Seller Plan Active</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeCreateModal()" [disabled]="isSubmitting">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold d-flex align-items-center gap-2" (click)="submitCropListing()" [disabled]="isSubmitting">
+                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+                        <i *ngIf="!isSubmitting" class="bi bi-cloud-arrow-up-fill"></i>
+                        <span>{{ isSubmitting ? 'Submitting Produce...' : 'Submit For Admin Approval' }}</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

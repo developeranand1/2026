@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { MandiRateService } from '../../pages/home/mandi-rate.service';
+import { PaymentService } from '../../core/payment.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,10 +17,15 @@ import Swal from 'sweetalert2';
 export class FarmerProductComponent implements OnInit {
   private authService = inject(AuthService);
   private mandiRateService = inject(MandiRateService);
+  private paymentService = inject(PaymentService);
 
   isLoggedIn = false;
   farmerUser: any = null;
   isLoading = false;
+
+  hasPaidListingFee = false;
+  showActivationModal = false;
+  isActivatingFee = false;
 
   myCropsList: any[] = [];
   selectedFilter: 'all' | 'approved' | 'pending' | 'rejected' = 'all';
@@ -69,7 +75,28 @@ export class FarmerProductComponent implements OnInit {
       if (this.farmerUser) {
         this.formName = this.farmerUser.name || '';
         this.formMobile = this.farmerUser.mobile || '';
+        if (this.farmerUser.hasPaidListingFee || this.farmerUser.role === 'admin') {
+          this.hasPaidListingFee = true;
+        }
       }
+    }
+
+    // Sync active listing access status from backend
+    const uid = this.farmerUser?._id || this.farmerUser?.id;
+    const mob = this.farmerUser?.mobile;
+    if (uid || mob) {
+      this.paymentService.checkListingStatus(uid, mob).subscribe({
+        next: (res) => {
+          if (res && res.hasPaidListingFee) {
+            this.hasPaidListingFee = true;
+            if (this.farmerUser && !this.farmerUser.hasPaidListingFee) {
+              this.farmerUser.hasPaidListingFee = true;
+              this.authService.saveUser(this.farmerUser);
+            }
+          }
+        },
+        error: () => {}
+      });
     }
   }
 
@@ -231,6 +258,11 @@ export class FarmerProductComponent implements OnInit {
   }
 
   openCreateModal(): void {
+    if (!this.hasPaidListingFee && this.farmerUser?.role !== 'admin') {
+      this.showActivationModal = true;
+      return;
+    }
+
     this.formRole = 'farmer';
     this.formType = 'sell';
     if (this.farmerUser) {
@@ -257,6 +289,110 @@ export class FarmerProductComponent implements OnInit {
 
   closeCreateModal(): void {
     this.showCreateModal = false;
+  }
+
+  closeActivationModal(): void {
+    this.showActivationModal = false;
+  }
+
+  payActivationFee(): void {
+    const name = this.farmerUser?.name || this.formName || 'Farmer';
+    const mobile = this.farmerUser?.mobile || this.formMobile || '';
+
+    this.isActivatingFee = true;
+
+    // 1. Create Razorpay order for ₹99 Unlimited Listing Activation
+    this.paymentService.createListingOrder('Unlimited Produce Listing Activation', name, mobile).subscribe({
+      next: async (res) => {
+        if (!res || !res.success || !res.order) {
+          this.isActivatingFee = false;
+          Swal.fire('Payment Gateway Error', 'Unable to initiate payment gateway. Please try again.', 'error');
+          return;
+        }
+
+        try {
+          // 2. Open Razorpay Checkout popup (UPI / QR / Cards / NetBanking)
+          const checkoutRes = await this.paymentService.openRazorpayCheckout(
+            res.order,
+            res.keyId,
+            this.farmerUser || { name, mobile },
+            'Unlimited Produce Listing Access'
+          );
+
+          // 3. Verify Payment & Activate Lifetime Unlimited Listings
+          const userId = this.farmerUser?._id || this.farmerUser?.id;
+          this.paymentService.activateUnlimitedListing({
+            razorpay_order_id: checkoutRes.razorpay_order_id,
+            razorpay_payment_id: checkoutRes.razorpay_payment_id,
+            razorpay_signature: checkoutRes.razorpay_signature,
+            userId,
+            mobile,
+            name
+          }).subscribe({
+            next: (verifyRes: any) => {
+              this.isActivatingFee = false;
+              if (verifyRes.success) {
+                this.hasPaidListingFee = true;
+                if (this.farmerUser) {
+                  this.farmerUser.hasPaidListingFee = true;
+                  this.authService.saveUser(this.farmerUser);
+                }
+                this.closeActivationModal();
+
+                Swal.fire({
+                  icon: 'success',
+                  title: '₹99 Payment Successful! 🎉',
+                  html: `
+                    <div class="text-start">
+                      <div class="alert alert-success d-flex align-items-center gap-2 p-2.5 mb-3 rounded-3">
+                        <i class="bi bi-patch-check-fill fs-4 text-success"></i>
+                        <div>
+                          <strong>Unlimited Listings Unlocked! 🌾</strong><br>
+                          <small class="text-muted">Payment ID: <code>${checkoutRes.razorpay_payment_id}</code></small>
+                        </div>
+                      </div>
+                      <p class="mb-0 text-secondary">Aapka seller access activate ho chuka hai! Ab aap <strong>Unlimited Crop Produce</strong> add aur sell kar sakte hain bina kisi extra charge ke.</p>
+                    </div>
+                  `,
+                  confirmButtonText: 'Add First Crop Produce 🚀',
+                  confirmButtonColor: '#198754'
+                }).then(() => {
+                  // Automatically open the Add Product modal immediately!
+                  this.openCreateModal();
+                });
+              } else {
+                Swal.fire('Payment Verification Failed', verifyRes.message || 'Signature verification failed', 'error');
+              }
+            },
+            error: (verifyErr: any) => {
+              this.isActivatingFee = false;
+              Swal.fire('Error', verifyErr.error?.message || 'Payment verification failed on server', 'error');
+            }
+          });
+        } catch (checkoutErr: any) {
+          this.isActivatingFee = false;
+          if (checkoutErr.message === 'PAYMENT_DISMISSED') {
+            Swal.fire({
+              icon: 'info',
+              title: 'Payment Incomplete',
+              text: 'Product add karne ke liye ₹99 one-time activation fee jaruri hai.',
+              confirmButtonColor: '#198754'
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Payment Failed',
+              text: checkoutErr.message || 'Could not complete payment process.',
+              confirmButtonColor: '#d33'
+            });
+          }
+        }
+      },
+      error: (orderErr: any) => {
+        this.isActivatingFee = false;
+        Swal.fire('Error', orderErr.error?.message || 'Could not initialize payment order', 'error');
+      }
+    });
   }
 
   calculateDiscount(): void {
@@ -320,6 +456,12 @@ export class FarmerProductComponent implements OnInit {
   }
 
   submitCropListing(): void {
+    if (!this.hasPaidListingFee && this.farmerUser?.role !== 'admin') {
+      this.closeCreateModal();
+      this.showActivationModal = true;
+      return;
+    }
+
     if (!this.formName || !this.formName.trim()) {
       Swal.fire('Required', 'Please enter your Name.', 'warning');
       return;
@@ -368,10 +510,13 @@ export class FarmerProductComponent implements OnInit {
       images: this.formImages,
       status: 'active',
       approvalStatus: 'pending',
-      isApproved: false
+      isApproved: false,
+      isPaid: true,
+      paymentStatus: 'paid'
     };
 
     this.isSubmitting = true;
+
     this.mandiRateService.createCropListing(cropData).subscribe({
       next: (res: any) => {
         this.isSubmitting = false;

@@ -136,6 +136,32 @@ const cropSchema = new mongoose.Schema(
             type: String,
             enum: ["approved", "pending", "rejected"],
             default: "approved"
+        },
+
+        isPaid: {
+            type: Boolean,
+            default: false
+        },
+
+        paymentAmount: {
+            type: Number,
+            default: 0
+        },
+
+        paymentStatus: {
+            type: String,
+            enum: ["unpaid", "paid", "refunded", "exempt"],
+            default: "unpaid"
+        },
+
+        razorpayPaymentId: {
+            type: String,
+            default: ""
+        },
+
+        razorpayOrderId: {
+            type: String,
+            default: ""
         }
     },
     { timestamps: true }

@@ -44,6 +44,20 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ["active", "blocked"],
             default: "active"
+        },
+
+        hasPaidListingFee: {
+            type: Boolean,
+            default: false
+        },
+
+        listingFeePaymentId: {
+            type: String,
+            default: ""
+        },
+
+        listingFeePaidAt: {
+            type: Date
         }
     },
     { timestamps: true }
