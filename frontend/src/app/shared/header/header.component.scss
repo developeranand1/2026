@@ -1,4 +1,6 @@
 .topbar {
+    position: relative;
+    z-index: 1051 !important;
     padding: 6px 0;
     background: linear-gradient(135deg, #0d3d20 0%, #134e2c 100%);
     color: rgba(255, 255, 255, 0.9);
@@ -28,6 +30,9 @@
 }
 
 .navbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1050 !important;
     min-height: 68px;
     background: rgba(255, 255, 255, 0.98) !important;
     backdrop-filter: blur(10px);
@@ -287,3 +292,117 @@
         font-size: 17px;
     }
 }
+
+/* Responsive Laptop & Tablet Nav Adjustments (992px to 1260px) */
+@media (min-width: 992px) and (max-width: 1260px) {
+    .navbar {
+        min-height: 62px;
+    }
+
+    .nav-link {
+        padding: 6px 8px !important;
+        font-size: 13px !important;
+    }
+
+    .nav-link .badge {
+        font-size: 9px !important;
+        padding: 2px 5px !important;
+    }
+
+    .logo-text strong {
+        font-size: 16px !important;
+    }
+
+    .logo-icon {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 17px !important;
+    }
+
+    .header-icon {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ========================================================
+   USER PROFILE DROPDOWN MENU
+   ======================================================== */
+.user-dropdown-container {
+    position: relative;
+
+    .user-dropdown-btn {
+        background: #ffffff;
+        border-color: #e2e8f0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .user-avatar-badge {
+            width: 28px;
+            height: 28px;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .user-name-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+    }
+
+    .user-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        min-width: 250px;
+        z-index: 1060;
+        animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+
+        .dropdown-nav-item {
+            transition: all 0.15s ease;
+            font-size: 13px;
+
+            .icon-wrap {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                display: grid;
+                place-items: center;
+                font-size: 14px;
+                flex-shrink: 0;
+            }
+
+            &:hover {
+                background: #f1f5f9;
+                color: #198754 !important;
+            }
+        }
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -401,3 +401,188 @@ exports.getFarmerPayments = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Get All Payments (Admin View)
+ * GET /api/admin/payments or GET /api/payment/admin/all
+ */
+exports.getAllPaymentsAdmin = async (req, res, next) => {
+    try {
+        const { status, purpose, search } = req.query;
+        let query = {};
+
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+        if (purpose && purpose !== 'all') {
+            query.purpose = purpose;
+        }
+        if (search && search.trim()) {
+            const regex = new RegExp(search.trim(), 'i');
+            query.$or = [
+                { farmerName: regex },
+                { farmerMobile: regex },
+                { transactionId: regex },
+                { razorpayPaymentId: regex }
+            ];
+        }
+
+        let payments = await Payment.find(query)
+            .populate("farmer", "name mobile role city")
+            .populate("buyer", "name mobile role city")
+            .populate("crop", "cropName category expectedPrice")
+            .sort({ createdAt: -1 });
+
+        // Auto-seed if database is empty so admin has sample transactions
+        if (payments.length === 0 && !search && (!status || status === 'all')) {
+            const samplePayments = [
+                {
+                    farmerName: "राम प्रसाद वर्मा (Ram Prasad Verma)",
+                    farmerMobile: "9876543210",
+                    amount: 99,
+                    currency: "INR",
+                    purpose: "crop_listing_fee",
+                    paymentMode: "Razorpay UPI",
+                    status: "received",
+                    transactionId: "TXN_RZP_998124",
+                    razorpayPaymentId: "pay_Ksk881920Jk",
+                    createdAt: new Date(Date.now() - 3600000 * 4)
+                },
+                {
+                    farmerName: "श्याम सुंदर मौर्य (Shyam Sundar)",
+                    farmerMobile: "9125955106",
+                    amount: 99,
+                    currency: "INR",
+                    purpose: "crop_listing_fee",
+                    paymentMode: "Razorpay QR",
+                    status: "received",
+                    transactionId: "TXN_RZP_998125",
+                    razorpayPaymentId: "pay_Msk992011Lk",
+                    createdAt: new Date(Date.now() - 3600000 * 18)
+                },
+                {
+                    farmerName: "हरिओम त्रिपाठी (Hariom Tripathi)",
+                    farmerMobile: "9450123456",
+                    amount: 14500,
+                    currency: "INR",
+                    purpose: "order_payment",
+                    commissionPercent: 1.5,
+                    commissionAmount: 217.5,
+                    farmerSettlementAmount: 14282.5,
+                    paymentMode: "Bank IMPS / Escrow",
+                    status: "completed",
+                    transactionId: "TXN_ESC_771923",
+                    createdAt: new Date(Date.now() - 86400000 * 2)
+                },
+                {
+                    farmerName: "विनोद कुमार चौधरी (Vinod Chaudhary)",
+                    farmerMobile: "9838012345",
+                    amount: 99,
+                    currency: "INR",
+                    purpose: "crop_listing_fee",
+                    paymentMode: "UPI / Cash Offline",
+                    status: "received",
+                    transactionId: "TXN_MAN_102938",
+                    createdAt: new Date(Date.now() - 86400000 * 3)
+                }
+            ];
+
+            await Payment.insertMany(samplePayments);
+            payments = await Payment.find().sort({ createdAt: -1 });
+        }
+
+        const totalVolume = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        const totalListingFees = payments
+            .filter(p => p.purpose === 'crop_listing_fee' && p.status === 'received')
+            .reduce((sum, p) => sum + (p.amount || 0), 0);
+        const totalCommission = payments.reduce((sum, p) => sum + (p.commissionAmount || 0), 0);
+
+        res.json({
+            success: true,
+            count: payments.length,
+            summary: {
+                totalVolume,
+                totalListingFees,
+                totalCommission,
+                totalTransactions: payments.length
+            },
+            data: payments
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Record Manual/Offline Payment (Admin Action)
+ * POST /api/admin/payments or POST /api/payment/admin/record-manual
+ */
+exports.createManualPaymentAdmin = async (req, res, next) => {
+    try {
+        const {
+            farmerName,
+            farmerMobile,
+            amount,
+            purpose = "crop_listing_fee",
+            paymentMode = "Cash / Offline UPI",
+            status = "received",
+            transactionId,
+            notes
+        } = req.body;
+
+        if (!amount || !farmerName) {
+            return res.status(400).json({
+                success: false,
+                message: "कृपया किसान का नाम और राशि (Amount) अवश्य भरें।"
+            });
+        }
+
+        const generatedTxnId = transactionId || `TXN_ADMIN_${Date.now()}`;
+
+        const payment = new Payment({
+            farmerName,
+            farmerMobile,
+            amount: Number(amount),
+            purpose,
+            paymentMode,
+            status,
+            transactionId: generatedTxnId,
+            notes
+        });
+
+        await payment.save();
+
+        // If listing fee paid, activate user listing status if user exists
+        if (farmerMobile && purpose === "crop_listing_fee") {
+            await User.findOneAndUpdate(
+                { mobile: farmerMobile },
+                { hasPaidListingFee: true }
+            );
+        }
+
+        res.status(201).json({
+            success: true,
+            message: "भुगतान रिकॉर्ड सफलतापूर्वक दर्ज किया गया।",
+            data: payment
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Delete Payment Record (Admin Action)
+ * DELETE /api/admin/payments/:id
+ */
+exports.deletePaymentAdmin = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        await Payment.findByIdAndDelete(id);
+        res.json({
+            success: true,
+            message: "भुगतान प्रविष्टि सफलतापूर्वक हटा दी गई।"
+        });
+    } catch (error) {
+        next(error);
+    }
+};

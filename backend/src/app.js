@@ -17,6 +17,7 @@ const trainingRoutes = require("./routes/training.routes");
 const sitemapRoutes = require("./routes/sitemap.routes");
 const ogRoutes = require("./routes/og.routes");
 const paymentRoutes = require("./routes/payment.routes");
+const levyRateRoutes = require("./routes/levyRate.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -60,6 +61,9 @@ app.use("/api/weather", weatherRoutes);
 app.use("/api/trainings", trainingRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin/payments", paymentRoutes);
+app.use("/api/admin/levy-rates", levyRateRoutes);
+app.use("/api/admin/mandi-rates", levyRateRoutes);
 
 // Also mount routes on /api/v1 to support v1 endpoints seamlessly
 app.use("/api/v1/auth", authRoutes);

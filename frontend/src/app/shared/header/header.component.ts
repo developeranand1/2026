@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -18,14 +18,24 @@ export class HeaderComponent implements OnInit {
   userMobile = '';
   userLocation = '';
   isMobileMenuOpen = false;
+  isPortalRoute = false;
+  isUserDropdownOpen = false;
 
   ngOnInit(): void {
     this.checkLoginStatus();
-    // Re-verify login status and close mobile menu on route changes
+    this.checkPortalRoute(this.router.url);
+
+    // Re-verify login status and close menus on route changes
     this.router.events.subscribe(() => {
       this.checkLoginStatus();
       this.closeMobileMenu();
+      this.closeUserDropdown();
+      this.checkPortalRoute(this.router.url);
     });
+  }
+
+  checkPortalRoute(url: string): void {
+    this.isPortalRoute = !!(url && (url.startsWith('/farmer') || url.startsWith('/buyer')));
   }
 
   checkLoginStatus(): void {
@@ -57,6 +67,25 @@ export class HeaderComponent implements OnInit {
 
   closeMobileMenu(): void {
     this.isMobileMenuOpen = false;
+  }
+
+  toggleUserDropdown(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isUserDropdownOpen = !this.isUserDropdownOpen;
+  }
+
+  closeUserDropdown(): void {
+    this.isUserDropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-dropdown-container')) {
+      this.closeUserDropdown();
+    }
   }
 
   logout(): void {

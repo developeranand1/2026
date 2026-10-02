@@ -1,0 +1,56 @@
+.home-levy-section {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.section-title {
+  font-size: 1.65rem;
+  letter-spacing: -0.02em;
+}
+
+.district-pills-bar {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.btn-white {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  &:hover {
+    background: #f1f5f9;
+  }
+}
+
+.levy-item-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
+  border: 1px solid #e2e8f0 !important;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1) !important;
+    border-color: #10b981 !important;
+  }
+}
+
+.card-accent-bar {
+  height: 4px;
+  width: 100%;
+}
+
+.crop-icon-box {
+  width: 44px;
+  height: 44px;
+  background: #f0fdf4 !important;
+  border: 1px solid #dcfce7;
+}
+
+.price-box {
+  background-color: #f8fafc;
+}
+
+.cess-highlight-box {
+  background-color: #fffbeb;
+  border-color: #fef3c7 !important;
+}

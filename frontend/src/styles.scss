@@ -12,10 +12,14 @@
 
 html {
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
     margin: 0;
+    max-width: 100%;
+    overflow-x: hidden;
     background: var(--gb-white);
     color: var(--gb-text);
     font-family: Arial, Helvetica, sans-serif;

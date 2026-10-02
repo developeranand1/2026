@@ -30,6 +30,7 @@ import { AgriCalculatorComponent } from './pages/agri-calculator/agri-calculator
 import { AgriSchemesComponent } from './pages/agri-schemes/agri-schemes.component';
 import { TrainingsPageComponent } from './pages/trainings/trainings-page.component';
 import { TrainingDetailComponent } from './pages/trainings/training-detail/training-detail.component';
+import { LevyRatesPageComponent } from './pages/levy-rates/levy-rates.component';
 
 // Route configuration with comprehensive SEO Meta data for KrisiMarg application
 export const routes: Routes = [
@@ -240,6 +241,18 @@ export const routes: Routes = [
                 title: 'लाइव मंडी भाव (Live Mandi Rates Today) | APMC Market Prices | KrisiMarg',
                 description: 'भारत के सभी राज्यों और APMC मंडियों के आज के ताज़ा भाव देखें। गेहूं, धान, सरसों, चना, प्याज, आलू, फल और सब्जियों के दैनिक मंडी भाव।',
                 keywords: 'Mandi Rates Today, Mandi Bhav, APMC Live Price, Gehu Mandi Bhav, Dhan Rate, Sarso Bhav, Chana Mandi, All India Mandi Bhav, KrisiMarg'
+            }
+        }
+    },
+    {
+        path: 'levy-rates',
+        component: LevyRatesPageComponent,
+        title: 'APMC Mandi Levy Rates & Shulk | Krishi Marg Mandi Cess',
+        data: {
+            seo: {
+                title: 'APMC Mandi Levy Rates & Market Cess (मंडी लेवी दरें एवं शुल्क) | KrisiMarg',
+                description: 'संत कबीर नगर (खलीलाबाद), बस्ती एवं गोरखपुर APMC मंडियों की फसलवार लेवी दरें (Mandi Cess 1.5%), न्यूनतम व अधिकतम भाव और आधिकारिक शुल्क तालिका।',
+                keywords: 'APMC Levy Rate, Mandi Cess, Sant Kabir Nagar Mandi Rate, Khalilabad Mandi Bhav, Basti Mandi Cess, Gorakhpur Mandi, Krishi Shulk, KrisiMarg'
             }
         }
     },

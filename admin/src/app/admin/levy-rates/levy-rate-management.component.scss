@@ -1,0 +1,17 @@
+.crop-icon-avatar {
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+.spin {
+  animation: spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

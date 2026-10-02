@@ -1,0 +1,418 @@
+<div class="container-fluid p-3 p-md-4">
+
+  <!-- Header Banner -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
+          <i class="bi bi-bank2 me-1"></i> APMC Mandi Parishad Portal
+        </span>
+        <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-2 py-1 small">
+          1.5% Mandi Cess
+        </span>
+      </div>
+      <h2 class="fw-bold text-dark mb-0">APMC Mandi Levy Rates Management</h2>
+      <p class="text-muted small mb-0">
+        मंडी लेवी दरें, दैनिक थोक नीलामी भाव एवं उपकर प्रबंधन • संत कबीर नगर (खलीलाबाद), बस्ती एवं गोरखपुर
+      </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="loadRates()">
+        <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> रिफ्रेश
+      </button>
+      <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm d-inline-flex align-items-center gap-1"
+        (click)="openAddModal()">
+        <i class="bi bi-plus-circle-fill"></i> + नई लेवी दर जोड़ें
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">कुल पंजीकृत लेवी दरें</small>
+        <h3 class="fw-bold text-dark mb-0 mt-1">{{ levyRates.length }} <small class="fs-6 text-muted">फसलें</small></h3>
+        <small class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>सत्यापित APMC डेटा</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-primary">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">मानक APMC लेवी उपकर</small>
+        <h3 class="fw-bold text-primary mb-0 mt-1">1.50%</h3>
+        <small class="text-muted fw-semibold">थोक विक्रय मूल्य पर</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">सक्रिय क्षेत्रीय मंडियां</small>
+        <h3 class="fw-bold text-dark mb-0 mt-1">3 <small class="fs-6 text-muted">केंद्र</small></h3>
+        <small class="text-warning fw-semibold">खलीलाबाद, बस्ती, गोरखपुर</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-info">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">निर्धारण वर्ष (Session)</small>
+        <h3 class="fw-bold text-dark mb-0 mt-1">2026-27</h3>
+        <small class="text-info fw-semibold"><i class="bi bi-calendar3 me-1"></i>चालू वित्तीय सत्र</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & District Filter Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+    <div class="row g-3 align-items-center justify-content-between">
+      <!-- District Pills -->
+      <div class="col-12 col-lg-7">
+        <div class="d-flex flex-wrap gap-2">
+          @for (dist of districts; track dist.value) {
+            <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+              [class.btn-success]="selectedDistrict === dist.value"
+              [class.btn-outline-secondary]="selectedDistrict !== dist.value"
+              (click)="onDistrictFilter(dist.value)">
+              <i class="bi bi-geo-alt-fill me-1" *ngIf="dist.value !== 'All'"></i>
+              {{ dist.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div class="col-12 col-lg-5">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0"
+            placeholder="जिंस या मंडी खोजें (गेहूं, खलीलाबाद)..."
+            [(ngModel)]="searchQuery" (input)="loadRates()">
+          <button class="btn btn-light border border-start-0 text-muted" type="button" *ngIf="searchQuery" (click)="searchQuery = ''; loadRates()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rates Table Card -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+        <i class="bi bi-table text-success"></i>
+        पंजीकृत मंडी लेवी दर तालिका (Registered Levy Rates)
+      </h5>
+      <small class="text-muted">कुल {{ levyRates.length }} रिकॉर्ड</small>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="text-muted small mt-2">डेटा लोड हो रहा है...</p>
+      </div>
+    } @else if (levyRates.length === 0) {
+      <div class="text-center py-5 border rounded-4 bg-light">
+        <i class="bi bi-inbox text-muted fs-1 d-block mb-2"></i>
+        <h6 class="fw-bold text-dark mb-1">कोई लेवी दर दर्ज नहीं है</h6>
+        <p class="text-muted small mb-3">दिए गए फिल्टर के अनुसार कोई रिकॉर्ड नहीं मिला।</p>
+        <button type="button" class="btn btn-success btn-sm rounded-pill px-4 fw-bold" (click)="openAddModal()">
+          <i class="bi bi-plus-circle me-1"></i> पहली लेवी दर जोड़ें
+        </button>
+      </div>
+    } @else {
+      <!-- Table -->
+      <div class="table-responsive rounded-3 border">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr style="font-size: 12px;" class="text-muted text-uppercase">
+              <th class="ps-3">जिंस / फसल (Commodity)</th>
+              <th>मंडी व ज़िला (Mandi Hub)</th>
+              <th>मॉडल भाव (Rate)</th>
+              <th>नीलामी सीमा (Min - Max)</th>
+              <th>APMC लेवी सेस (Cess)</th>
+              <th>स्थिति (Status)</th>
+              <th class="text-end pe-3">कार्यवाही (Actions)</th>
+            </tr>
+          </thead>
+          <tbody style="font-size: 13px;">
+            @for (rate of levyRates; track rate._id) {
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="crop-icon-avatar bg-light rounded-circle shadow-xs d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                      <i class="bi {{ getCropIcon(rate.commodity) }} fs-5"></i>
+                    </div>
+                    <div>
+                      <strong class="d-block text-dark">{{ rate.commodity }}</strong>
+                      <small class="text-muted">{{ rate.hindiName || rate.variety || rate.category }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <strong class="d-block text-dark">{{ rate.mandiName || (rate.district + ' APMC') }}</strong>
+                  <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ rate.district }}, {{ rate.state }}</small>
+                </td>
+
+                <td>
+                  <strong class="text-success fs-6">₹{{ (rate.rate || rate.modalPrice) | number }}</strong>
+                  <small class="text-muted d-block" style="font-size: 11px;">/ {{ rate.unit || rate.rateUnit || 'क्विंटल' }}</small>
+                </td>
+
+                <td>
+                  <span class="text-muted">₹{{ rate.minPrice | number }} - ₹{{ rate.maxPrice | number }}</span>
+                </td>
+
+                <td>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 fw-bold">
+                    <i class="bi bi-percent me-1"></i>{{ rate.levyRate || 1.5 }}% उपकर
+                  </span>
+                  <small class="text-muted d-block" style="font-size: 10px;">{{ rate.assessmentYear || '2026-27' }}</small>
+                </td>
+
+                <td>
+                  <button type="button" class="btn btn-sm rounded-pill px-2 py-0 fw-bold border"
+                    [class.btn-success]="rate.status === 'active'"
+                    [class.btn-light]="rate.status !== 'active'"
+                    (click)="toggleStatus(rate)" title="Click to toggle status">
+                    {{ rate.status === 'active' ? '🟢 सक्रिय' : '🔴 निष्क्रिय' }}
+                  </button>
+                </td>
+
+                <td class="text-end pe-3">
+                  <div class="d-inline-flex gap-1">
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center shadow-xs"
+                      style="width: 32px; height: 32px;" (click)="openEditModal(rate)" title="Edit Rate">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center shadow-xs"
+                      style="width: 32px; height: 32px;" (click)="deleteRate(rate)" title="Delete Rate">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ========================================================
+     ADMIN ADD / EDIT LEVY RATE MODAL
+     ======================================================== -->
+@if (showModal) {
+  <div class="modal-backdrop fade show" (click)="closeModal()"></div>
+  <div class="modal d-block fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="modal-header bg-success text-white py-3 px-4">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-bank2 fs-4 text-warning"></i>
+            <div>
+              <h5 class="fw-bold mb-0 text-white">
+                {{ isEditing ? 'लेवी व मंडी दर संशोधित करें (Edit Levy Rate)' : 'नई फसल लेवी व मंडी दर जोड़ें (Add New Levy Rate)' }}
+              </h5>
+              <small class="text-white-50">APMC Mandi Cess & Wholesale Agricultural Rate Form</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal Body Form -->
+        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+          <form (ngSubmit)="saveRate()">
+            
+            <!-- SECTION 1: Location Hierarchy -->
+            <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+              <i class="bi bi-geo-alt-fill me-1"></i> 1. भौगोलिक विवरण (Mandi Location & Jurisdiction)
+            </h6>
+
+            <div class="row g-3 mb-4">
+              <!-- State -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">राज्य (State) *</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.state" name="state" required>
+              </div>
+
+              <!-- District -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">ज़िला (District) *</label>
+                <select class="form-select" [(ngModel)]="formData.district" name="district" (ngModelChange)="onDistrictSelectChange($event)" required>
+                  <option value="Sant Kabir Nagar">संत कबीर नगर (खलीलाबाद)</option>
+                  <option value="Basti">बस्ती (Basti)</option>
+                  <option value="Gorakhpur">गोरखपुर (Gorakhpur)</option>
+                  <option value="Lucknow">लखनऊ (Lucknow)</option>
+                  <option value="Varanasi">वाराणसी (Varanasi)</option>
+                </select>
+              </div>
+
+              <!-- City / Mandi Hub -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">शहर / केंद्र (City) *</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.city" name="city" required>
+              </div>
+
+              <!-- Mandi Name -->
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-dark">मंडी का नाम (Mandi Name) *</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.mandiName" name="mandiName" placeholder="उदा. Khalilabad APMC Mandi" required>
+              </div>
+
+              <!-- Municipality / Nagar Palika -->
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-dark">नगर पालिका / निकाय (Municipality)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.municipality" name="municipality" placeholder="उदा. Khalilabad Nagar Palika">
+              </div>
+            </div>
+
+            <!-- SECTION 2: Commodity & Crop Details -->
+            <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+              <i class="bi bi-flower1 me-1"></i> 2. फसल / जिंस विवरण (Commodity & Classification)
+            </h6>
+
+            <div class="row g-3 mb-4">
+              <!-- Commodity English -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">फसल नाम अंग्रेजी (Commodity) *</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.commodity" name="commodity" placeholder="उदा. Wheat, Paddy, Mustard" required>
+              </div>
+
+              <!-- Hindi Name -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">फसल नाम हिंदी (Hindi Name) *</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.hindiName" name="hindiName" placeholder="उदा. गेहूं, धान, सरसों" required>
+              </div>
+
+              <!-- Category -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">श्रेणी (Category)</label>
+                <select class="form-select" [(ngModel)]="formData.category" name="category">
+                  @for (cat of categories; track cat) {
+                    <option [value]="cat">{{ cat }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Variety -->
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-dark">किस्म / वैरायटी (Variety)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.variety" name="variety" placeholder="उदा. Sharbati Grade A / 1121">
+              </div>
+
+              <!-- Property / Trade Type -->
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-dark">प्रॉपर्टी / ट्रेड प्रकार (Property Type)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.propertyType" name="propertyType" placeholder="Agricultural APMC Mandi">
+              </div>
+            </div>
+
+            <!-- SECTION 3: Pricing & Mandi Levy/Cess -->
+            <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+              <i class="bi bi-currency-rupee me-1"></i> 3. दर व लेवी निर्धारण (Rate & APMC Cess)
+            </h6>
+
+            <div class="row g-3 mb-4">
+              <!-- Rate (Modal Price) -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">मॉडल भाव दर (Rate ₹/Qtl) *</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" [(ngModel)]="formData.rate" name="rate" placeholder="2350" required>
+                </div>
+              </div>
+
+              <!-- Min Price -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">न्यूनतम भाव (Min Price ₹)</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" [(ngModel)]="formData.minPrice" name="minPrice" placeholder="2200">
+                </div>
+              </div>
+
+              <!-- Max Price -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">अधिकतम भाव (Max Price ₹)</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" [(ngModel)]="formData.maxPrice" name="maxPrice" placeholder="2450">
+                </div>
+              </div>
+
+              <!-- APMC Mandi Levy Rate (%) -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">लेवी / मंडी शुल्क दर (Levy Rate %) *</label>
+                <div class="input-group">
+                  <input type="number" step="0.1" class="form-control" [(ngModel)]="formData.levyRate" name="levyRate" placeholder="1.5">
+                  <span class="input-group-text">%</span>
+                </div>
+              </div>
+
+              <!-- Calculation Method -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">गणना पद्धति (Calculation Method)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.calculationMethod" name="calculationMethod" placeholder="APMC Mandi Cess / Trade Value">
+              </div>
+
+              <!-- Assessment Year -->
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-dark">निर्धारण वर्ष (Assessment Year)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.assessmentYear" name="assessmentYear" placeholder="2026-2027">
+              </div>
+            </div>
+
+            <!-- SECTION 4: Validity & Status -->
+            <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+              <i class="bi bi-shield-check me-1"></i> 4. वैधता, स्रोत व स्थिति (Status & Source)
+            </h6>
+
+            <div class="row g-3 mb-3">
+              <!-- Source -->
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-dark">डेटा स्रोत (Source)</label>
+                <input type="text" class="form-control" [(ngModel)]="formData.source" name="source" placeholder="Official APMC Mandi Parishad">
+              </div>
+
+              <!-- Status -->
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-dark">स्थिति (Status)</label>
+                <select class="form-select" [(ngModel)]="formData.status" name="status">
+                  <option value="active">सक्रिय (Active)</option>
+                  <option value="inactive">निष्क्रिय (Inactive)</option>
+                  <option value="pending">समीक्षाधीन (Pending)</option>
+                </select>
+              </div>
+
+              <!-- Notes -->
+              <div class="col-12">
+                <label class="form-label small fw-bold text-dark">विशेष टिप्पणी (Notes)</label>
+                <textarea class="form-control" rows="2" [(ngModel)]="formData.notes" name="notes" placeholder="आवक व नीलामी संबंधी टिप्पणी दर्ज करें..."></textarea>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <button type="button" class="btn btn-light rounded-pill px-4" (click)="closeModal()">
+                रद्द करें (Cancel)
+              </button>
+              <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSaving">
+                <span class="spinner-border spinner-border-sm me-1" *ngIf="isSaving"></span>
+                {{ isEditing ? 'दर अपडेट करें' : 'दर सुरक्षित करें व लाइव करें' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

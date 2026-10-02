@@ -38,7 +38,43 @@ export class FarmerDashboardComponent implements OnInit {
     { crop: 'Maize (मक्का)', rate: 1750, unit: 'Quintal', icon: '🌽' }
   ];
 
-  recentOrders: Array<any> = [];
+  selectedTrendCrop: 'Wheat' | 'Paddy' | 'Mustard' = 'Wheat';
+  selectedTimeframe: '1M' | '3M' | '6M' | '1Y' = '6M';
+
+  trendPoints = [
+    { month: 'May', wheat: 2050, paddy: 1780, mustard: 4950, x: 5, y: 65, rate: '₹2,050' },
+    { month: 'Jun', wheat: 2110, paddy: 1820, mustard: 5020, x: 23, y: 55, rate: '₹2,110' },
+    { month: 'Jul', wheat: 2180, paddy: 1840, mustard: 5150, x: 41, y: 42, rate: '₹2,180' },
+    { month: 'Aug', wheat: 2150, paddy: 1860, mustard: 5100, x: 59, y: 48, rate: '₹2,150' },
+    { month: 'Sep', wheat: 2240, paddy: 1890, mustard: 5240, x: 77, y: 30, rate: '₹2,240' },
+    { month: 'Oct', wheat: 2290, paddy: 1940, mustard: 5320, x: 95, y: 20, rate: '₹2,290' },
+  ];
+
+  paymentSettlements = [
+    { id: 'TXN-9021', buyer: 'AgroBulk Trading Corp', crop: 'Wheat (गेहूं) - 50 Qtl', amount: 114500, date: '28 Sep 2026', status: 'Completed', statusText: 'खाते में जमा (Credited)' },
+    { id: 'TXN-8842', buyer: 'Kisan Mandi Traders', crop: 'Mustard (सरसों) - 25 Qtl', amount: 131250, date: '15 Sep 2026', status: 'Completed', statusText: 'खाते में जमा (Credited)' },
+    { id: 'TXN-7913', buyer: 'Patanjali Agro Supply', crop: 'Paddy (धान) - 80 Qtl', amount: 153600, date: '02 Sep 2026', status: 'Escrow', statusText: 'एस्क्रो सुरक्षित (In Escrow)' },
+  ];
+
+  get totalEstimatedRevenue(): number {
+    if (!this.myCropsList || this.myCropsList.length === 0) {
+      return 399350;
+    }
+    const total = this.myCropsList.reduce((acc, c) => {
+      const price = Number(c.expectedPrice) || 0;
+      const qty = Number(c.quantity) || 1;
+      return acc + (price * qty);
+    }, 0);
+    return total > 0 ? total : 399350;
+  }
+
+  setTrendCrop(crop: 'Wheat' | 'Paddy' | 'Mustard'): void {
+    this.selectedTrendCrop = crop;
+  }
+
+  setTimeframe(tf: '1M' | '3M' | '6M' | '1Y'): void {
+    this.selectedTimeframe = tf;
+  }
 
   ngOnInit(): void {
     this.checkUser();

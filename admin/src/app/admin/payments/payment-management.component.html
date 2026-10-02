@@ -1,0 +1,324 @@
+<div class="container-fluid p-3 p-md-4">
+
+  <!-- Header Banner -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">
+          <i class="bi bi-shield-check me-1"></i> Financial & Payment Ledger
+        </span>
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small">
+          Razorpay & Escrow
+        </span>
+      </div>
+      <h2 class="fw-bold text-dark mb-0">Platform Payments & Fee Management</h2>
+      <p class="text-muted small mb-0">
+        किसान लिस्टिंग शुल्क (₹99), ऑर्डर कमीशन, एस्क्रो सेटलमेंट एवं ऑफलाइन भुगतान प्रबंधन
+      </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="loadPayments()">
+        <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> रिफ्रेश
+      </button>
+      <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm d-inline-flex align-items-center gap-1"
+        (click)="openManualModal()">
+        <i class="bi bi-plus-circle-fill"></i> + ऑफलाइन/मैनुअल भुगतान दर्ज करें
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">कुल लेनदेन मूल्य (Volume)</small>
+        <h3 class="fw-bold text-dark mb-0 mt-1">₹{{ summary.totalVolume | number:'1.0-0' }}</h3>
+        <small class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>कुल प्रोसेस राशि</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-primary">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">किसान लिस्टिंग शुल्क</small>
+        <h3 class="fw-bold text-primary mb-0 mt-1">₹{{ summary.totalListingFees | number:'1.0-0' }}</h3>
+        <small class="text-muted fw-semibold">₹99 प्रति सक्रियण</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">प्लेटफॉर्म कमीशन अर्जित</small>
+        <h3 class="fw-bold text-warning-emphasis mb-0 mt-1">₹{{ summary.totalCommission | number:'1.0-2' }}</h3>
+        <small class="text-warning fw-semibold">फसल व्यापार कमीशन</small>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-info">
+        <small class="text-muted fw-bold text-uppercase" style="font-size: 11px;">कुल लेनदेन संख्या</small>
+        <h3 class="fw-bold text-dark mb-0 mt-1">{{ summary.totalTransactions }} <small class="fs-6 text-muted">लेनदेन</small></h3>
+        <small class="text-info fw-semibold"><i class="bi bi-receipt me-1"></i>सत्यापित प्रविष्टियां</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Purpose Filter Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+    <div class="row g-3 align-items-center justify-content-between">
+      <!-- Status Pills -->
+      <div class="col-12 col-lg-7">
+        <div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+            [class.btn-success]="selectedStatus === 'all'"
+            [class.btn-outline-secondary]="selectedStatus !== 'all'"
+            (click)="setStatusFilter('all')">
+            सभी (All Status)
+          </button>
+          <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+            [class.btn-success]="selectedStatus === 'received'"
+            [class.btn-outline-secondary]="selectedStatus !== 'received'"
+            (click)="setStatusFilter('received')">
+            प्राप्त (Received)
+          </button>
+          <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+            [class.btn-success]="selectedStatus === 'completed'"
+            [class.btn-outline-secondary]="selectedStatus !== 'completed'"
+            (click)="setStatusFilter('completed')">
+            पूर्ण (Completed)
+          </button>
+          <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+            [class.btn-success]="selectedStatus === 'processing'"
+            [class.btn-outline-secondary]="selectedStatus !== 'processing'"
+            (click)="setStatusFilter('processing')">
+            प्रक्रियाधीन (Processing)
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div class="col-12 col-lg-5">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0"
+            placeholder="किसान नाम, मोबाइल या Txn ID खोजें..."
+            [(ngModel)]="searchQuery" (input)="loadPayments()">
+          <button class="btn btn-light border border-start-0 text-muted" type="button" *ngIf="searchQuery" (click)="searchQuery = ''; loadPayments()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments Table Card -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+        <i class="bi bi-cash-stack text-success"></i>
+        भुगतान एवं कमीशन बहीखाता (Transactions Ledger)
+      </h5>
+      <small class="text-muted">कुल {{ payments.length }} प्रविष्टियां</small>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="text-muted small mt-2">भुगतान डेटा लोड हो रहा है...</p>
+      </div>
+    } @else if (payments.length === 0) {
+      <div class="text-center py-5 border rounded-4 bg-light">
+        <i class="bi bi-wallet2 text-muted fs-1 d-block mb-2"></i>
+        <h6 class="fw-bold text-dark mb-1">कोई भुगतान प्रविष्टि नहीं मिली</h6>
+        <p class="text-muted small mb-3">दिए गए फिल्टर के अनुसार कोई रिकॉर्ड नहीं मिला।</p>
+        <button type="button" class="btn btn-success btn-sm rounded-pill px-4 fw-bold" (click)="openManualModal()">
+          <i class="bi bi-plus-circle me-1"></i> भुगतान दर्ज करें
+        </button>
+      </div>
+    } @else {
+      <!-- Table -->
+      <div class="table-responsive rounded-3 border">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr style="font-size: 12px;" class="text-muted text-uppercase">
+              <th class="ps-3">किसान / उपयोगकर्ता</th>
+              <th>लेनदेन विवरण (Purpose)</th>
+              <th>माध्यम (Mode)</th>
+              <th>राशि (Amount)</th>
+              <th>कमीशन / सेटलमेंट</th>
+              <th>स्थिति (Status)</th>
+              <th>दिनांक</th>
+              <th class="text-end pe-3">कार्यवाही</th>
+            </tr>
+          </thead>
+          <tbody style="font-size: 13px;">
+            @for (p of payments; track p._id) {
+              <tr>
+                <td class="ps-3">
+                  <strong class="d-block text-dark">{{ p.farmerName || p.farmer?.name || 'अज्ञात उपयोगकर्ता' }}</strong>
+                  <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ p.farmerMobile || p.farmer?.mobile || 'N/A' }}</small>
+                </td>
+
+                <td>
+                  <span class="badge rounded-pill px-2 py-1 fw-bold"
+                    [class.bg-primary-subtle]="p.purpose === 'crop_listing_fee'"
+                    [class.text-primary]="p.purpose === 'crop_listing_fee'"
+                    [class.bg-success-subtle]="p.purpose === 'order_payment'"
+                    [class.text-success]="p.purpose === 'order_payment'">
+                    {{ p.purpose === 'crop_listing_fee' ? '🌾 फसल लिस्टिंग शुल्क' : '📦 फसल ऑर्डर भुगतान' }}
+                  </span>
+                  <small class="text-muted d-block font-monospace" style="font-size: 11px;">{{ p.transactionId || p.razorpayPaymentId || 'N/A' }}</small>
+                </td>
+
+                <td>
+                  <span class="badge bg-light text-dark border px-2 py-1">
+                    {{ p.paymentMode || 'Online' }}
+                  </span>
+                </td>
+
+                <td>
+                  <strong class="text-success fs-6">₹{{ p.amount | number:'1.0-0' }}</strong>
+                </td>
+
+                <td>
+                  @if (p.purpose === 'order_payment') {
+                    <span class="text-muted small d-block">कमीशन: <strong class="text-warning-emphasis">₹{{ p.commissionAmount || 0 | number:'1.0-2' }}</strong></span>
+                    <span class="text-muted small d-block">सेटलमेंट: <strong class="text-success">₹{{ p.farmerSettlementAmount || 0 | number:'1.0-0' }}</strong></span>
+                  } @else {
+                    <span class="text-muted small">पूर्ण प्राप्त (100%)</span>
+                  }
+                </td>
+
+                <td>
+                  <span class="badge rounded-pill px-2 py-1 fw-bold"
+                    [class.bg-success]="p.status === 'received' || p.status === 'completed'"
+                    [class.text-white]="p.status === 'received' || p.status === 'completed'"
+                    [class.bg-warning]="p.status === 'processing'"
+                    [class.text-dark]="p.status === 'processing'"
+                    [class.bg-danger]="p.status === 'failed'"
+                    [class.text-white]="p.status === 'failed'">
+                    {{ p.status === 'received' ? 'सफल प्राप्त' : (p.status === 'completed' ? 'पूर्ण' : p.status) }}
+                  </span>
+                </td>
+
+                <td>
+                  <small class="text-muted">{{ p.createdAt | date:'mediumDate' }}</small>
+                  <small class="text-muted d-block" style="font-size: 10px;">{{ p.createdAt | date:'shortTime' }}</small>
+                </td>
+
+                <td class="text-end pe-3">
+                  <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-1" (click)="deletePayment(p)" title="Delete Entry" style="width: 30px; height: 30px;">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ========================================================
+     MANUAL PAYMENT ENTRY MODAL
+     ======================================================== -->
+@if (showModal) {
+  <div class="modal-backdrop fade show" (click)="closeModal()"></div>
+  <div class="modal d-block fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        
+        <div class="modal-header bg-success text-white py-3 px-4">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-wallet2 fs-4 text-warning"></i>
+            <div>
+              <h5 class="fw-bold mb-0 text-white">ऑफलाइन / मैनुअल भुगतान दर्ज करें</h5>
+              <small class="text-white-50">Manual Cash/UPI Payment Logging</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form (ngSubmit)="savePayment()">
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">किसान / प्रेषक का नाम *</label>
+              <input type="text" class="form-control" [(ngModel)]="manualForm.farmerName" name="farmerName" placeholder="उदा. राम कुमार वर्मा" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">मोबाइल नंबर</label>
+              <input type="tel" class="form-control" [(ngModel)]="manualForm.farmerMobile" name="farmerMobile" placeholder="उदा. 9876543210">
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">भुगतान राशि (₹) *</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" class="form-control" [(ngModel)]="manualForm.amount" name="amount" required>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">उद्देश्य (Purpose)</label>
+                <select class="form-select" [(ngModel)]="manualForm.purpose" name="purpose">
+                  <option value="crop_listing_fee">फसल लिस्टिंग शुल्क (₹99)</option>
+                  <option value="order_payment">फसल ऑर्डर भुगतान</option>
+                  <option value="subscription">सब्सक्रिप्शन</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">माध्यम (Mode)</label>
+                <select class="form-select" [(ngModel)]="manualForm.paymentMode" name="paymentMode">
+                  <option value="Cash / Offline">नकद (Cash Offline)</option>
+                  <option value="UPI / PhonePe / GPay">UPI (PhonePe / GPay)</option>
+                  <option value="Bank NEFT / IMPS">Bank Transfer</option>
+                  <option value="Cheque">चेक (Cheque)</option>
+                </select>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">स्थिति (Status)</label>
+                <select class="form-select" [(ngModel)]="manualForm.status" name="status">
+                  <option value="received">सफल प्राप्त (Received)</option>
+                  <option value="processing">प्रक्रियाधीन (Processing)</option>
+                  <option value="completed">पूर्ण (Completed)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">लेनदेन संदर्भ आईडी (Txn Reference)</label>
+              <input type="text" class="form-control font-monospace" [(ngModel)]="manualForm.transactionId" name="transactionId">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">टिप्पणी / विवरण</label>
+              <textarea class="form-control" rows="2" [(ngModel)]="manualForm.notes" name="notes" placeholder="रसीद संख्या या संदर्भ लिखें..."></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+              <button type="button" class="btn btn-light rounded-pill px-4" (click)="closeModal()">
+                रद्द करें
+              </button>
+              <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSaving">
+                <span class="spinner-border spinner-border-sm me-1" *ngIf="isSaving"></span>
+                भुगतान दर्ज करें
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

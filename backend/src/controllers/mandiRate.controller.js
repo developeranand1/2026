@@ -1,4 +1,5 @@
 const MandiRate = require("../models/MandiRate");
+const LevyRate = require("../models/LevyRate");
 const https = require("https");
 
 // Key Government APMC Mandi Hubs by State
@@ -446,12 +447,19 @@ exports.getLiveMandiRates = async (req, res) => {
                     {
                         $or: [
                             { district: { $regex: new RegExp(districtQuery, "i") } },
+                            { city: { $regex: new RegExp(districtQuery, "i") } },
                             { location: { $regex: new RegExp(districtQuery, "i") } }
                         ]
                     }
                 ];
             }
-            dbRates = await MandiRate.find(query).sort({ rateDate: -1 }).limit(15).lean();
+
+            const [mandiDb, levyDb] = await Promise.all([
+                MandiRate.find(query).sort({ rateDate: -1 }).limit(15).lean(),
+                LevyRate.find({ ...query, status: "active" }).sort({ updatedAt: -1 }).limit(15).lean()
+            ]);
+
+            dbRates = [...mandiDb, ...levyDb];
         } catch (dbErr) {
             console.warn("DB MandiRate query skipped:", dbErr.message);
         }
@@ -553,24 +561,27 @@ exports.getLiveMandiRates = async (req, res) => {
         if (dbRates.length > 0) {
             const formattedDbRates = dbRates.map((db, idx) => ({
                 id: `db-${db._id || idx}`,
-                commodity: db.cropName || db.commodity,
+                commodity: db.commodity || db.cropName,
                 hindiName: db.hindiName || db.cropName || db.commodity,
                 category: db.category || "Grains",
                 variety: db.variety || "Admin Verified Grade",
                 market: db.mandiName || primaryMarket,
                 district: db.district || districtQuery || "Local APMC",
                 state: db.state || stateQuery,
-                min_price: db.minPrice || Math.round(db.pricePerQuintal * 0.95),
-                max_price: db.maxPrice || Math.round(db.pricePerQuintal * 1.05),
-                modal_price: db.modalPrice || db.pricePerQuintal,
-                unit: db.unit || "Quintal",
+                min_price: db.minPrice || Math.round((db.pricePerQuintal || db.rate || db.modalPrice) * 0.95),
+                max_price: db.maxPrice || Math.round((db.pricePerQuintal || db.rate || db.modalPrice) * 1.05),
+                modal_price: db.modalPrice || db.rate || db.pricePerQuintal,
+                unit: db.unit || db.rateUnit || "Quintal",
+                levyRate: db.levyRate || 1.5,
+                levyUnit: db.levyUnit || "%",
+                mandiCess: (db.levyRate || 1.5) + (db.levyUnit || "%") + " APMC Mandi Cess",
                 change: db.change || ((db.changeAmount >= 0 ? `+${db.changeAmount}` : `${db.changeAmount}`) + " ₹"),
                 isUp: db.isUp !== undefined ? db.isUp : (db.trend === "up" || db.changeAmount >= 0),
                 arrival_date: db.rateDate ? new Date(db.rateDate).toLocaleDateString("en-IN") : todayStr,
-                source: "Official AGMARKNET Verified Feed",
+                source: db.source || "Official APMC Verified Mandi Feed",
                 season: "Current Trading Season",
-                description: `Live price updated directly via official Mandi desk for ${db.mandiName}.`,
-                marketTips: `Verified auction rate registered at ${db.mandiName}.`
+                description: `Live price updated directly via official Mandi desk for ${db.mandiName || 'APMC'}.`,
+                marketTips: `Verified auction rate registered with ${db.levyRate || 1.5}% Mandi Cess.`
             }));
             generatedRates = [...formattedDbRates, ...generatedRates];
         }

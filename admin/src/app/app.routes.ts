@@ -9,6 +9,8 @@ import { UserManagementComponent } from './admin/users/user-management.component
 import { ContactManagementComponent } from './admin/contact/contact-management.component';
 import { NewsManagementComponent } from './admin/news/news-management.component';
 import { TrainingManagementComponent } from './admin/trainings/training-management.component';
+import { LevyRateManagementComponent } from './admin/levy-rates/levy-rate-management.component';
+import { PaymentManagementComponent } from './admin/payments/payment-management.component';
 
 export const routes: Routes = [
   {
@@ -93,6 +95,14 @@ export const routes: Routes = [
       {
         path: 'mandi-rates',
         component: AdminDashboardComponent
+      },
+      {
+        path: 'levy-rates',
+        component: LevyRateManagementComponent
+      },
+      {
+        path: 'payments',
+        component: PaymentManagementComponent
       }
     ]
   },

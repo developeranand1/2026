@@ -6,7 +6,10 @@ const {
     activateFarmerListingAccess,
     verifyListingPayment,
     getFarmerListingStatus,
-    getFarmerPayments
+    getFarmerPayments,
+    getAllPaymentsAdmin,
+    createManualPaymentAdmin,
+    deletePaymentAdmin
 } = require("../controllers/payment.controller");
 const { protect } = require("../middlewares/auth.middleware");
 
@@ -25,5 +28,10 @@ router.get("/listing-status/:userId", getFarmerListingStatus);
 
 // Farmer transactions / earnings
 router.get("/farmer-payments", protect, getFarmerPayments);
+
+// Admin Payment Management
+router.get("/admin/all", getAllPaymentsAdmin);
+router.post("/admin/record-manual", createManualPaymentAdmin);
+router.delete("/admin/:id", deletePaymentAdmin);
 
 module.exports = router;

@@ -9,6 +9,7 @@ import { TestimonialsComponent } from './components/testimonials/testimonials.co
 import { FarmerCtaComponent } from './components/farmer-cta/farmer-cta.component';
 import { NewsletterComponent } from './components/newsletter/newsletter.component';
 import { HomeNewsComponent } from './components/home-news/home-news.component';
+import { HomeLevyCardComponent } from './components/home-levy-card/home-levy-card.component';
 import { SeoService } from '../../core/seo.service';
 
 @Component({
@@ -19,6 +20,7 @@ import { SeoService } from '../../core/seo.service';
     CategoriesComponent,
     ProductsComponent,
     MandiRatesComponent,
+    HomeLevyCardComponent,
     KisanLoanCalculatorComponent,
     HomeNewsComponent,
     BenefitsComponent,

@@ -1,6 +1,11 @@
 .farmer-products-view {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+
   .hover-elevate {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+
     &:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1) !important;
@@ -41,11 +46,13 @@
       border: 1px solid #eef2f5 !important;
     }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
       min-height: 46px;
       font-size: 0.92rem;
       border-radius: 10px;
       border: 1px solid #d0d7de;
+
       &:focus {
         border-color: #198754;
         box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);

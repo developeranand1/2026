@@ -1,0 +1,165 @@
+<section class="home-levy-section py-4 py-md-5">
+  <div class="container">
+
+    <!-- Section Header Bar -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-warning-subtle text-dark border border-warning rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-1">
+            <i class="bi bi-receipt text-warning-emphasis"></i> APMC मंडी लेवी एवं शुल्क (Levy Rates)
+          </span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small">
+            1.5% Mandi Cess
+          </span>
+        </div>
+        <h2 class="section-title fw-bold text-dark mb-1">
+          Mandi Levy Rates & Shulk Dar
+        </h2>
+        <p class="section-subtitle text-muted mb-0">
+          संत कबीर नगर (खलीलाबाद), बस्ती एवं गोरखपुर APMC मंडियों के नवीनतम लेवी शुल्क व फसल भाव
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <a routerLink="/levy-rates" class="btn btn-success btn-sm rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1 shadow-sm">
+          <i class="bi bi-arrow-up-right-circle"></i> सभी लेवी दरें देखें (View All Rates)
+        </a>
+      </div>
+    </div>
+
+    <!-- District Selection Filter Pills -->
+    <div class="district-pills-bar d-flex flex-wrap align-items-center gap-2 mb-4 p-2 bg-light rounded-4 border">
+      <span class="text-muted small fw-bold px-2 d-none d-sm-inline">
+        <i class="bi bi-geo-alt-fill text-danger me-1"></i> मंडी जिला:
+      </span>
+      <button *ngFor="let dist of districts" type="button"
+              class="btn btn-sm rounded-pill px-3 fw-semibold transition-all"
+              [class.btn-success]="selectedDistrict === dist"
+              [class.btn-white]="selectedDistrict !== dist"
+              [class.text-dark]="selectedDistrict !== dist"
+              [class.shadow-sm]="selectedDistrict === dist"
+              (click)="setDistrict(dist)">
+        {{ dist === 'All' ? 'सभी मंडियां (All APMC)' : (dist === 'Sant Kabir Nagar' ? 'संत कबीर नगर (खलीलाबाद)' : (dist === 'Basti' ? 'बस्ती' : 'गोरखपुर')) }}
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5 bg-white rounded-4 shadow-sm border">
+      <div class="spinner-border text-success mb-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-muted fw-semibold mb-0">लेवी दरें लोड हो रही हैं...</p>
+    </div>
+
+    <!-- Rates Grid -->
+    <div *ngIf="!isLoading">
+      <div *ngIf="filteredRates.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm border">
+        <i class="bi bi-exclamation-circle text-warning fs-1 d-block mb-2"></i>
+        <h5 class="fw-bold text-dark">कोई लेवी रेट नहीं मिला</h5>
+        <p class="text-muted small mb-3">इस जिले के लिए अभी कोई रेट दर्ज नहीं है। आप नया लेवी रेट जोड़ सकते हैं।</p>
+        <a routerLink="/levy-rates" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+          <i class="bi bi-plus-lg me-1"></i> नया लेवी रेट जोड़ें
+        </a>
+      </div>
+
+      <div *ngIf="filteredRates.length > 0" class="row g-3 g-md-4">
+        <div *ngFor="let rate of filteredRates" class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 levy-item-card border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+            <!-- Top Color Bar -->
+            <div class="card-accent-bar bg-success"></div>
+
+            <div class="card-body p-3 p-xl-4 d-flex flex-column justify-content-between">
+              <!-- Top Row: Crop & Mandi -->
+              <div>
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="crop-icon-box rounded-3 bg-light d-flex align-items-center justify-content-center">
+                      <i class="bi {{ getCropIcon(rate.commodity) }} fs-4"></i>
+                    </div>
+                    <div>
+                      <h5 class="fw-bold text-dark mb-0 lh-sm">{{ rate.hindiName || rate.commodity }}</h5>
+                      <span class="text-muted small">{{ rate.commodity }} &bull; {{ rate.variety || 'Standard' }}</span>
+                    </div>
+                  </div>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small fw-bold">
+                    {{ rate.rateUnit || rate.unit || '1 Quintal' }}
+                  </span>
+                </div>
+
+                <!-- Mandi Location Badge -->
+                <div class="location-badge-box d-flex align-items-center gap-1 px-2 py-1 rounded-3 bg-light border mb-3">
+                  <i class="bi bi-geo-alt-fill text-danger small"></i>
+                  <span class="fw-semibold text-dark small text-truncate">
+                    {{ rate.mandiName || rate.district }}, {{ rate.district }}
+                  </span>
+                  <span class="badge bg-secondary-subtle text-secondary ms-auto px-2 py-0 rounded-pill small" style="font-size: 10px;">
+                    {{ rate.state || 'UP' }}
+                  </span>
+                </div>
+
+                <!-- Price Figures -->
+                <div class="price-box p-3 rounded-3 bg-light-subtle border mb-3">
+                  <div class="d-flex justify-content-between align-items-baseline mb-1">
+                    <span class="text-muted small fw-medium">मंडी मॉडल भाव (Modal):</span>
+                    <span class="fw-bold text-success fs-5">
+                      ₹{{ rate.modalPrice || rate.rate || 0 | number:'1.0-0' }}
+                    </span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center text-muted small pt-1 border-top border-light-subtle">
+                    <span>न्यूनतम: <strong class="text-dark">₹{{ rate.minPrice || rate.rate || 0 | number:'1.0-0' }}</strong></span>
+                    <span>अधिकतम: <strong class="text-dark">₹{{ rate.maxPrice || rate.rate || 0 | number:'1.0-0' }}</strong></span>
+                  </div>
+                </div>
+
+                <!-- Mandi Cess / Levy Highlight -->
+                <div class="cess-highlight-box p-2 rounded-3 bg-warning-subtle border border-warning-subtle d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-warning-emphasis fs-5"></i>
+                    <div>
+                      <span class="d-block text-dark fw-bold small lh-1">APMC मंडी लेवी शुल्क</span>
+                      <small class="text-muted" style="font-size: 11px;">Mandi Cess {{ rate.calculationMethod || 'Percentage' }}</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-1 fs-6">
+                    {{ rate.levyRate || 1.5 }}%
+                  </span>
+                </div>
+              </div>
+
+              <!-- Card Footer Meta & Quick Action -->
+              <div class="pt-2 border-top d-flex align-items-center justify-content-between">
+                <span class="text-muted" style="font-size: 11px;">
+                  <i class="bi bi-calendar3 me-1"></i> सत्र: {{ rate.assessmentYear || '2026-27' }}
+                </span>
+                <a routerLink="/levy-rates" class="btn btn-sm btn-link text-success p-0 fw-bold text-decoration-none d-inline-flex align-items-center gap-1">
+                  पूर्ण विवरण (View Details) <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Informational Bar -->
+    <div class="mt-4 p-3 rounded-4 bg-white border shadow-sm d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="info-circle bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+          <i class="bi bi-info-lg fs-5"></i>
+        </div>
+        <div>
+          <h6 class="fw-bold text-dark mb-0">उत्तर प्रदेश कृषि उत्पादन मंडी समिति अधिनियम</h6>
+          <small class="text-muted">
+            संत कबीर नगर (खलीलाबाद), बस्ती एवं गोरखपुर मंडियों में अधिसूचित कृषि उपज पर 1.5% लेवी शुल्क लागू है।
+          </small>
+        </div>
+      </div>
+      <a routerLink="/levy-rates" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold flex-shrink-0">
+        लेवी शुल्क नियम एवं तालिका पढ़ें &rarr;
+      </a>
+    </div>
+
+  </div>
+</section>

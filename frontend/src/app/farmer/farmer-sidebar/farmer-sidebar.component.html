@@ -1,125 +1,230 @@
 <div class="farmer-layout-wrapper d-flex flex-column flex-md-row min-vh-100 bg-light">
 
-  <!-- DESKTOP LIGHT SIDEBAR (Visible on Medium & Larger Screens: >= 768px) -->
-  <aside class="farmer-sidebar bg-white border-end shadow-sm d-none d-md-flex flex-column justify-content-between"
+  <!-- DESKTOP / TABLET RESPONSIVE SIDEBAR (>= 768px) -->
+  <aside class="farmer-sidebar bg-white border-end shadow-xs d-none d-md-flex flex-column justify-content-between"
     [class.collapsed]="isSidebarCollapsed">
-    <div>
-      <!-- Sidebar Header / Logo -->
-      <div class="sidebar-header p-3 border-bottom d-flex align-items-center justify-content-between">
-        <a routerLink="/farmer/dashboard"
-          class="d-flex align-items-center gap-2 text-dark text-decoration-none overflow-hidden">
-          <span
-            class="logo-badge bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
-            style="width:38px; height:38px; flex-shrink:0;">
-            <i class="bi bi-flower1 fs-5"></i>
-          </span>
-          <div class="brand-text overflow-hidden" [class.d-none]="isSidebarCollapsed">
-            <h5 class="fw-bold mb-0 text-success text-nowrap">KrisiMarg</h5>
-            <small class="text-muted text-nowrap" style="font-size: 11px;">Kisan Portal</small>
+
+    <div class="d-flex flex-column">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header px-3 py-3 border-bottom d-flex align-items-center"
+        [class.justify-content-between]="!isSidebarCollapsed" [class.justify-content-center]="isSidebarCollapsed">
+
+        <div class="d-flex align-items-center gap-2 overflow-hidden" *ngIf="!isSidebarCollapsed">
+          <div class="portal-badge-icon shadow-xs">
+            <i class="bi bi-flower1"></i>
           </div>
-        </a>
-        <button type="button" class="btn btn-light btn-sm text-secondary p-1 border-0 fs-5 d-none d-lg-block"
-          (click)="toggleSidebar()" title="Toggle Sidebar">
-          <i class="bi" [class.bi-indent]="!isSidebarCollapsed" [class.bi-outdent]="isSidebarCollapsed"></i>
+          <div class="lh-1">
+            <span class="portal-brand-title">किसान सेवा केंद्र</span>
+            <span class="portal-brand-sub">Farmer Portal</span>
+          </div>
+        </div>
+
+        <button type="button" class="sidebar-toggle-btn shadow-xs" (click)="toggleSidebar()"
+          [title]="isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+          <i class="bi" [class.bi-chevron-left]="!isSidebarCollapsed" [class.bi-chevron-right]="isSidebarCollapsed"></i>
         </button>
       </div>
 
-      <!-- Navigation Links -->
-      <nav class="sidebar-nav p-2 mt-2">
-        <ul class="nav nav-pills flex-column gap-1">
-          <!-- Dashboard -->
+      <!-- Farmer Mini Profile Card (Shown when expanded) -->
+      <!-- <div class="farmer-mini-profile mx-2 mt-2 p-2 rounded-3 bg-light-subtle border d-flex align-items-center gap-2"
+        *ngIf="!isSidebarCollapsed">
+        <div
+          class="profile-avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-xs">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <div class="overflow-hidden flex-grow-1">
+          <div class="fw-bold text-dark text-truncate fs-7">{{ farmerUser?.name || 'Kisan Brother' }}</div>
+          <div class="d-flex align-items-center gap-1">
+            <span class="status-dot"></span>
+            <small class="text-success fw-semibold" style="font-size: 11px;">सत्यापित किसान</small>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Navigation Section -->
+      <nav class="sidebar-nav px-2 mt-2">
+        <!-- Main Section Title -->
+        <div class="nav-section-title" *ngIf="!isSidebarCollapsed">
+          <span>मुख्य कार्य (MAIN)</span>
+        </div>
+
+        <ul class="nav nav-pills flex-column gap-1 list-unstyled mb-0">
+          <!-- 1. Dashboard -->
           <li class="nav-item">
             <a routerLink="/farmer/dashboard" routerLinkActive="active-nav"
-              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2 rounded-3 hover-light">
-              <i class="bi bi-grid-1x2-fill fs-5 text-success"></i>
-              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Dashboard</span>
+              class="nav-link text-secondary d-flex align-items-center rounded-3" [class.px-2]="!isSidebarCollapsed"
+              [class.justify-content-center]="isSidebarCollapsed" [title]="isSidebarCollapsed ? 'Dashboard' : ''">
+              <div class="nav-icon-wrapper bg-success-subtle text-success">
+                <i class="bi bi-grid-1x2-fill"></i>
+              </div>
+              <span class="nav-text fw-semibold ms-2" *ngIf="!isSidebarCollapsed">डैशबोर्ड (Dashboard)</span>
             </a>
           </li>
 
-          <!-- My Crop Produce Listings (Dedicated Route) -->
+          <!-- 2. My Crop Produce Listings -->
           <li class="nav-item">
             <a routerLink="/farmer/product" routerLinkActive="active-nav"
-              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2 rounded-3 hover-light">
-              <i class="bi bi-box-seam-fill fs-5 text-warning"></i>
-              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">My Crop Produce</span>
+              class="nav-link text-secondary d-flex align-items-center rounded-3" [class.px-2]="!isSidebarCollapsed"
+              [class.justify-content-center]="isSidebarCollapsed" [title]="isSidebarCollapsed ? 'My Crops' : ''">
+              <div class="nav-icon-wrapper bg-warning-subtle text-warning">
+                <i class="bi bi-box-seam-fill"></i>
+              </div>
+              <span class="nav-text fw-semibold ms-2" *ngIf="!isSidebarCollapsed">मेरी फसलें (My Crops)</span>
             </a>
           </li>
 
-          <!-- Mandi Rates -->
+          <!-- 3. Mandi Rates -->
           <li class="nav-item">
             <a routerLink="/farmer/mandi-rates" routerLinkActive="active-nav"
-              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2 rounded-3 hover-light">
-              <i class="bi bi-graph-up-arrow fs-5 text-primary"></i>
-              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Mandi Rates (मंडी भाव)</span>
+              class="nav-link text-secondary d-flex align-items-center rounded-3" [class.px-2]="!isSidebarCollapsed"
+              [class.justify-content-center]="isSidebarCollapsed" [title]="isSidebarCollapsed ? 'Mandi Rates' : ''">
+              <div class="nav-icon-wrapper bg-primary-subtle text-primary">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <div class="d-flex align-items-center justify-content-between flex-grow-1 ms-2"
+                *ngIf="!isSidebarCollapsed">
+                <span class="nav-text fw-semibold">मंडी भाव (Mandi Rates)</span>
+                <span
+                  class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill py-0 px-2 fw-bold"
+                  style="font-size: 10px;">
+                  LIVE
+                </span>
+              </div>
             </a>
           </li>
+        </ul>
 
-          <!-- Weather & Rain Forecast -->
+        <!-- Services Section Title -->
+        <div class="nav-section-title mt-3" *ngIf="!isSidebarCollapsed">
+          <span>सेवाएं (SERVICES)</span>
+        </div>
+
+        <ul class="nav nav-pills flex-column gap-1 list-unstyled mb-0">
+          <!-- 4. Weather & Rain Forecast -->
           <li class="nav-item">
             <a routerLink="/farmer/weather" routerLinkActive="active-nav"
-              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2 rounded-3 hover-light">
-              <i class="bi bi-cloud-sun-fill fs-5 text-info"></i>
-              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Krishi Mausam (मौसम)</span>
+              class="nav-link text-secondary d-flex align-items-center rounded-3" [class.px-2]="!isSidebarCollapsed"
+              [class.justify-content-center]="isSidebarCollapsed" [title]="isSidebarCollapsed ? 'Krishi Mausam' : ''">
+              <div class="nav-icon-wrapper bg-info-subtle text-info">
+                <i class="bi bi-cloud-sun-fill"></i>
+              </div>
+              <span class="nav-text fw-semibold ms-2" *ngIf="!isSidebarCollapsed">कृषि मौसम (Weather)</span>
             </a>
           </li>
 
-          <!-- Profile -->
+          <!-- 5. Profile -->
           <li class="nav-item">
             <a routerLink="/farmer/profile" routerLinkActive="active-nav"
-              class="nav-link text-dark d-flex align-items-center gap-3 px-3 py-2 rounded-3 hover-light">
-              <i class="bi bi-person-lines-fill fs-5 text-success"></i>
-              <span class="nav-text fw-semibold" [class.d-none]="isSidebarCollapsed">Farmer Profile (प्रोफ़ाइल)</span>
+              class="nav-link text-secondary d-flex align-items-center rounded-3" [class.px-2]="!isSidebarCollapsed"
+              [class.justify-content-center]="isSidebarCollapsed" [title]="isSidebarCollapsed ? 'Farmer Profile' : ''">
+              <div class="nav-icon-wrapper bg-secondary-subtle text-secondary">
+                <i class="bi bi-person-lines-fill"></i>
+              </div>
+              <span class="nav-text fw-semibold ms-2" *ngIf="!isSidebarCollapsed">प्रोफ़ाइल (Profile)</span>
             </a>
           </li>
         </ul>
       </nav>
+
+      <!-- Sidebar Support / Helpline Card (Fills empty vertical void cleanly) -->
+      <div class="sidebar-help-box mx-2 mt-4 p-3 rounded-3 text-white shadow-xs position-relative overflow-hidden"
+        *ngIf="!isSidebarCollapsed">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="help-circle bg-white text-success rounded-circle shadow-xs">
+            <i class="bi bi-headset"></i>
+          </div>
+          <div class="lh-1">
+            <strong class="d-block text-white" style="font-size: 13px;">किसान हेल्पलाइन</strong>
+            <small class="text-white-50" style="font-size: 10px;">24x7 निःशुल्क सहायता</small>
+          </div>
+        </div>
+        <a href="tel:+917219159731"
+          class="btn btn-light btn-sm w-100 rounded-pill fw-bold text-success shadow-xs d-flex align-items-center justify-content-center gap-1"
+          style="font-size: 11px;">
+          <i class="bi bi-telephone-fill"></i> 7219159731
+        </a>
+      </div>
+    </div>
+
+    <!-- Sidebar Bottom User Info & Logout -->
+    <div class="sidebar-footer p-2 p-md-3 border-top bg-light-subtle mt-auto">
+      <div class="d-flex align-items-center justify-content-between" *ngIf="!isSidebarCollapsed">
+        <div class="d-flex align-items-center gap-2 overflow-hidden">
+          <div
+            class="badge-role bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center fw-bold">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="overflow-hidden">
+            <small class="fw-bold text-dark d-block text-truncate" style="max-width: 120px;">
+              {{ farmerUser?.name || 'Kisan Brother' }}
+            </small>
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill py-0 px-2"
+              style="font-size: 10px;">
+              सेलर एक्टिव
+            </span>
+          </div>
+        </div>
+
+        <button type="button"
+          class="btn btn-outline-danger btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center shadow-xs"
+          style="width: 32px; height: 32px;" (click)="logout()" title="Logout from Portal">
+          <i class="bi bi-power"></i>
+        </button>
+      </div>
+
+      <div class="d-flex justify-content-center" *ngIf="isSidebarCollapsed">
+        <button type="button"
+          class="btn btn-outline-danger btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center shadow-xs"
+          style="width: 36px; height: 36px;" (click)="logout()" title="Logout from Portal">
+          <i class="bi bi-power"></i>
+        </button>
+      </div>
     </div>
   </aside>
 
   <!-- MAIN CONTENT AREA -->
   <main class="farmer-main-content flex-grow-1 bg-light d-flex flex-column pb-5 pb-md-0">
-    <!-- ROUTED SUB-COMPONENT CONTENT (Dashboard / Product / Profile / Mandi Rates / Weather) -->
     <div class="portal-body-content p-3 p-md-4 flex-grow-1">
       <router-outlet></router-outlet>
     </div>
   </main>
 
-  <!-- FIXED BOTTOM FOOTER NAVIGATION FOR MOBILE (Visible on Screens < 768px) -->
-  <nav class="mobile-bottom-nav fixed-bottom bg-white border-top shadow-lg d-md-none py-2 px-3">
-    <div class="d-flex justify-content-around align-items-center">
-      <!-- Dashboard Tab -->
+  <!-- FIXED BOTTOM FOOTER NAVIGATION FOR MOBILE (< 768px) -->
+  <nav class="mobile-bottom-nav fixed-bottom bg-white border-top shadow-lg d-md-none py-1 px-2">
+    <div class="d-flex justify-content-around align-items-center h-100">
+      <!-- 1. Dashboard -->
       <a routerLink="/farmer/dashboard" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
-        <i class="bi bi-grid-1x2-fill fs-5 mb-1"></i>
-        <span style="font-size: 11px;" class="fw-semibold">Dashboard</span>
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>डैशबोर्ड</span>
       </a>
 
-      <!-- My Crops Tab -->
+      <!-- 2. My Crops -->
       <a routerLink="/farmer/product" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
-        <i class="bi bi-box-seam-fill fs-5 mb-1 text-warning"></i>
-        <span style="font-size: 11px;" class="fw-semibold">My Crops</span>
+        <i class="bi bi-box-seam-fill"></i>
+        <span>फसलें</span>
       </a>
 
-      <!-- Mandi Rates Tab -->
+      <!-- 3. Mandi Rates -->
       <a routerLink="/farmer/mandi-rates" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
-        <i class="bi bi-graph-up-arrow fs-5 mb-1"></i>
-        <span style="font-size: 11px;" class="fw-semibold">Mandi</span>
+        <i class="bi bi-graph-up-arrow"></i>
+        <span>मंडी भाव</span>
       </a>
 
-      <!-- Weather Tab -->
+      <!-- 4. Weather -->
       <a routerLink="/farmer/weather" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
-        <i class="bi bi-cloud-sun-fill fs-5 mb-1 text-info"></i>
-        <span style="font-size: 11px;" class="fw-semibold">Mausam</span>
+        <i class="bi bi-cloud-sun-fill"></i>
+        <span>मौसम</span>
       </a>
 
-      <!-- Profile Tab -->
+      <!-- 5. Profile -->
       <a routerLink="/farmer/profile" routerLinkActive="active-mobile-tab"
         class="mobile-nav-item text-center text-muted text-decoration-none d-flex flex-column align-items-center">
-        <i class="bi bi-person-lines-fill fs-5 mb-1"></i>
-        <span style="font-size: 11px;" class="fw-semibold">Profile</span>
+        <i class="bi bi-person-lines-fill"></i>
+        <span>प्रोफ़ाइल</span>
       </a>
     </div>
   </nav>

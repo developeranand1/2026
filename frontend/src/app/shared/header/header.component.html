@@ -1,9 +1,8 @@
 <!-- Top Announcement & Helpline Bar -->
-<div class="topbar">
+<div class="topbar" *ngIf="!isPortalRoute">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2 topbar-left">
-            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-1"
-                style="font-size: 10px;">LIVE</span>
+            <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-1" style="font-size: 10px;">LIVE</span>
             <span class="topbar-text">
                 <i class="bi bi-truck me-1"></i>
                 Direct Farm-to-Buyer Delivery Across India
@@ -26,10 +25,10 @@
 
 <!-- Main Sticky Navbar -->
 <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-2">
-    <div class="container">
+    <div class="container-fluid px-3 px-xl-4 px-xxl-5">
 
         <!-- Brand Logo -->
-        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/" (click)="closeMobileMenu()">
+        <a class="navbar-brand d-flex align-items-center gap-2 me-2 me-xl-3" routerLink="/" (click)="closeMobileMenu()">
             <span class="logo-icon shadow-sm">
                 <i class="bi bi-flower1"></i>
             </span>
@@ -59,45 +58,50 @@
 
         <!-- Desktop Navigation Center Menu (Hidden on Mobile: >= 992px) -->
         <div class="collapse navbar-collapse d-none d-lg-flex" id="mainNavbarDesktop">
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav mx-auto align-items-center gap-1 gap-xl-2">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/" routerLinkActive="active"
+                    <a class="nav-link text-nowrap" routerLink="/" routerLinkActive="active"
                         [routerLinkActiveOptions]="{exact: true}">
                         Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/mandi-rates" routerLinkActive="active">
+                    <a class="nav-link text-nowrap" routerLink="/mandi-rates" routerLinkActive="active">
                         Mandi Rates <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 ms-1"
                             style="font-size: 10px;">Live</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/trainings" routerLinkActive="active">
+                    <a class="nav-link text-nowrap" routerLink="/levy-rates" routerLinkActive="active">
+                        Mandi Levy <span class="badge bg-warning-subtle text-dark rounded-pill px-2 py-1 ms-1"
+                            style="font-size: 10px;">1.5% Cess</span>
+                    </a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link text-nowrap" routerLink="/trainings" routerLinkActive="active">
                         Trainings <span class="badge bg-warning text-dark rounded-pill px-2 py-1 ms-1"
                             style="font-size: 10px;">Free Camp</span>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/news" routerLinkActive="active">
+                    <a class="nav-link text-nowrap" routerLink="/news" routerLinkActive="active">
                         News & Updates
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/about" routerLinkActive="active">
+                <!-- <li class="nav-item">
+                    <a class="nav-link text-nowrap" routerLink="/about" routerLinkActive="active">
                         About Us
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/contact" routerLinkActive="active">
+                    <a class="nav-link text-nowrap" routerLink="/contact" routerLinkActive="active">
                         Contact
                     </a>
                 </li>
-
             </ul>
 
             <!-- Desktop Right Action Capsule -->
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 ms-auto">
                 <button class="header-icon position-relative" type="button" aria-label="Shopping cart"
                     routerLink="/mandi-rates">
                     <i class="bi bi-cart3"></i>
@@ -105,29 +109,110 @@
                 </button>
 
                 @if (!isLoggedIn) {
-                <a class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold" routerLink="/login"
+                <a class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold text-nowrap" routerLink="/login"
                     [queryParams]="{mode: 'login'}">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Login
                 </a>
-                <a class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" routerLink="/login"
+                <a class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm text-nowrap" routerLink="/login"
                     [queryParams]="{mode: 'register'}">
                     <i class="bi bi-person-plus-fill me-1"></i> Register
                 </a>
                 } @else {
-                <div class="d-flex align-items-center bg-light rounded-pill p-1 ps-3 border shadow-sm">
-                    <span class="text-success fw-bold me-2 small text-truncate" style="max-width: 140px;">
-                        👋 {{ userName }}
-                    </span>
-                    <a class="btn btn-success btn-sm rounded-pill px-3 py-1 fw-bold shadow-sm d-flex align-items-center gap-1"
-                        [routerLink]="userRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard'">
-                        <i class="bi bi-grid-fill"></i>
-                        Dashboard
-                    </a>
-                    <button
-                        class="btn btn-outline-danger btn-sm rounded-circle p-1 ms-1 d-flex align-items-center justify-content-center"
-                        style="width: 28px; height: 28px;" (click)="logout()" title="Logout">
-                        <i class="bi bi-power"></i>
+                <!-- Direct Dashboard Button -->
+                <!-- <a class="btn btn-success btn-sm rounded-pill px-3 py-1 fw-bold shadow-sm d-flex align-items-center gap-1 text-nowrap"
+                    [routerLink]="userRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard'">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a> -->
+
+                <!-- User Profile Dropdown Menu -->
+                <div class="position-relative user-dropdown-container">
+                    <button type="button"
+                        class="btn btn-light rounded-pill border d-flex align-items-center gap-2 py-1 px-2 shadow-xs user-dropdown-btn text-nowrap"
+                        (click)="toggleUserDropdown($event)" [attr.aria-expanded]="isUserDropdownOpen">
+                        <span
+                            class="user-avatar-badge bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        <span class="fw-bold text-dark small user-name-label">
+                            {{ userName }}
+                        </span>
+                        <i class="bi bi-chevron-down text-muted small ms-1 transition-transform"
+                            [class.rotate-180]="isUserDropdownOpen"></i>
                     </button>
+
+                    <!-- Dropdown Menu -->
+                    <div class="user-dropdown-menu shadow-lg rounded-4 p-2 bg-white border" *ngIf="isUserDropdownOpen"
+                        (click)="$event.stopPropagation()">
+
+                        <!-- Header inside Dropdown with Full Name, Phone and Role -->
+                        <div class="p-3 bg-light rounded-3 mb-2 border">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-xs"
+                                    style="width: 38px; height: 38px; font-size: 16px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <strong class="d-block text-dark text-truncate" style="max-width: 180px;">{{
+                                        userName }}</strong>
+                                    <span
+                                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0"
+                                        style="font-size: 10px;">
+                                        {{ userRole === 'farmer' ? '🌾 किसान पोर्टल' : '🏬 खरीदार पोर्टल' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-muted" style="font-size: 11px;" *ngIf="userMobile">
+                                <i class="bi bi-telephone-fill text-success me-1"></i> +91 {{ userMobile }}
+                            </div>
+                        </div>
+
+                        <!-- Links inside Dropdown -->
+                        <div class="d-flex flex-column gap-1">
+                            <a class="dropdown-nav-item d-flex align-items-center gap-2 p-2 rounded-2 text-decoration-none text-dark fw-semibold"
+                                [routerLink]="userRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard'"
+                                (click)="closeUserDropdown()">
+                                <span class="icon-wrap bg-success-subtle text-success"><i
+                                        class="bi bi-grid-1x2-fill"></i></span>
+                                <span>डैशबोर्ड (Dashboard)</span>
+                            </a>
+
+                            <a class="dropdown-nav-item d-flex align-items-center gap-2 p-2 rounded-2 text-decoration-none text-dark fw-semibold"
+                                [routerLink]="userRole === 'farmer' ? '/farmer/product' : '/buyer/product'"
+                                (click)="closeUserDropdown()">
+                                <span class="icon-wrap bg-warning-subtle text-warning"><i
+                                        class="bi bi-box-seam-fill"></i></span>
+                                <span>{{ userRole === 'farmer' ? 'मेरी फसलें (My Crops)' : 'मेरी मांग (Requirements)'
+                                    }}</span>
+                            </a>
+
+                            <a class="dropdown-nav-item d-flex align-items-center gap-2 p-2 rounded-2 text-decoration-none text-dark fw-semibold"
+                                [routerLink]="userRole === 'farmer' ? '/farmer/mandi-rates' : '/mandi-rates'"
+                                (click)="closeUserDropdown()">
+                                <span class="icon-wrap bg-primary-subtle text-primary"><i
+                                        class="bi bi-graph-up-arrow"></i></span>
+                                <span>मंडी भाव (Mandi Rates)</span>
+                            </a>
+
+                            <a class="dropdown-nav-item d-flex align-items-center gap-2 p-2 rounded-2 text-decoration-none text-dark fw-semibold"
+                                [routerLink]="userRole === 'farmer' ? '/farmer/profile' : '/buyer/profile'"
+                                (click)="closeUserDropdown()">
+                                <span class="icon-wrap bg-secondary-subtle text-secondary"><i
+                                        class="bi bi-person-lines-fill"></i></span>
+                                <span>प्रोफ़ाइल सेटिंग्स (Profile)</span>
+                            </a>
+                        </div>
+
+                        <div class="dropdown-divider my-2 border-top"></div>
+
+                        <!-- Logout inside Dropdown -->
+                        <button type="button"
+                            class="btn btn-outline-danger btn-sm w-100 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 py-1"
+                            (click)="logout(); closeUserDropdown()">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>लॉगआउट (Logout)</span>
+                        </button>
+                    </div>
                 </div>
                 }
             </div>
@@ -228,6 +313,18 @@
                         <span class="fw-semibold text-dark">Mandi Rates (मंडी भाव)</span>
                         <span class="badge bg-success text-white rounded-pill px-2 py-1"
                             style="font-size: 10px;">Live</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="mobile-nav-link d-flex align-items-center gap-3 p-3 rounded-3" routerLink="/levy-rates"
+                    routerLinkActive="active-mobile-link" (click)="closeMobileMenu()">
+                    <span class="mobile-nav-icon bg-light text-warning-emphasis"><i
+                            class="bi bi-receipt-cutoff"></i></span>
+                    <div class="d-flex justify-content-between align-items-center flex-grow-1">
+                        <span class="fw-semibold text-dark">Mandi Levy (लेवी दरें एवं शुल्क)</span>
+                        <span class="badge bg-warning text-dark rounded-pill px-2 py-1"
+                            style="font-size: 10px;">1.5%</span>
                     </div>
                 </a>
             </li>

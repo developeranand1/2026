@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
@@ -21,6 +21,20 @@ export class FarmerSidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkUser();
+    if (typeof window !== 'undefined' && window.innerWidth < 992) {
+      this.isSidebarCollapsed = true;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 992 && window.innerWidth >= 768) {
+        this.isSidebarCollapsed = true;
+      } else if (window.innerWidth >= 992) {
+        this.isSidebarCollapsed = false;
+      }
+    }
   }
 
   checkUser(): void {

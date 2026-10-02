@@ -1,34 +1,129 @@
+.farmer-dashboard-view {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ========================================================
+   HERO WELCOME BANNER
+   ======================================================== */
 .brand-hero-banner {
-  background: linear-gradient(135deg, #1b5e20 0%, #2E7D32 50%, #388e3c 100%);
+  background: linear-gradient(135deg, #0a331b 0%, #155724 50%, #1e7e34 100%);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(10, 51, 27, 0.18) !important;
 
   &::before {
     content: '';
     position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 250px;
-    height: 250px;
+    top: -60px;
+    right: -60px;
+    width: 280px;
+    height: 280px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 20%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(242, 201, 76, 0.08) 0%, rgba(242, 201, 76, 0) 70%);
+  }
+
+  .weather-mini-box {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 }
 
+/* ========================================================
+   KPI STAT CARDS
+   ======================================================== */
+.kpi-card {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .kpi-icon-box {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+/* ========================================================
+   SVG INTERACTIVE CHART
+   ======================================================== */
+.chart-card {
+  .svg-graph-container {
+    svg {
+      circle {
+        transition: r 0.2s ease, stroke-width 0.2s ease;
+        cursor: pointer;
+
+        &:hover {
+          r: 9;
+          stroke-width: 4;
+        }
+      }
+    }
+  }
+}
+
+/* ========================================================
+   BANK KYC & ESCROW STYLING
+   ======================================================== */
+.bank-kyc-card {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+
+  .bank-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.escrow-process-box {
+  background: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+
+  .font-escrow-title {
+    font-size: 13.5px;
+    letter-spacing: -0.2px;
+  }
+}
+
+/* ========================================================
+   MICRO-ANIMATIONS & HOVER STATES
+   ======================================================== */
 .hover-elevate {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 10px 22px rgba(15, 67, 34, 0.12) !important;
   }
 }
 
-.spin {
-  animation: spinAnim 1s linear infinite;
+.cursor-pointer {
+  cursor: pointer;
 }
 
-@keyframes spinAnim {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@media (max-width: 576px) {
+  .font-hero-title {
+    font-size: 1.25rem !important;
+  }
 }
