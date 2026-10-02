@@ -1,422 +1,656 @@
 <div class="farmer-products-view animate-fade-in">
-  <!-- Page Header & Action Bar -->
-  <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-      <div>
-        <div class="d-flex align-items-center gap-2">
-          <span class="p-2 bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center">
-            <i class="bi bi-box-seam-fill fs-4"></i>
-          </span>
-          <div>
-            <h4 class="fw-bold text-dark mb-0">My Crop Produce Listings 🌾</h4>
-            <span class="text-muted fs-8">Manage farm produce listed for sale on KrisiMarg Marketplace</span>
+
+  <!-- ============================================================== -->
+  <!-- VIEW 1: CROPS PRODUCE LISTINGS OVERVIEW (WHEN NOT IN ADD MODE) -->
+  <!-- ============================================================== -->
+  <div *ngIf="!showCreateModal">
+    <!-- Page Header & Action Bar -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="p-2 bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center">
+              <i class="bi bi-box-seam-fill fs-4"></i>
+            </span>
+            <div>
+              <h4 class="fw-bold text-dark mb-0">मेरी फसल उत्पाद लिस्टिंग (My Crop Produce)</h4>
+              <span class="text-muted fs-8">KrisiMarg डिजिटल कृषि बाज़ार पर अपनी फसल लिस्ट व प्रबंधित करें</span>
+            </div>
           </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <span *ngIf="hasPaidListingFee" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-7 d-none d-sm-inline-flex align-items-center gap-1 shadow-xs">
+            <i class="bi bi-patch-check-fill text-success"></i> सेलर एक्टिवेट है (Unlimited Access)
+          </span>
+          <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2 hover-elevate" (click)="openCreateModal()">
+            <i class="bi bi-plus-circle-fill fs-6"></i>
+            <span>{{ hasPaidListingFee ? '+ नई फसल जोड़ें (Add Crop)' : '+ फसल लिस्ट करें (Pay ₹99)' }}</span>
+          </button>
         </div>
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <span *ngIf="hasPaidListingFee" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-7 d-none d-sm-inline-flex align-items-center gap-1 shadow-xs">
-          <i class="bi bi-patch-check-fill text-success"></i> Unlimited Listings Active
-        </span>
-        <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" (click)="openCreateModal()">
-          <i class="bi bi-plus-circle-fill fs-6"></i>
-          <span>{{ hasPaidListingFee ? '+ List New Crop Produce' : '+ List Crop Produce (Pay ₹99)' }}</span>
+      <!-- Filter Tabs Bar -->
+      <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+        <button 
+          type="button" 
+          class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
+          [class.btn-success]="selectedFilter === 'all'"
+          [class.btn-outline-secondary]="selectedFilter !== 'all'"
+          (click)="selectedFilter = 'all'">
+          सभी फसलें / All Crops ({{ myCropsList.length }})
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
+          [class.btn-success]="selectedFilter === 'approved'"
+          [class.btn-outline-secondary]="selectedFilter !== 'approved'"
+          (click)="selectedFilter = 'approved'">
+          <i class="bi bi-check2-circle me-1"></i> लाइव स्वीकृत (Live Approved)
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
+          [class.btn-warning]="selectedFilter === 'pending'"
+          [class.btn-outline-secondary]="selectedFilter !== 'pending'"
+          (click)="selectedFilter = 'pending'">
+          <i class="bi bi-clock-history me-1"></i> समीक्षाधीन (Pending Review)
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
+          [class.btn-danger]="selectedFilter === 'rejected'"
+          [class.btn-outline-secondary]="selectedFilter !== 'rejected'"
+          (click)="selectedFilter = 'rejected'">
+          <i class="bi bi-x-circle me-1"></i> अस्वीकृत (Rejected)
         </button>
       </div>
     </div>
 
-    <!-- Filter Tabs Bar -->
-    <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
-      <button 
-        type="button" 
-        class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
-        [class.btn-success]="selectedFilter === 'all'"
-        [class.btn-outline-secondary]="selectedFilter !== 'all'"
-        (click)="selectedFilter = 'all'">
-        All Listed Crops ({{ myCropsList.length }})
-      </button>
+    <!-- 1. BEST HERO CARD: WHEN PAYMENT IS PENDING -->
+    <!-- 1. BEST HERO CARD: WHEN PAYMENT IS PENDING (PURE WHITE BACKGROUND & ULTRA READABLE HIGH-CONTRAST TEXT) -->
+    <div *ngIf="!hasPaidListingFee" class="card border border-2 border-success-subtle shadow-sm rounded-4 overflow-hidden mb-4 bg-white activation-hero-card">
+      <div class="p-4 p-md-5 bg-white position-relative">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-8">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-success-subtle text-success border border-success-subtle fs-8 fw-bold mb-3 shadow-xs">
+              <i class="bi bi-shield-check text-success fs-6"></i>
+              <span>किसान सेलर एक्टिवेशन शुल्क • मात्र ₹99 एकमुश्त (One-Time Activation)</span>
+            </div>
 
-      <button 
-        type="button" 
-        class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
-        [class.btn-success]="selectedFilter === 'approved'"
-        [class.btn-outline-secondary]="selectedFilter !== 'approved'"
-        (click)="selectedFilter = 'approved'">
-        ✅ Live Approved
-      </button>
+            <h2 class="fw-bold mb-2 text-dark display-6 fs-2">अपनी फसल सीधे थोक व्यापारियों को बेचें</h2>
+            <p class="text-secondary fs-6 mb-4" style="max-width: 640px;">
+              बिचौलियों और दलालों से मुक्ति पाएं! KrisiMarg पर मात्र <strong class="text-success">₹99</strong> का एकमुश्त शुल्क देकर अपना सेलर अकाउंट एक्टिवेट करें और <strong class="text-dark">असीमित (Unlimited) फसलें</strong> सीधे थोक खरीदारों को बेचें।
+            </p>
 
-      <button 
-        type="button" 
-        class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
-        [class.btn-warning]="selectedFilter === 'pending'"
-        [class.btn-outline-secondary]="selectedFilter !== 'pending'"
-        (click)="selectedFilter = 'pending'">
-        ⏳ Pending Review
-      </button>
-
-      <button 
-        type="button" 
-        class="btn btn-sm rounded-pill px-3 py-1 fw-bold transition-all"
-        [class.btn-danger]="selectedFilter === 'rejected'"
-        [class.btn-outline-secondary]="selectedFilter !== 'rejected'"
-        (click)="selectedFilter = 'rejected'">
-        ❌ Rejected
-      </button>
-    </div>
-  </div>
-
-  <!-- CROPS PRODUCE GRID -->
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-success" role="status"></div>
-    <p class="text-muted small mt-2">Loading your crop listings...</p>
-  </div>
-
-  <div *ngIf="!isLoading && filteredCrops.length === 0" class="card border-0 shadow-sm rounded-4 bg-white p-5 text-center">
-    <i class="bi bi-box-seam fs-1 text-success opacity-50 mb-3 d-block"></i>
-    <h5 class="fw-bold text-dark mb-1">No Crop Listings Found</h5>
-    <p class="text-muted small mb-4">List your harvested crop produce (₹99 listing fee) to connect directly with wholesale buyers!</p>
-    <div>
-      <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm" (click)="openCreateModal()">
-        + List Crop Produce Now (₹99)
-      </button>
-    </div>
-  </div>
-
-  <div *ngIf="!isLoading && filteredCrops.length > 0" class="row g-3">
-    <div *ngFor="let item of filteredCrops" class="col-12 col-md-6 col-lg-4 col-xl-3">
-      <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100 position-relative hover-elevate cursor-pointer" (click)="viewCropDetails(item)">
-        <!-- Thumbnail Header -->
-        <div class="position-relative" style="height: 180px;">
-          <img [src]="item.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80'" alt="Crop" class="w-100 h-100 object-fit-cover">
-          
-          <!-- Discount Badge overlay -->
-          <span *ngIf="item.discountPercentage && item.discountPercentage > 0" class="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
-            {{ item.discountPercentage }}% OFF
-          </span>
-
-          <!-- Top-End Badges -->
-          <div class="position-absolute top-0 end-0 m-3 d-flex flex-column align-items-end gap-1">
-            <span *ngIf="item.isPaid || item.paymentStatus === 'paid'" class="badge bg-primary text-white rounded-pill px-2.5 py-1 fs-8 shadow-sm">
-              <i class="bi bi-patch-check-fill me-1"></i> ₹99 Paid
-            </span>
-            <span *ngIf="item.approvalStatus === 'approved' || item.isApproved" class="badge bg-success text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
-              ✅ Approved
-            </span>
-            <span *ngIf="item.approvalStatus === 'pending' && !item.isApproved" class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-8 shadow-sm">
-              ⏳ Pending Review
-            </span>
-            <span *ngIf="item.approvalStatus === 'rejected'" class="badge bg-danger text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
-              ❌ Rejected
-            </span>
-          </div>
-        </div>
-
-        <div class="card-body p-3 d-flex flex-column">
-          <div class="d-flex align-items-center justify-content-between mb-1">
-            <span class="badge bg-light text-secondary border rounded-pill px-2 py-1 fs-8">{{ item.category }}</span>
-            <span *ngIf="item.variety" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1 fs-8">{{ item.variety }}</span>
-          </div>
-
-          <h6 class="fw-bold text-dark mb-2 text-truncate">{{ item.cropName }}</h6>
-
-          <div class="bg-light rounded-3 p-3 mb-3">
-            <div class="d-flex align-items-baseline justify-content-between">
-              <div>
-                <span class="fs-8 text-muted d-block">Selling Price</span>
-                <strong class="text-success fs-5">₹{{ item.expectedPrice | number }}</strong> <span class="fs-8 text-muted">/ {{ item.priceUnit || 'Qtl' }}</span>
+            <!-- 4-Benefits Grid with Bootstrap Icons & High Contrast Dark Text -->
+            <div class="row g-3 mb-4">
+              <div class="col-sm-6">
+                <div class="d-flex align-items-start gap-2 p-3 rounded-3 bg-light border border-light-subtle h-100">
+                  <div class="p-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 38px; height: 38px; min-width: 38px;">
+                    <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+                  </div>
+                  <div>
+                    <strong class="d-block fs-7 text-dark mb-1">अनलिमिटेड फसल लिस्टिंग</strong>
+                    <small class="text-secondary fs-8">गेहूं, धान, मक्का, दलहन, तिलहन या सब्जियां जितनी चाहें उतनी फसलें लिस्ट करें</small>
+                  </div>
+                </div>
               </div>
-              <div class="text-end">
-                <span *ngIf="item.originalPrice && item.originalPrice > item.expectedPrice" class="text-muted text-decoration-line-through fs-8 d-block">₹{{ item.originalPrice | number }}</span>
-                <span class="fw-bold text-dark fs-7">{{ item.quantity }} {{ item.unit }}</span>
+
+              <div class="col-sm-6">
+                <div class="d-flex align-items-start gap-2 p-3 rounded-3 bg-light border border-light-subtle h-100">
+                  <div class="p-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 38px; height: 38px; min-width: 38px;">
+                    <i class="bi bi-telephone-fill text-white fs-5"></i>
+                  </div>
+                  <div>
+                    <strong class="d-block fs-7 text-dark mb-1">सीधा खरीदार संपर्क</strong>
+                    <small class="text-secondary fs-8">थोक व्यापारी और राइस मिलर्स सीधे आपके मोबाइल और WhatsApp पर संपर्क करेंगे</small>
+                  </div>
+                </div>
               </div>
+
+              <div class="col-sm-6">
+                <div class="d-flex align-items-start gap-2 p-3 rounded-3 bg-light border border-light-subtle h-100">
+                  <div class="p-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 38px; height: 38px; min-width: 38px;">
+                    <i class="bi bi-cash-stack text-warning fs-5"></i>
+                  </div>
+                  <div>
+                    <strong class="d-block fs-7 text-dark mb-1">0% कमीशन - पूरा पैसा आपका</strong>
+                    <small class="text-secondary fs-8">बिक्री पर KrisiMarg कोई कमीशन नहीं लेता, पूरी रकम सीधे किसान को</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="d-flex align-items-start gap-2 p-3 rounded-3 bg-light border border-light-subtle h-100">
+                  <div class="p-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 38px; height: 38px; min-width: 38px;">
+                    <i class="bi bi-patch-check-fill text-white fs-5"></i>
+                  </div>
+                  <div>
+                    <strong class="d-block fs-7 text-dark mb-1">वेरीफाइड किसान बैज (Badge)</strong>
+                    <small class="text-secondary fs-8">आपकी लिस्टिंग पर वेरीफाइड बैज दिखता है जिससे खरीदारों को 100% भरोसा होता है</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3-Step Process Flow with High Contrast -->
+            <div class="d-flex flex-wrap align-items-center gap-2 p-3 bg-light rounded-3 border border-light-subtle text-secondary fs-8">
+              <span class="fw-bold text-dark"><i class="bi bi-info-circle-fill text-success me-1"></i> प्रक्रिया (Process):</span>
+              <span class="badge bg-white text-dark border px-3 py-2 shadow-xs">१. ₹99 का भुगतान करें</span>
+              <i class="bi bi-chevron-right text-success"></i>
+              <span class="badge bg-white text-dark border px-3 py-2 shadow-xs">२. फसल की फोटो व भाव भरें</span>
+              <i class="bi bi-chevron-right text-success"></i>
+              <span class="badge bg-white text-dark border px-3 py-2 shadow-xs">३. मंडी में तुरंत लाइव दिखना शुरू</span>
             </div>
           </div>
 
-          <div class="mt-auto pt-2 border-top d-flex gap-2">
-            <button type="button" class="btn btn-outline-success btn-sm flex-grow-1 rounded-pill fw-bold fs-8" (click)="viewCropDetails(item); $event.stopPropagation()">
-              <i class="bi bi-eye-fill me-1"></i> View Specifications
-            </button>
-            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width:32px; height:32px; flex-shrink: 0;" title="Delete Listing" (click)="deleteCropListing(item, $event)">
-              <i class="bi bi-trash"></i>
-            </button>
+          <!-- Payment CTA Box with Clean White Background & High Contrast -->
+          <div class="col-lg-4 text-center">
+            <div class="bg-success-subtle bg-opacity-25 border border-2 border-success rounded-4 p-4 text-dark shadow-sm">
+              <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill fw-bold fs-8 mb-2">
+                विशेष किसान ऑफर • One-Time
+              </span>
+              <h5 class="fw-bold text-dark mb-1">सेलर एक्टिवेशन शुल्क</h5>
+              <div class="d-flex align-items-baseline justify-content-center gap-2 my-2">
+                <span class="text-muted text-decoration-line-through fs-5">₹499</span>
+                <span class="fs-3 fw-bold text-success">₹</span>
+                <span class="display-4 fw-bold text-success">99</span>
+                <span class="text-muted fs-8">/ लाइफटाइम</span>
+              </div>
+              <p class="text-secondary fs-8 mb-3">
+                एक बार ₹99 का भुगतान करें, हमेशा के लिए अनलिमिटेड फसलें लिस्ट करें।
+              </p>
+
+              <button type="button" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 fs-6 hover-elevate mb-3" (click)="openCreateModal()">
+                <i class="bi bi-credit-card-2-front-fill fs-5"></i>
+                <span>₹99 का भुगतान करें और फसल जोड़ें</span>
+              </button>
+
+              <div class="border-top border-secondary-subtle pt-2">
+                <span class="text-secondary fs-9 d-block mb-1 fw-semibold">सुरक्षित भुगतान माध्यम (Razorpay 256-bit SSL):</span>
+                <div class="d-flex justify-content-center align-items-center flex-wrap gap-1 text-secondary fs-8">
+                  <span class="badge bg-white text-dark border shadow-xs"><i class="bi bi-qr-code text-success me-1"></i> QR Code</span>
+                  <span class="badge bg-white text-dark border shadow-xs"><i class="bi bi-phone text-success me-1"></i> UPI / PhonePe / GPay</span>
+                  <span class="badge bg-white text-dark border shadow-xs"><i class="bi bi-credit-card text-success me-1"></i> ATM / Cards</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-</div>
 
+    <!-- 2. STATUS CARD: WHEN PAYMENT IS ACTIVE -->
+    <div *ngIf="hasPaidListingFee" class="card border-0 bg-success bg-opacity-10 border border-success-subtle rounded-4 p-3 mb-4 shadow-none">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px; min-width: 44px;">
+            <i class="bi bi-patch-check-fill fs-4"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-success-emphasis mb-0">वेरीफाइड किसान सेलर अकाउंट एक्टिवेट है (Unlimited Seller Plan)</h6>
+            <span class="text-secondary fs-8">आपकी ₹99 एक्टिवेशन फीस सफलतापूर्वक प्राप्त हो चुकी है। अब आप बिना किसी अतिरिक्त शुल्क के जितनी चाहें उतनी फसलें जोड़ सकते हैं।</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2 hover-elevate" (click)="openCreateModal()">
+          <i class="bi bi-plus-circle-fill"></i> + नई फसल जोड़ें (Add Crop)
+        </button>
+      </div>
+    </div>
 
+    <!-- CROPS PRODUCE GRID -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="text-muted small mt-2">आपकी फसल लिस्टिंग लोड हो रही है...</p>
+    </div>
 
-<!-- UNLIMITED LISTINGS ACTIVATION MODAL (₹99) -->
-<div *ngIf="showActivationModal" class="modal-backdrop fade show"></div>
-<div *ngIf="showActivationModal" class="modal fade show d-block" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
-            <!-- Modal Header Banner -->
-            <div class="text-white p-4 text-center position-relative" style="background: linear-gradient(135deg, #198754 0%, #0d5032 100%);">
-                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" (click)="closeActivationModal()"></button>
-                <div class="bg-white text-success rounded-circle d-inline-flex align-items-center justify-content-center shadow mb-3" style="width: 65px; height: 65px;">
-                    <i class="bi bi-patch-check-fill fs-1"></i>
-                </div>
-                <h4 class="fw-bold mb-1">Unlock Unlimited Listings 🌾</h4>
-                <p class="mb-0 text-white-50 fs-8">One-time seller activation fee to list and sell produce directly to wholesale buyers</p>
+    <div *ngIf="!isLoading && filteredCrops.length === 0" class="card border-0 shadow-sm rounded-4 bg-white p-5 text-center">
+      <i class="bi bi-box-seam fs-1 text-success opacity-50 mb-3 d-block"></i>
+      <h5 class="fw-bold text-dark mb-1">अभी तक कोई फसल लिस्ट नहीं की गई है</h5>
+      <p class="text-muted small mb-4">सीधे थोक खरीदारों से जुड़ने के लिए अपनी कटी हुई फसल या कृषि उत्पाद को लिस्ट करें!</p>
+      <div>
+        <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm" (click)="openCreateModal()">
+          {{ hasPaidListingFee ? '+ अभी फसल लिस्ट करें' : '+ ₹99 का भुगतान करें और फसल लिस्ट करें' }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && filteredCrops.length > 0" class="row g-3">
+      <div *ngFor="let item of filteredCrops" class="col-12 col-md-6 col-lg-4 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100 position-relative hover-elevate cursor-pointer" (click)="viewCropDetails(item)">
+          <!-- Thumbnail Header -->
+          <div class="position-relative" style="height: 180px;">
+            <img [src]="item.image || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80'" alt="Crop" class="w-100 h-100 object-fit-cover">
+            
+            <!-- Discount Badge overlay -->
+            <span *ngIf="item.discountPercentage && item.discountPercentage > 0" class="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
+              {{ item.discountPercentage }}% छूट (OFF)
+            </span>
+
+            <!-- Top-End Badges -->
+            <div class="position-absolute top-0 end-0 m-3 d-flex flex-column align-items-end gap-1">
+              <span *ngIf="item.isPaid || item.paymentStatus === 'paid'" class="badge bg-primary text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
+                <i class="bi bi-patch-check-fill me-1"></i> वेरीफाइड सेलर
+              </span>
+              <span *ngIf="item.approvalStatus === 'approved' || item.isApproved" class="badge bg-success text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
+                <i class="bi bi-check2-circle me-1"></i> लाइव स्वीकृत
+              </span>
+              <span *ngIf="item.approvalStatus === 'pending' && !item.isApproved" class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-8 shadow-sm">
+                <i class="bi bi-clock-history me-1"></i> समीक्षाधीन (Pending)
+              </span>
+              <span *ngIf="item.approvalStatus === 'rejected'" class="badge bg-danger text-white rounded-pill px-3 py-1 fs-8 shadow-sm">
+                <i class="bi bi-x-circle me-1"></i> अस्वीकृत
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body p-3 d-flex flex-column">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="badge bg-light text-secondary border rounded-pill px-2 py-1 fs-8">{{ item.category }}</span>
+              <span *ngIf="item.variety" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1 fs-8">{{ item.variety }}</span>
             </div>
 
-            <!-- Modal Body -->
-            <div class="modal-body p-4">
-                <!-- Price Display Card -->
-                <div class="card border border-success-subtle bg-success bg-opacity-10 rounded-4 p-3 text-center mb-3">
-                    <span class="text-uppercase text-success fw-bold fs-8 tracking-wider">One-Time Platform Fee</span>
-                    <div class="d-flex align-items-baseline justify-content-center gap-1 mt-1">
-                        <span class="fs-4 fw-bold text-success">₹</span>
-                        <span class="display-5 fw-bold text-success">99</span>
-                        <span class="text-muted fs-8">/ Lifetime Unlimited</span>
-                    </div>
-                    <small class="text-secondary mt-1 d-block fs-8">Pay once, list unlimited crop produce forever!</small>
-                </div>
+            <h6 class="fw-bold text-dark mb-2 text-truncate">{{ item.cropName }}</h6>
 
-                <!-- Features list -->
-                <div class="d-flex flex-column gap-2.5 mb-4">
-                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
-                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
-                        <span><strong>Unlimited Crop Listings:</strong> Add as many products as you want</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
-                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
-                        <span><strong>Direct Wholesale Buyers:</strong> Receive direct calls & WhatsApp inquiries</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
-                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
-                        <span><strong>Live Mandi Rates:</strong> Compare market prices in real-time</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2 text-dark fs-7">
-                        <i class="bi bi-check-circle-fill text-success fs-6"></i>
-                        <span><strong>Verified Farmer Badge:</strong> Increases buyer trust & quick deal closing</span>
-                    </div>
+            <div class="bg-light rounded-3 p-3 mb-3">
+              <div class="d-flex align-items-baseline justify-content-between">
+                <div>
+                  <span class="fs-8 text-muted d-block">बिक्री भाव (Selling Price)</span>
+                  <strong class="text-success fs-5">₹{{ item.expectedPrice | number }}</strong> <span class="fs-8 text-muted">/ {{ item.priceUnit || 'Qtl' }}</span>
                 </div>
+                <div class="text-end">
+                  <span *ngIf="item.originalPrice && item.originalPrice > item.expectedPrice" class="text-muted text-decoration-line-through fs-8 d-block">₹{{ item.originalPrice | number }}</span>
+                  <span class="fw-bold text-dark fs-7">{{ item.quantity }} {{ item.unit }}</span>
+                </div>
+              </div>
+            </div>
 
-                <!-- Action Button -->
-                <button type="button" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 fs-6" (click)="payActivationFee()" [disabled]="isActivatingFee">
-                    <span *ngIf="isActivatingFee" class="spinner-border spinner-border-sm"></span>
-                    <i *ngIf="!isActivatingFee" class="bi bi-credit-card-2-front-fill"></i>
-                    <span>{{ isActivatingFee ? 'Opening Razorpay Payment...' : 'Pay ₹99 & Unlock Now' }}</span>
+            <div class="mt-auto pt-2 border-top d-flex gap-2">
+              <button type="button" class="btn btn-outline-success btn-sm flex-grow-1 rounded-pill fw-bold fs-8" (click)="viewCropDetails(item); $event.stopPropagation()">
+                <i class="bi bi-eye-fill me-1"></i> विवरण देखें (View Details)
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width:32px; height:32px; flex-shrink: 0;" title="Delete Listing" (click)="deleteCropListing(item, $event)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: DEDICATED FULL DETAIL-PAGE ADD PRODUCE FORM (RESPONSIVE VIEW) -->
+  <!-- ===================================================================== -->
+  <div *ngIf="showCreateModal" class="add-produce-page animate-fade-in">
+    <!-- Top Navigation & Breadcrumb Header -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4 mb-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold d-flex align-items-center gap-2 fs-7" (click)="closeCreateModal()">
+            <i class="bi bi-arrow-left fs-6"></i>
+            <span>वापस जाएं (Back)</span>
+          </button>
+          <div>
+            <h4 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-box-seam-fill text-success fs-4"></i>
+              <span>फसल उत्पाद बिक्री हेतु जोड़ें (List Crop Produce)</span>
+            </h4>
+            <span class="text-muted fs-8">अपनी कटी हुई फसल का पूरा विवरण भरें और सीधे थोक खरीदारों को बेचें</span>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-7 shadow-xs">
+            <i class="bi bi-patch-check-fill text-success me-1"></i> अनलिमिटेड सेलर प्लान सक्रिय
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Responsive Form Body -->
+    <div class="row justify-content-center">
+      <div class="col-12 col-xl-10">
+
+        <!-- Form Cards Container -->
+        <div class="d-flex flex-column gap-4">
+
+          <!-- 1. FARMER CONTACT INFO -->
+          <div class="form-section-card border shadow-sm">
+            <div class="section-divider-title">
+              <i class="bi bi-person-fill text-success fs-5"></i>
+              <span>१. किसान संपर्क विवरण (Farmer Contact Details)</span>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">
+                  किसान का पूरा नाम (Full Name) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                  <input type="text" [(ngModel)]="formName" class="form-control border-start-0" placeholder="उदा. रमेश कुमार (Ramesh Kumar)">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">
+                  मोबाइल नंबर (WhatsApp / Call Number) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-telephone"></i></span>
+                  <input type="text" [(ngModel)]="formMobile" class="form-control border-start-0" placeholder="उदा. 9876543210 (जिस पर खरीदार कॉल कर सकें)">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. CROP PRODUCE DETAILS -->
+          <div class="form-section-card border shadow-sm">
+            <div class="section-divider-title">
+              <i class="bi bi-tag-fill text-success fs-5"></i>
+              <span>२. फसल की जानकारी (Crop Produce Details)</span>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">
+                  फसल / जिंस का नाम (Crop Name) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-flower2"></i></span>
+                  <input type="text" [(ngModel)]="formTitle" class="form-control border-start-0" placeholder="उदा. शरबती गेहूं, 1121 बासमती धान, पीला मक्का">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">
+                  फसल की मुख्य श्रेणी (Category) <span class="text-danger">*</span>
+                </label>
+                <select 
+                  class="form-select fw-semibold" 
+                  [ngModel]="isCustomCategory ? 'NEW_CUSTOM_CATEGORY' : formCategory" 
+                  (ngModelChange)="onCategoryChange($event)">
+                  <option value="" disabled>-- श्रेणी चुनें (Select Category) --</option>
+                  <option *ngFor="let cat of dbCategories" [value]="cat.name">{{ cat.name }}</option>
+                  <option value="NEW_CUSTOM_CATEGORY" class="fw-bold text-success">+ नई श्रेणी जोड़ें (Add New Category)...</option>
+                </select>
+
+                <div *ngIf="isCustomCategory" class="mt-2">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="formCategory" 
+                    class="form-control form-control-sm border-success bg-white fw-bold text-success" 
+                    placeholder="नई श्रेणी का नाम लिखें...">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">
+                  उप-श्रेणी (Subcategory):
+                </label>
+                <select 
+                  class="form-select" 
+                  [ngModel]="isCustomSubcategory ? 'NEW_CUSTOM_SUBCATEGORY' : formSubcategory" 
+                  (ngModelChange)="onSubcategoryChange($event)">
+                  <option value="">-- उप-श्रेणी चुनें (Select Subcategory) --</option>
+                  <option *ngFor="let sub of availableSubcategories" [value]="sub.name">{{ sub.name }}</option>
+                  <option value="NEW_CUSTOM_SUBCATEGORY" class="fw-bold text-success">+ नई उप-श्रेणी जोड़ें (Add Custom)...</option>
+                </select>
+
+                <div *ngIf="isCustomSubcategory" class="mt-2">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="formSubcategory" 
+                    class="form-control form-control-sm border-success bg-white fw-semibold" 
+                    placeholder="नई उप-श्रेणी का नाम लिखें...">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">
+                  किस्म / वैरायटी / ग्रेड (Variety / Grade):
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-award"></i></span>
+                  <input type="text" [(ngModel)]="formVariety" class="form-control border-start-0" placeholder="उदा. 1121, शरबती, ग्रेड-ए">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. QUANTITY, LOCATION & PRICING -->
+          <div class="form-section-card border shadow-sm">
+            <div class="section-divider-title">
+              <i class="bi bi-currency-rupee text-success fs-5"></i>
+              <span>३. मात्रा, मंडी व भाव विवरण (Quantity, Mandi & Pricing)</span>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">
+                  उपलब्ध मात्रा (Quantity) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-speedometer2"></i></span>
+                  <input type="number" [(ngModel)]="formQuantity" class="form-control border-start-0" placeholder="उदा. 50">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label text-dark fw-semibold fs-7 mb-1">
+                  मात्रा इकाई (Unit) <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" [(ngModel)]="formUnit">
+                  <option value="Qtl">क्विंटल (Quintal - Qtl)</option>
+                  <option value="Kg">किलोग्राम (Kg)</option>
+                  <option value="Ton">टन (Ton)</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">
+                  मंडी / स्थान (Mandi & Location) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-geo-alt"></i></span>
+                  <input type="text" [(ngModel)]="formLocation" class="form-control border-start-0" placeholder="उदा. खलीलाबाद, संतकबीर नगर, उत्तर प्रदेश">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label text-dark fs-7 mb-1">
+                  मूल भाव (Original Market Rate ₹):
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted">₹</span>
+                  <input type="number" [(ngModel)]="formOriginalPrice" (input)="calculateDiscount()" class="form-control border-start-0" placeholder="उदा. 2400">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label text-dark fw-bold fs-7 mb-1">
+                  आपका बिक्री भाव (Selling Offer Price ₹) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-success-subtle border-end-0 text-success fw-bold">₹</span>
+                  <input type="number" [(ngModel)]="formSellingPrice" (input)="calculateDiscount()" class="form-control border-start-0 fw-bold text-success fs-6" placeholder="उदा. 2250">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label text-dark fs-7 mb-1">
+                  छूट (Discount % OFF):
+                </label>
+                <div class="input-group">
+                  <input type="number" [(ngModel)]="formDiscount" (input)="onDiscountChange()" class="form-control fw-bold text-danger">
+                  <span class="input-group-text bg-danger-subtle text-danger fs-8 fw-bold">% OFF</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. CLOUDINARY MULTI-IMAGE GALLERY (HIDDEN INPUT + MODERN DROPZONE) -->
+          <div class="form-section-card border shadow-sm">
+            <div class="section-divider-title">
+              <i class="bi bi-camera-fill text-success fs-5"></i>
+              <span>४. फसल की तस्वीरें (Crop Photos Gallery)</span>
+            </div>
+
+            <!-- Hidden native file input -->
+            <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" multiple class="d-none">
+
+            <!-- Interactive Modern Upload Dropzone Card -->
+            <div class="upload-dropzone p-4 text-center rounded-4" (click)="fileInput.click()">
+              <div class="mb-2">
+                <div class="bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center p-3 shadow-xs" style="width: 64px; height: 64px;">
+                  <i class="bi bi-camera-fill fs-2"></i>
+                </div>
+              </div>
+              <h6 class="fw-bold text-dark mb-1">फ़ोटो चुनें या कैमरा से खींचें (Tap to Choose or Take Picture)</h6>
+              <p class="text-muted fs-8 mb-2">मोबाइल गैलरी से फ़ोटो चुनें या सीधे कैमरे से फ़ोटो खींचें</p>
+              <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 py-2 fw-bold fs-8">
+                <i class="bi bi-cloud-arrow-up-fill me-1"></i> फ़ोटो अपलोड करें (अधिकतम 1MB प्रति फ़ोटो)
+              </button>
+            </div>
+
+            <div *ngIf="isUploading" class="text-success fs-8 fw-bold mt-2">
+              <span class="spinner-border spinner-border-sm me-1"></span> फ़ोटो अपलोड हो रही है...
+            </div>
+
+            <!-- Uploaded Photos Grid -->
+            <div *ngIf="formImages.length > 0" class="d-flex flex-wrap gap-2 mt-3">
+              <div *ngFor="let img of formImages; let idx = index" class="position-relative rounded-3 overflow-hidden border shadow-sm" style="width: 85px; height: 85px;">
+                <img [src]="img" class="w-100 h-100 object-fit-cover" alt="Crop Photo">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0 rounded-circle m-1 d-flex align-items-center justify-content-center shadow-sm" style="width: 22px; height: 22px;" (click)="removeImageAtIndex(idx)">
+                  <i class="bi bi-x-lg" style="font-size: 11px;"></i>
                 </button>
-
-                <!-- Trust footer -->
-                <div class="text-center mt-3 text-muted fs-8 d-flex align-items-center justify-content-center gap-2">
-                    <i class="bi bi-shield-check text-success"></i>
-                    <span>Secured by <strong>Razorpay</strong> • UPI / GPay / PhonePe / QR / Cards</span>
-                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- 5. RICH TEXT DESCRIPTION & SPECS -->
+          <div class="form-section-card border shadow-sm">
+            <div class="section-divider-title">
+              <i class="bi bi-card-text text-success fs-5"></i>
+              <span>५. गुणवत्ता विनिर्देश व अन्य विवरण (Quality Specifications & Description)</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+              <label class="form-label text-dark fw-bold fs-7 mb-0">गुणवत्ता विनिर्देश (नमी %, पैकिंग, लोडिंग)</label>
+              
+              <!-- Formatting Toolbar -->
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-light border btn-sm py-1 px-3 fw-bold" (click)="applyTextFormat('b')" title="Bold"><b>B</b></button>
+                <button type="button" class="btn btn-light border btn-sm py-1 px-3 fst-italic" (click)="applyTextFormat('i')" title="Italic"><i>I</i></button>
+                <button type="button" class="btn btn-light border btn-sm py-1 px-3" (click)="applyTextFormat('ul')" title="Bullet List"><i class="bi bi-list-ul"></i> सूची</button>
+                <button type="button" class="btn btn-light border btn-sm py-1 px-3 text-success fw-bold" (click)="applyTextFormat('h')" title="Heading">शीर्षक</button>
+                <button type="button" class="btn btn-light border btn-sm py-1 px-3 text-primary fw-semibold" (click)="applyTextFormat('moisture')" title="Add Moisture Spec">+ नमी विनिर्देश</button>
+              </div>
+            </div>
+            <textarea [(ngModel)]="formDescription" rows="4" class="form-control fs-7" placeholder="फसल की कटाई का समय, नमी प्रतिशत (उदा. 12% से कम), बोरियों की पैकिंग (उदा. 50kg बैग) और डिलीवरी की उपलब्धता दर्ज करें..."></textarea>
+          </div>
+
+          <!-- Admin Pending Notice Banner -->
+          <div class="alert alert-warning border border-warning rounded-4 p-3 mb-0 d-flex align-items-center gap-3 fs-7 shadow-xs">
+            <i class="bi bi-clock-history fs-3 text-warning"></i>
+            <div>
+              <strong class="text-dark d-block">एडमिन वेरिफिकेशन प्रक्रिया (Admin Approval):</strong>
+              <span class="text-secondary">सबमिट करने के बाद आपकी फसल समीक्षा हेतु एडमिन के पास जाएगी। वेरिफिकेशन होते ही फसल बाज़ार में थोक व्यापारियों के लिए लाइव हो जाएगी।</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold fs-7" (click)="closeCreateModal()" [disabled]="isSubmitting">
+                <i class="bi bi-x-circle me-1"></i> रद्द करें (Cancel)
+              </button>
+
+              <button type="button" class="btn btn-success rounded-pill px-5 py-3 shadow fw-bold d-flex align-items-center justify-content-center gap-2 fs-6 hover-elevate" (click)="submitCropListing()" [disabled]="isSubmitting">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+                <i *ngIf="!isSubmitting" class="bi bi-cloud-arrow-up-fill fs-5"></i>
+                <span>{{ isSubmitting ? 'सबमिट हो रहा है...' : 'फसल लिस्टिंग जमा करें (Submit Crop Listing)' }}</span>
+              </button>
+            </div>
+          </div>
+
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
 
-
-<!-- FARMER CREATE CROP LISTING MODAL -->
-<div *ngIf="showCreateModal" class="modal-backdrop fade show"></div>
-<div *ngIf="showCreateModal" class="modal fade show d-block" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
-            <!-- Modal Header -->
-            <div class="modal-header bg-success text-white py-3 px-4">
-                <h5 class="modal-title fw-bold d-flex align-items-center gap-2 fs-5">
-                    <i class="bi bi-flower1"></i>
-                    List Crop Product For Sale (Farmer 🌾)
-                </h5>
-                <button type="button" class="btn-close btn-close-white" (click)="closeCreateModal()"></button>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="modal-body p-4" style="max-height: 80vh; overflow-y: auto;">
-                <!-- Unlimited Access Active Banner -->
-                <div class="card border border-success-subtle bg-success bg-opacity-10 rounded-4 p-3 mb-4 shadow-none">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px; min-width: 42px;">
-                                <i class="bi bi-patch-check-fill fs-5"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold text-success-emphasis mb-0">Unlimited Product Listings Active ✅</h6>
-                                <small class="text-secondary">Fill in your produce specifications. Your listing will be submitted directly for admin approval.</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-success text-white px-3 py-1.5 fs-8 rounded-pill shadow-xs">
-                            Verified Seller
-                        </span>
-                    </div>
-                </div>
-
-                <div class="row g-3">
-                    <!-- Contact Person Info -->
-                    <div class="col-md-6">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Your Full Name <span class="text-danger">*</span></label>
-                        <input type="text" [(ngModel)]="formName" class="form-control" placeholder="e.g. Ramesh Kumar">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Mobile Number (WhatsApp/Call) <span class="text-danger">*</span></label>
-                        <input type="text" [(ngModel)]="formMobile" class="form-control" placeholder="e.g. 9876543210">
-                    </div>
-
-                    <!-- Crop Title & Category -->
-                    <div class="col-md-6">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Crop / Commodity Name <span class="text-danger">*</span></label>
-                        <input type="text" [(ngModel)]="formTitle" class="form-control" placeholder="e.g. Sharbati Wheat, Basmati Paddy, Yellow Maize">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Category <span class="text-danger">*</span></label>
-                        <select 
-                            class="form-select fw-semibold" 
-                            [ngModel]="isCustomCategory ? 'NEW_CUSTOM_CATEGORY' : formCategory" 
-                            (ngModelChange)="onCategoryChange($event)">
-                            <option value="" disabled>-- Select Category --</option>
-                            <option *ngFor="let cat of dbCategories" [value]="cat.name">{{ cat.name }}</option>
-                            <option value="NEW_CUSTOM_CATEGORY" class="fw-bold text-success">+ Add New Category (Custom)...</option>
-                        </select>
-
-                        <div *ngIf="isCustomCategory" class="mt-2">
-                            <input 
-                                type="text" 
-                                [(ngModel)]="formCategory" 
-                                class="form-control form-control-sm border-success bg-white fw-bold text-success" 
-                                placeholder="Enter new category name...">
-                        </div>
-                    </div>
-
-                    <!-- Subcategory & Variety -->
-                    <div class="col-md-6">
-                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Subcategory:</label>
-                        <select 
-                            class="form-select" 
-                            [ngModel]="isCustomSubcategory ? 'NEW_CUSTOM_SUBCATEGORY' : formSubcategory" 
-                            (ngModelChange)="onSubcategoryChange($event)">
-                            <option value="">-- Select Subcategory --</option>
-                            <option *ngFor="let sub of availableSubcategories" [value]="sub.name">{{ sub.name }}</option>
-                            <option value="NEW_CUSTOM_SUBCATEGORY" class="fw-bold text-success">+ Add New Subcategory (Custom)...</option>
-                        </select>
-
-                        <div *ngIf="isCustomSubcategory" class="mt-2">
-                            <input 
-                                type="text" 
-                                [(ngModel)]="formSubcategory" 
-                                class="form-control form-control-sm border-success bg-white fw-semibold" 
-                                placeholder="Enter new subcategory name...">
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Variety / Grade:</label>
-                        <input type="text" [(ngModel)]="formVariety" class="form-control" placeholder="e.g. Sharbati, 1121, Grade A">
-                    </div>
-
-                    <!-- Quantity & Pricing -->
-                    <div class="col-md-4">
-                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Quantity <span class="text-danger">*</span></label>
-                        <input type="number" [(ngModel)]="formQuantity" class="form-control">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label text-dark fw-semibold fs-7 mb-1">Unit <span class="text-danger">*</span></label>
-                        <select class="form-select" [(ngModel)]="formUnit">
-                            <option value="Qtl">Quintal (Qtl)</option>
-                            <option value="Kg">Kilogram (Kg)</option>
-                            <option value="Ton">Ton</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Location / Mandi <span class="text-danger">*</span></label>
-                        <input type="text" [(ngModel)]="formLocation" class="form-control" placeholder="e.g. Muzaffarpur, Bihar">
-                    </div>
-
-                    <!-- Price & Discount -->
-                    <div class="col-md-4">
-                        <label class="form-label text-dark fs-7 mb-1">Original Price (₹):</label>
-                        <input type="number" [(ngModel)]="formOriginalPrice" (input)="calculateDiscount()" class="form-control" placeholder="">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Selling / Offer Price (₹) <span class="text-danger">*</span></label>
-                        <input type="number" [(ngModel)]="formSellingPrice" (input)="calculateDiscount()" class="form-control fw-bold text-success" placeholder="">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label text-dark fs-7 mb-1">Discount (% OFF):</label>
-                        <div class="input-group">
-                            <input type="number" [(ngModel)]="formDiscount" (input)="onDiscountChange()" class="form-control fw-bold text-danger">
-                            <span class="input-group-text bg-success-subtle text-success fs-8 fw-bold">% OFF</span>
-                        </div>
-                    </div>
-
-                    <!-- Cloudinary Multi-Image Upload (Max 1MB per image) -->
-                    <div class="col-12">
-                        <label class="form-label text-dark fw-bold fs-7 mb-1">Crop Photo Gallery (Cloudinary)</label>
-                        <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple class="form-control form-control-sm mb-1">
-                        <small class="text-muted fs-8 d-block mb-2">Upload crop photos (<strong>Max 1MB per image</strong>)</small>
-
-                        <div *ngIf="isUploading" class="text-success fs-8 fw-bold mb-2">
-                            <span class="spinner-border spinner-border-sm me-1"></span> Uploading photo to Cloudinary...
-                        </div>
-
-                        <!-- Gallery Thumbnails Preview -->
-                        <div *ngIf="formImages.length > 0" class="d-flex flex-wrap gap-2">
-                            <div *ngFor="let img of formImages; let idx = index" class="position-relative rounded-3 overflow-hidden border shadow-sm" style="width: 75px; height: 75px;">
-                                <img [src]="img" class="w-100 h-100 object-fit-cover">
-                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0 rounded-circle" style="width: 20px; height: 20px;" (click)="removeImageAtIndex(idx)">
-                                    <i class="bi bi-x" style="font-size: 12px;"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rich Text Description Specifications -->
-                    <div class="col-12">
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                          <label class="form-label text-dark fw-bold fs-7 mb-0">Full Description & Quality Specifications</label>
-                          
-                          <!-- Formatting Toolbar -->
-                          <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 fw-bold" (click)="applyTextFormat('b')" title="Bold"><b>B</b></button>
-                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 fst-italic" (click)="applyTextFormat('i')" title="Italic"><i>I</i></button>
-                            <button type="button" class="btn btn-light border btn-sm py-0 px-2" (click)="applyTextFormat('ul')" title="Bullet List">• List</button>
-                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 text-success fw-bold" (click)="applyTextFormat('h')" title="Heading">Header</button>
-                            <button type="button" class="btn btn-light border btn-sm py-0 px-2 text-primary" (click)="applyTextFormat('moisture')" title="Add Moisture Spec">+ Moisture Spec</button>
-                          </div>
-                        </div>
-                        <textarea [(ngModel)]="formDescription" rows="4" class="form-control fs-7" placeholder="Provide harvest moisture content %, packaging type, and delivery availability..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Admin Pending Notice Banner -->
-                <div class="alert alert-warning border border-warning rounded-3 p-3 mt-4 mb-0 d-flex align-items-center gap-2 fs-7">
-                    <i class="bi bi-clock-history fs-4 text-warning"></i>
-                    <div>
-                        <strong class="text-dark">Admin Approval Workflow:</strong>
-                        <span class="d-block text-secondary">Your crop listing will be sent to the Admin team in <strong>Pending Approval ⏳</strong> status. Once verified by Admin, it will be published live.</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="modal-footer bg-light py-3 px-4 d-flex justify-content-between align-items-center">
-                <div class="text-success fs-8 fw-semibold d-flex align-items-center gap-1">
-                    <i class="bi bi-shield-check fs-6"></i>
-                    <span>Unlimited Seller Plan Active</span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeCreateModal()" [disabled]="isSubmitting">
-                        Cancel
-                    </button>
-                    <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold d-flex align-items-center gap-2" (click)="submitCropListing()" [disabled]="isSubmitting">
-                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
-                        <i *ngIf="!isSubmitting" class="bi bi-cloud-arrow-up-fill"></i>
-                        <span>{{ isSubmitting ? 'Submitting Produce...' : 'Submit For Admin Approval' }}</span>
-                    </button>
-                </div>
-            </div>
+  <!-- ======================================================= -->
+  <!-- UNLIMITED LISTINGS ACTIVATION POPUP MODAL (₹99)        -->
+  <!-- ======================================================= -->
+  <div *ngIf="showActivationModal" class="modal-backdrop fade show"></div>
+  <div *ngIf="showActivationModal" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <!-- Modal Header Banner -->
+        <div class="bg-white p-4 text-center position-relative border-bottom">
+          <button type="button" class="btn-close position-absolute top-0 end-0 m-3" (click)="closeActivationModal()"></button>
+          <div class="bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center shadow-xs mb-3" style="width: 65px; height: 65px;">
+            <i class="bi bi-patch-check-fill fs-1 text-success"></i>
+          </div>
+          <h4 class="fw-bold text-dark mb-1">किसान सेलर एक्टिवेशन (₹99)</h4>
+          <p class="mb-0 text-secondary fs-8">एक बार शुल्क दें और जीवनभर असीमित फसलें सीधे थोक खरीदारों को बेचें</p>
         </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body p-4">
+          <!-- Price Display Card -->
+          <div class="card border border-success-subtle bg-success bg-opacity-10 rounded-4 p-3 text-center mb-3">
+            <span class="text-uppercase text-success fw-bold fs-8 tracking-wider">एकमुश्त सेलर फीस (One-Time Fee)</span>
+            <div class="d-flex align-items-baseline justify-content-center gap-1 mt-1">
+              <span class="fs-4 fw-bold text-success">₹</span>
+              <span class="display-5 fw-bold text-success">99</span>
+              <span class="text-muted fs-8">/ लाइफटाइम अनलिमिटेड</span>
+            </div>
+            <small class="text-secondary mt-1 d-block fs-8">कोई मासिक या वार्षिक शुल्क नहीं • असीमित फसलें जोड़ें</small>
+          </div>
+
+          <!-- Features list -->
+          <div class="d-flex flex-column gap-3 mb-4">
+            <div class="d-flex align-items-center gap-2 text-dark fs-7">
+              <i class="bi bi-check-circle-fill text-success fs-6"></i>
+              <span><strong>अनलिमिटेड फसल लिस्टिंग:</strong> जितनी चाहें उतनी फसलें जोड़ें</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-dark fs-7">
+              <i class="bi bi-telephone-fill text-success fs-6"></i>
+              <span><strong>सीधा खरीदार संपर्क:</strong> WhatsApp व कॉल द्वारा सीधे खरीदार से बात</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-dark fs-7">
+              <i class="bi bi-cash-stack text-success fs-6"></i>
+              <span><strong>0% कमीशन:</strong> फसल की पूरी रकम सीधे आपके बैंक खाते में</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-dark fs-7">
+              <i class="bi bi-patch-check-fill text-success fs-6"></i>
+              <span><strong>वेरीफाइड किसान बैज:</strong> खरीदारों का 100% भरोसा व तेज़ बिक्री</span>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button type="button" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 fs-6 hover-elevate" (click)="payActivationFee()" [disabled]="isActivatingFee">
+            <span *ngIf="isActivatingFee" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!isActivatingFee" class="bi bi-credit-card-2-front-fill"></i>
+            <span>{{ isActivatingFee ? 'Razorpay गेटवे खुल रहा है...' : 'अभी ₹99 दें और तुरंत अनलॉक करें' }}</span>
+          </button>
+
+          <!-- Trust footer -->
+          <div class="text-center mt-3 text-muted fs-8 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-shield-check text-success"></i>
+            <span>Razorpay द्वारा सुरक्षित • UPI / PhonePe / GPay / Paytm / Cards</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
 </div>

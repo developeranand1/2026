@@ -285,10 +285,16 @@ export class FarmerProductComponent implements OnInit {
       this.onCategoryChange(this.formCategory);
     }
     this.showCreateModal = true;
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   closeCreateModal(): void {
     this.showCreateModal = false;
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   closeActivationModal(): void {
@@ -344,10 +350,10 @@ export class FarmerProductComponent implements OnInit {
                   title: '₹99 Payment Successful! 🎉',
                   html: `
                     <div class="text-start">
-                      <div class="alert alert-success d-flex align-items-center gap-2 p-2.5 mb-3 rounded-3">
+                      <div class="alert alert-success d-flex align-items-center gap-2 p-3 mb-3 rounded-3">
                         <i class="bi bi-patch-check-fill fs-4 text-success"></i>
                         <div>
-                          <strong>Unlimited Listings Unlocked! 🌾</strong><br>
+                          <strong>Unlimited Listings Unlocked!</strong><br>
                           <small class="text-muted">Payment ID: <code>${checkoutRes.razorpay_payment_id}</code></small>
                         </div>
                       </div>
@@ -529,7 +535,7 @@ export class FarmerProductComponent implements OnInit {
             html: `
               <div class="text-start">
                 <p class="mb-2">Your listing for <strong>"${this.formTitle}"</strong> has been submitted successfully!</p>
-                <div class="alert alert-warning p-2.5 rounded-3 fs-7 mb-0">
+                <div class="alert alert-warning p-3 rounded-3 fs-7 mb-0">
                   <i class="bi bi-clock-history me-1"></i>
                   <strong>Status: Pending Admin Verification</strong><br>
                   Admin team will review and approve your listing. Once approved by Admin, it will be published live on KrisiMarg marketplace!
