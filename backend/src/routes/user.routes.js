@@ -4,6 +4,8 @@ const userController = require("../controllers/user.controller");
 
 router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUserById);
+router.put("/:id", userController.updateUserProfile);
+router.put("/profile/:id", userController.updateUserProfile);
 router.patch("/:id/status", userController.updateUserStatus);
 router.patch("/:id/verification", userController.updateUserVerification);
 router.delete("/:id", userController.deleteUser);

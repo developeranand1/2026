@@ -79,18 +79,20 @@ exports.getAllUsers = async (req, res, next) => {
 };
 
 /**
- * Get User Details by ID with Full Profile
+ * Get User Details by ID or Mobile with Full Profile
  * GET /api/users/:id
  */
 exports.getUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, message: "Invalid User ID format" });
+        let user = null;
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            user = await User.findById(id).lean();
+        } else {
+            user = await User.findOne({ mobile: id }).lean();
         }
 
-        const user = await User.findById(id).lean();
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
@@ -99,9 +101,9 @@ exports.getUserById = async (req, res, next) => {
         let buyerProfile = null;
 
         if (user.role === "farmer") {
-            farmerProfile = await FarmerProfile.findOne({ user: id }).lean();
+            farmerProfile = await FarmerProfile.findOne({ user: user._id }).lean();
         } else if (user.role === "buyer") {
-            buyerProfile = await BuyerProfile.findOne({ user: id }).lean();
+            buyerProfile = await BuyerProfile.findOne({ user: user._id }).lean();
         }
 
         res.json({
@@ -116,6 +118,142 @@ exports.getUserById = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Update User and Profile (Farmer or Buyer)
+ * PUT /api/users/:id
+ * PUT /api/users/profile/:id
+ */
+exports.updateUserProfile = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        let user = null;
+        if (mongoose.Types.ObjectId.isValid(id)) {
+            user = await User.findById(id);
+        } else {
+            user = await User.findOne({ mobile: id });
+        }
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const {
+            name,
+            email,
+            mobile,
+            // Farmer specific fields
+            fatherName,
+            aadhaarNumber,
+            totalLand,
+            landUnit,
+            irrigationType,
+            village,
+            city,
+            district,
+            state,
+            pincode,
+            bankHolder,
+            bankAccount,
+            bankIfsc,
+            bankName,
+            location,
+            bankDetails,
+            // Buyer specific fields
+            companyName,
+            gstNumber,
+            street,
+            address
+        } = req.body;
+
+        // Check if mobile is being changed and is already taken
+        if (mobile && mobile !== user.mobile) {
+            const existingMobileUser = await User.findOne({ mobile, _id: { $ne: user._id } });
+            if (existingMobileUser) {
+                return res.status(400).json({ success: false, message: "Mobile number is already registered with another account" });
+            }
+            user.mobile = mobile;
+        }
+
+        if (name) user.name = name;
+        if (email !== undefined) user.email = email;
+        await user.save();
+
+        let updatedFarmerProfile = null;
+        let updatedBuyerProfile = null;
+
+        if (user.role === "farmer") {
+            const locData = {
+                village: village !== undefined ? village : (location?.village || ""),
+                city: city !== undefined ? city : (location?.city || ""),
+                district: district !== undefined ? district : (location?.district || ""),
+                state: state !== undefined ? state : (location?.state || ""),
+                pincode: pincode !== undefined ? pincode : (location?.pincode || "")
+            };
+
+            const bankData = {
+                accountHolderName: bankHolder !== undefined ? bankHolder : (bankDetails?.accountHolderName || ""),
+                accountNumber: bankAccount !== undefined ? bankAccount : (bankDetails?.accountNumber || ""),
+                ifscCode: bankIfsc !== undefined ? bankIfsc : (bankDetails?.ifscCode || ""),
+                bankName: bankName !== undefined ? bankName : (bankDetails?.bankName || "")
+            };
+
+            const updateFields = {
+                location: locData,
+                bankDetails: bankData
+            };
+
+            if (fatherName !== undefined) updateFields.fatherName = fatherName;
+            if (aadhaarNumber !== undefined) updateFields.aadhaarNumber = aadhaarNumber;
+            if (totalLand !== undefined) updateFields.totalLand = totalLand;
+            if (landUnit !== undefined) updateFields.landUnit = landUnit;
+            if (irrigationType !== undefined) updateFields.irrigationType = irrigationType;
+
+            updatedFarmerProfile = await FarmerProfile.findOneAndUpdate(
+                { user: user._id },
+                { $set: updateFields },
+                { new: true, upsert: true }
+            ).lean();
+        } else if (user.role === "buyer") {
+            const addrData = {
+                street: street !== undefined ? street : (address?.street || ""),
+                city: city !== undefined ? city : (address?.city || ""),
+                district: district !== undefined ? district : (address?.district || ""),
+                state: state !== undefined ? state : (address?.state || ""),
+                pincode: pincode !== undefined ? pincode : (address?.pincode || "")
+            };
+
+            const buyerUpdate = {
+                address: addrData
+            };
+            if (companyName !== undefined) buyerUpdate.companyName = companyName;
+            if (gstNumber !== undefined) buyerUpdate.gstNumber = gstNumber;
+
+            updatedBuyerProfile = await BuyerProfile.findOneAndUpdate(
+                { user: user._id },
+                { $set: buyerUpdate },
+                { new: true, upsert: true }
+            ).lean();
+        }
+
+        const safeUser = user.toObject();
+        delete safeUser.password;
+
+        res.json({
+            success: true,
+            message: "Profile updated successfully",
+            data: {
+                ...safeUser,
+                farmerProfile: updatedFarmerProfile,
+                buyerProfile: updatedBuyerProfile
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 /**
  * Update User Status (active / blocked)

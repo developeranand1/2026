@@ -95,7 +95,7 @@ export class FarmerProductComponent implements OnInit {
             }
           }
         },
-        error: () => {}
+        error: () => { }
       });
     }
   }
@@ -276,7 +276,7 @@ export class FarmerProductComponent implements OnInit {
     this.formOriginalPrice = 0;
     this.formSellingPrice = 0;
     this.formDiscount = 10;
-    this.formLocation = this.farmerUser?.district ? `${this.farmerUser.district}, ${this.farmerUser.state || 'Bihar'}` : 'Bihar';
+    this.formLocation = this.farmerUser?.district ? `${this.farmerUser.district}, ${this.farmerUser.state || 'UP'}` : 'UP';
     this.formDescription = '<b>Grade A Farm Harvest</b>\n• Moisture: Below 12%\n• Direct farm loading & immediate dispatch available.';
     this.formImages = [];
 
@@ -402,15 +402,15 @@ export class FarmerProductComponent implements OnInit {
   }
 
   calculateDiscount(): void {
-    const orig = this.formOriginalPrice ;
-    const sale = this.formSellingPrice ;
+    const orig = this.formOriginalPrice;
+    const sale = this.formSellingPrice;
     if (orig > 0 && sale > 0 && orig > sale) {
       this.formDiscount = Math.round(((orig - sale) / orig) * 100);
     }
   }
 
   onDiscountChange(): void {
-    const orig = this.formOriginalPrice ;
+    const orig = this.formOriginalPrice;
     const disc = this.formDiscount;
     if (orig > 0 && disc > 0 && disc < 100) {
       this.formSellingPrice = Math.round(orig * (1 - disc / 100));
@@ -511,7 +511,7 @@ export class FarmerProductComponent implements OnInit {
       expectedPrice: this.formSellingPrice,
       discountPercentage: this.formDiscount,
       priceUnit: 'Quintal',
-      location: this.formLocation || 'Bihar',
+      location: this.formLocation || 'UP',
       description: this.formDescription,
       images: this.formImages,
       status: 'active',

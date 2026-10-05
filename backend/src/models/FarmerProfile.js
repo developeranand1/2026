@@ -9,6 +9,31 @@ const farmerProfileSchema = new mongoose.Schema(
             unique: true
         },
 
+        fatherName: {
+            type: String,
+            default: ""
+        },
+
+        aadhaarNumber: {
+            type: String,
+            default: ""
+        },
+
+        totalLand: {
+            type: String,
+            default: ""
+        },
+
+        landUnit: {
+            type: String,
+            default: "Bigha"
+        },
+
+        irrigationType: {
+            type: String,
+            default: "Irrigated"
+        },
+
         location: {
             village: String,
             city: String,

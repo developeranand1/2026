@@ -9,16 +9,30 @@
       <p class="text-muted mb-0">Update your personal information, farm details, and bank account for direct settlements</p>
     </div>
 
-    <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSaving" (click)="onSaveProfile()">
-      @if (isSaving) {
-        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...
-      } @else {
-        <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+    <div class="d-flex align-items-center gap-2">
+      @if (isLoading) {
+        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
+          <span class="spinner-border spinner-border-sm text-success" role="status"></span> Loading profile...
+        </span>
       }
-    </button>
+      <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSaving || isLoading" (click)="onSaveProfile()">
+        @if (isSaving) {
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...
+        } @else {
+          <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+        }
+      </button>
+    </div>
   </div>
 
-  <form (ngSubmit)="onSaveProfile()" #profileForm="ngForm">
+  @if (isLoading) {
+    <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4">
+      <div class="spinner-border text-success mx-auto mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+      <h6 class="text-secondary fw-semibold">Fetching your profile details from server...</h6>
+    </div>
+  }
+
+  <form (ngSubmit)="onSaveProfile()" #profileForm="ngForm" [class.opacity-50]="isLoading">
     <div class="row g-4">
       
       <!-- Personal Information Card -->
@@ -32,7 +46,7 @@
             <label class="form-label fw-semibold text-secondary">Full Name (किसान का पूरा नाम) <span class="text-danger">*</span></label>
             <div class="input-group">
               <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill"></i></span>
-              <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.name" name="name" required>
+              <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.name" name="name" required placeholder="Enter full name">
             </div>
           </div>
 
@@ -41,42 +55,52 @@
               <label class="form-label fw-semibold text-secondary">Mobile Number <span class="text-danger">*</span></label>
               <div class="input-group">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-phone-fill"></i></span>
-                <input type="tel" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.mobile" name="mobile" maxlength="10" required>
+                <input type="tel" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.mobile" name="mobile" maxlength="10" required placeholder="10-digit mobile number">
               </div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label fw-semibold text-secondary">Father's Name</label>
+              <label class="form-label fw-semibold text-secondary">Father's Name (पिता का नाम)</label>
               <div class="input-group">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.fatherName" name="fatherName">
+                <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.fatherName" name="fatherName" placeholder="Father's name">
               </div>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-secondary">Email Address <span class="text-muted">(Optional)</span></label>
-            <div class="input-group">
-              <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope-fill"></i></span>
-              <input type="email" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.email" name="email">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Email Address <span class="text-muted">(Optional)</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope-fill"></i></span>
+                <input type="email" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.email" name="email" placeholder="example@domain.com">
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold text-secondary">Aadhaar Number (आधार संख्या)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-card-text"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="profileData.aadhaarNumber" name="aadhaarNumber" placeholder="XXXX-XXXX-XXXX" maxlength="14">
+              </div>
             </div>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">Village (गांव) <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" [(ngModel)]="profileData.village" name="village" required>
+              <input type="text" class="form-control" [(ngModel)]="profileData.village" name="village" required placeholder="Village name">
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">Block / City (ब्लॉक / शहर)</label>
-              <input type="text" class="form-control" [(ngModel)]="profileData.city" name="city">
+              <input type="text" class="form-control" [(ngModel)]="profileData.city" name="city" placeholder="Block or City">
             </div>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">District (जिला) <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" [(ngModel)]="profileData.district" name="district" required>
+              <input type="text" class="form-control" [(ngModel)]="profileData.district" name="district" required placeholder="District name">
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">State (राज्य) <span class="text-danger">*</span></label>
@@ -90,7 +114,7 @@
 
           <div class="mb-1">
             <label class="form-label fw-semibold text-secondary">Pincode (पिनकोड) <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="profileData.pincode" name="pincode" maxlength="6" required>
+            <input type="text" class="form-control" [(ngModel)]="profileData.pincode" name="pincode" maxlength="6" required placeholder="6-digit pincode">
           </div>
         </div>
       </div>
@@ -106,7 +130,7 @@
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">Total Land Holding</label>
               <div class="input-group">
-                <input type="text" class="form-control" [(ngModel)]="profileData.totalLand" name="totalLand">
+                <input type="text" class="form-control" [(ngModel)]="profileData.totalLand" name="totalLand" placeholder="e.g. 5">
                 <select class="form-select" [(ngModel)]="profileData.landUnit" name="landUnit">
                   <option value="Bigha">Bigha</option>
                   <option value="Acre">Acre</option>
@@ -134,28 +158,39 @@
 
           <div class="mb-3">
             <label class="form-label fw-semibold text-secondary">Account Holder Name</label>
-            <input type="text" class="form-control" [(ngModel)]="profileData.bankHolder" name="bankHolder">
+            <input type="text" class="form-control" [(ngModel)]="profileData.bankHolder" name="bankHolder" placeholder="Account holder name">
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">Account Number</label>
-              <input type="text" class="form-control" [(ngModel)]="profileData.bankAccount" name="bankAccount">
+              <input type="text" class="form-control" [(ngModel)]="profileData.bankAccount" name="bankAccount" placeholder="Bank account number">
             </div>
 
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold text-secondary">IFSC Code</label>
-              <input type="text" class="form-control" [(ngModel)]="profileData.bankIfsc" name="bankIfsc">
+              <input type="text" class="form-control" [(ngModel)]="profileData.bankIfsc" name="bankIfsc" placeholder="e.g. SBIN0001234">
             </div>
           </div>
 
           <div class="mb-1">
             <label class="form-label fw-semibold text-secondary">Bank Name</label>
-            <input type="text" class="form-control" [(ngModel)]="profileData.bankName" name="bankName">
+            <input type="text" class="form-control" [(ngModel)]="profileData.bankName" name="bankName" placeholder="e.g. State Bank of India">
           </div>
         </div>
       </div>
 
+    </div>
+
+    <!-- Bottom Action Button -->
+    <div class="d-flex justify-content-end mt-4">
+      <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 fw-bold shadow" [disabled]="isSaving || isLoading">
+        @if (isSaving) {
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving Profile...
+        } @else {
+          <i class="bi bi-check-circle-fill me-2"></i> Save Profile Details (सुरक्षित करें)
+        }
+      </button>
     </div>
   </form>
 </div>

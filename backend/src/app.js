@@ -18,6 +18,7 @@ const sitemapRoutes = require("./routes/sitemap.routes");
 const ogRoutes = require("./routes/og.routes");
 const paymentRoutes = require("./routes/payment.routes");
 const levyRateRoutes = require("./routes/levyRate.routes");
+const farmerRoutes = require("./routes/farmer.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -57,6 +58,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/news-types", newsTypeRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/farmer", farmerRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/trainings", trainingRoutes);
 app.use("/api/payment", paymentRoutes);
@@ -75,6 +77,7 @@ app.use("/api/v1/contact", contactRoutes);
 app.use("/api/v1/news-types", newsTypeRoutes);
 app.use("/api/v1/news", newsRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/farmer", farmerRoutes);
 app.use("/api/v1/weather", weatherRoutes);
 app.use("/api/v1/trainings", trainingRoutes);
 app.use("/api/v1/payment", paymentRoutes);
