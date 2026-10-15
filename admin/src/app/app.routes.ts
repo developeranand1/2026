@@ -11,6 +11,9 @@ import { NewsManagementComponent } from './admin/news/news-management.component'
 import { TrainingManagementComponent } from './admin/trainings/training-management.component';
 import { LevyRateManagementComponent } from './admin/levy-rates/levy-rate-management.component';
 import { PaymentManagementComponent } from './admin/payments/payment-management.component';
+import { CenterManagementComponent } from './admin/centers/center-management.component';
+import { CenterDetailComponent } from './admin/centers/center-detail/center-detail.component';
+import { CenterFormComponent } from './admin/centers/center-form/center-form.component';
 
 export const routes: Routes = [
   {
@@ -103,6 +106,22 @@ export const routes: Routes = [
       {
         path: 'payments',
         component: PaymentManagementComponent
+      },
+      {
+        path: 'centers',
+        component: CenterManagementComponent
+      },
+      {
+        path: 'centers/create',
+        component: CenterFormComponent
+      },
+      {
+        path: 'centers/edit/:id',
+        component: CenterFormComponent
+      },
+      {
+        path: 'centers/:id',
+        component: CenterDetailComponent
       }
     ]
   },

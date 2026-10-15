@@ -1,0 +1,532 @@
+<div class="center-management-container">
+  <!-- Top Banner / Header -->
+  <div class="page-header d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="header-icon-box">
+        <i class="bi bi-geo-alt-fill"></i>
+      </div>
+      <div>
+        <h3 class="page-title m-0">Krishi Centers & Suvidha Kendras</h3>
+        <p class="page-subtitle text-muted m-0">Government Agri Centers, Leadership, and Field Staff Management</p>
+      </div>
+    </div>
+    <div class="mt-2 mt-md-0 d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm" (click)="loadCenters()" [disabled]="isLoading">
+        <i class="bi bi-arrow-clockwise me-1" [class.spin]="isLoading"></i> Refresh
+      </button>
+      <a routerLink="/admin/centers/create" class="btn btn-primary-custom btn-sm">
+        <i class="bi bi-plus-circle-fill me-1"></i> + Add New Center Form
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Metrics Grid (Compact) -->
+  <div class="row g-2 mb-3">
+    <div class="col-6 col-lg-3">
+      <div class="metric-card metric-primary">
+        <div class="metric-content">
+          <div class="metric-label">TOTAL CENTERS</div>
+          <div class="metric-value">{{ totalCenters }}</div>
+          <div class="metric-sub text-muted">Across all zones</div>
+        </div>
+        <div class="metric-icon">
+          <i class="bi bi-building"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="metric-card metric-success">
+        <div class="metric-content">
+          <div class="metric-label">ACTIVE CENTERS</div>
+          <div class="metric-value">{{ activeCenters }}</div>
+          <div class="metric-sub text-muted">Fully operational</div>
+        </div>
+        <div class="metric-icon">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="metric-card metric-warning">
+        <div class="metric-content">
+          <div class="metric-label">STAFF & WORKERS</div>
+          <div class="metric-value">{{ totalWorkersCount }}</div>
+          <div class="metric-sub text-muted">Assigned staff members</div>
+        </div>
+        <div class="metric-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="metric-card metric-info">
+        <div class="metric-content">
+          <div class="metric-label">PINCODES COVERED</div>
+          <div class="metric-value">{{ uniquePincodesCount }}</div>
+          <div class="metric-sub text-muted">Postal delivery areas</div>
+        </div>
+        <div class="metric-icon">
+          <i class="bi bi-pin-map-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & View Switch Toolbar -->
+  <div class="card filter-card mb-3 border-0 shadow-sm">
+    <div class="card-body p-2">
+      <div class="row g-2 align-items-center">
+        <!-- Search Input -->
+        <div class="col-12 col-md-5">
+          <div class="search-input-group">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="form-control search-input"
+              placeholder="Search Center, Address, Pincode, Director, Worker..."
+              [(ngModel)]="searchQuery"
+              (input)="applyFilter()"
+            />
+            <button *ngIf="searchQuery" class="clear-btn" (click)="searchQuery = ''; applyFilter()">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <select class="form-select status-select" [(ngModel)]="selectedStatus" (change)="applyFilter()">
+            <option value="all">All Statuses (Active & Inactive)</option>
+            <option value="active">Active (Operational Only)</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+        </div>
+
+        <!-- View Switch Buttons -->
+        <div class="col-6 col-md-3 col-lg-4 text-end d-flex justify-content-end gap-1">
+          <div class="btn-group btn-group-sm">
+            <button
+              class="btn"
+              [ngClass]="currentView === 'table' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="currentView = 'table'"
+              title="Table View"
+            >
+              <i class="bi bi-table me-1"></i> Table
+            </button>
+            <button
+              class="btn"
+              [ngClass]="currentView === 'cards' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="currentView = 'cards'"
+              title="Cards Grid View"
+            >
+              <i class="bi bi-grid-fill me-1"></i> Cards
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MAIN CENTERS TABLE VIEW                    -->
+  <!-- ========================================== -->
+  <div class="card table-card border-0 shadow-sm mb-4" *ngIf="currentView === 'table'">
+    <div class="card-body p-0">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-2 mb-0">Loading centers data...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && filteredCenters.length === 0" class="text-center py-5 px-3">
+        <div class="empty-icon mb-2">
+          <i class="bi bi-geo-alt fs-1 text-muted"></i>
+        </div>
+        <h5 class="empty-title">No Centers Found</h5>
+        <p class="empty-desc text-muted mb-3">No Krishi Centers match your current search or filter criteria.</p>
+        <a routerLink="/admin/centers/create" class="btn btn-sm btn-primary-custom">
+          <i class="bi bi-plus-circle me-1"></i> Add First Center
+        </a>
+      </div>
+
+      <!-- Table View with Silky Custom Scroll -->
+      <div *ngIf="!isLoading && filteredCenters.length > 0" class="table-scroll-container">
+        <table class="table table-hover align-middle mb-0 custom-table">
+          <thead>
+            <tr>
+              <th scope="col" style="min-width: 220px;">Center Name & Code</th>
+              <th scope="col" style="min-width: 170px;">Address & PIN</th>
+              <th scope="col" style="min-width: 170px;">Director / In-charge</th>
+              <th scope="col" style="min-width: 170px;">Workers & Staff Roster</th>
+              <th scope="col" style="min-width: 150px;">Hours & Helpline</th>
+              <th scope="col" class="text-center" style="width: 90px;">Status</th>
+              <th scope="col" class="text-end sticky-action-col" style="min-width: 230px; width: 230px;">Quick Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let center of filteredCenters">
+              <!-- Center Name & Image -->
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="center-img-box">
+                    <img *ngIf="center.image" [src]="center.image" [alt]="center.centerName" class="center-thumb" />
+                    <div *ngIf="!center.image" class="center-placeholder">
+                      <i class="bi bi-building"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <a [routerLink]="['/admin/centers', center._id]" class="center-title text-decoration-none text-dark fw-bold d-block">
+                      {{ center.centerName }} <i class="bi bi-arrow-up-right-circle text-primary fs-8"></i>
+                    </a>
+                    <div class="d-flex align-items-center gap-1 mt-1">
+                      <span class="badge bg-primary-subtle text-primary border border-primary-subtle py-0 px-1 fs-8">
+                        KM-{{ center.pinCode }}-{{ (center._id || '').slice(-4).toUpperCase() }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Address & Pin Code -->
+              <td>
+                <div class="address-text">{{ center.address }}</div>
+                <span class="badge bg-light text-dark border mt-1 fs-8">
+                  <i class="bi bi-pin-map-fill text-danger me-1"></i>PIN: <strong>{{ center.pinCode }}</strong>
+                </span>
+              </td>
+
+              <!-- Director / In-charge -->
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="director-avatar-sm">
+                    <i class="bi bi-person-badge"></i>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark fs-8">{{ center.director.name }}</div>
+                    <small class="text-muted d-block fs-8">{{ center.director.designation || 'Director' }}</small>
+                    <small class="text-primary fs-8" *ngIf="center.director.contactNumber">
+                      <i class="bi bi-telephone me-1"></i>{{ center.director.contactNumber }}
+                    </small>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Workers & Staff Roster (Best UI with Avatar Stack) -->
+              <td>
+                <div class="workers-cell">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <!-- Avatar Stack -->
+                    <div class="avatar-stack d-flex" *ngIf="center.workers && center.workers.length > 0">
+                      <div
+                        *ngFor="let w of center.workers | slice:0:3"
+                        class="stacked-avatar"
+                        [title]="w.name + ' (' + w.role + ')'"
+                      >
+                        {{ getWorkerInitials(w.name) }}
+                      </div>
+                    </div>
+                    <span class="badge bg-warning-subtle text-dark border border-warning-subtle py-0 px-2 fs-8">
+                      {{ center.workers.length }} Staff
+                    </span>
+                    <button class="btn btn-xs btn-outline-primary py-0 px-1" (click)="openWorkersModal(center)" title="Quick Add/Manage Workers">
+                      <i class="bi bi-person-plus-fill"></i>
+                    </button>
+                  </div>
+
+                  <!-- Names preview -->
+                  <div class="text-muted fs-8 text-truncate" style="max-width: 180px;" *ngIf="center.workers && center.workers.length > 0">
+                    <span *ngFor="let w of center.workers | slice:0:2; let last = last">
+                      {{ w.name }}<span *ngIf="!last">, </span>
+                    </span>
+                    <span *ngIf="center.workers.length > 2"> +{{ center.workers.length - 2 }}</span>
+                  </div>
+                  <div class="text-muted fs-8 fst-italic" *ngIf="!center.workers || center.workers.length === 0">
+                    No workers assigned
+                  </div>
+                </div>
+              </td>
+
+              <!-- Hours & Helpline -->
+              <td>
+                <div class="hours-text fs-8 text-muted">
+                  <i class="bi bi-clock text-primary me-1"></i> {{ center.openingTime }}
+                </div>
+                <div class="helpline-text mt-1 fs-8">
+                  <a [href]="'tel:' + center.helplineNumber" class="text-decoration-none fw-bold text-success">
+                    <i class="bi bi-telephone-fill me-1"></i> {{ center.helplineNumber }}
+                  </a>
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td class="text-center">
+                <span
+                  class="badge px-2 py-1 rounded-pill fs-8"
+                  [ngClass]="center.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-secondary-subtle text-secondary border border-secondary'"
+                >
+                  <i class="bi" [ngClass]="center.status === 'active' ? 'bi-check-circle-fill' : 'bi-pause-circle-fill'"></i>
+                  {{ center.status === 'active' ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+
+              <!-- Right Actions Hub (Best UI) -->
+              <td class="text-end sticky-action-col">
+                <div class="action-buttons-wrap d-flex align-items-center justify-content-end gap-1">
+                  <!-- Primary Action: Profile & Farmer Register -->
+                  <a
+                    [routerLink]="['/admin/centers', center._id]"
+                    class="action-pill-btn btn-view-profile"
+                    title="Open Center Profile & Farmer Procurement Register"
+                  >
+                    <i class="bi bi-door-open-fill"></i>
+                    <span>Profile & Sellers</span>
+                  </a>
+
+                  <!-- Manage Workers -->
+                  <button
+                    type="button"
+                    class="action-icon-btn btn-workers-action"
+                    (click)="openWorkersModal(center)"
+                    title="Quick Manage Staff & Workers"
+                  >
+                    <i class="bi bi-people-fill"></i>
+                  </button>
+
+                  <!-- Edit -->
+                  <a
+                    [routerLink]="['/admin/centers/edit', center._id]"
+                    class="action-icon-btn btn-edit-action"
+                    title="Edit Center Details"
+                  >
+                    <i class="bi bi-pencil-fill"></i>
+                  </a>
+
+                  <!-- Delete -->
+                  <button
+                    type="button"
+                    class="action-icon-btn btn-delete-action"
+                    (click)="deleteCenter(center)"
+                    title="Delete Center"
+                  >
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- ALTERNATIVE CARDS GRID VIEW                -->
+  <!-- ========================================== -->
+  <div class="row g-2 mb-4" *ngIf="currentView === 'cards' && !isLoading && filteredCenters.length > 0">
+    <div class="col-12 col-md-6 col-lg-4" *ngFor="let center of filteredCenters">
+      <div class="card center-grid-card border-0 shadow-sm h-100">
+        <div class="card-body p-3 d-flex flex-column justify-content-between">
+          <div>
+            <!-- Header Strip with Status and ID -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle py-0 px-2 fs-8">
+                KM-{{ center.pinCode }}-{{ (center._id || '').slice(-4).toUpperCase() }}
+              </span>
+              <span class="badge rounded-pill fs-8" [ngClass]="center.status === 'active' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                ● {{ center.status === 'active' ? 'Operational' : 'Inactive' }}
+              </span>
+            </div>
+
+            <!-- Title & Photo -->
+            <div class="d-flex gap-2 align-items-start mb-2">
+              <div class="center-img-box flex-shrink-0">
+                <img *ngIf="center.image" [src]="center.image" [alt]="center.centerName" class="center-thumb" />
+                <div *ngIf="!center.image" class="center-placeholder">
+                  <i class="bi bi-building"></i>
+                </div>
+              </div>
+              <div>
+                <a [routerLink]="['/admin/centers', center._id]" class="fw-bold text-dark text-decoration-none fs-7 d-block">
+                  {{ center.centerName }}
+                </a>
+                <span class="text-muted fs-8 d-block text-truncate" style="max-width: 220px;">
+                  <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ center.address }}
+                </span>
+              </div>
+            </div>
+
+            <!-- In-Charge & Workers Roster -->
+            <div class="bg-light p-2 rounded mb-2 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fs-8 text-muted">Director:</span>
+                <strong class="fs-8 text-dark">{{ center.director.name }}</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fs-8 text-muted">Staff Workers:</span>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="badge bg-warning-subtle text-dark border border-warning-subtle py-0 px-2 fs-8">
+                    {{ center.workers.length }} Workers
+                  </span>
+                  <button class="btn btn-xs btn-outline-primary py-0 px-1" (click)="openWorkersModal(center)">
+                    <i class="bi bi-plus-lg"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+            <span class="fs-8 text-muted">
+              <i class="bi bi-telephone text-success me-1"></i>{{ center.helplineNumber }}
+            </span>
+            <div class="btn-group btn-group-sm">
+              <a [routerLink]="['/admin/centers', center._id]" class="btn btn-xs btn-success fw-bold px-2">
+                <i class="bi bi-eye me-1"></i> View & Sellers
+              </a>
+              <a [routerLink]="['/admin/centers/edit', center._id]" class="btn btn-xs btn-light border text-primary">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: DEDICATED WORKERS MANAGER (BEST UI)  -->
+  <!-- ========================================== -->
+  <div class="custom-modal-backdrop" *ngIf="showWorkersModal">
+    <div class="custom-modal-dialog" style="max-width: 650px;">
+      <div class="custom-modal-content">
+        <div class="custom-modal-header py-2 px-3 bg-white border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <div class="modal-icon-badge bg-warning-subtle text-warning">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+              <h6 class="modal-title m-0 fw-bold">Workers & Staff for {{ selectedCenterForWorkers?.centerName }}</h6>
+              <small class="text-muted fs-8">Assign and manage staff working at this center</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-sm" (click)="closeWorkersModal()"></button>
+        </div>
+
+        <div class="custom-modal-body p-3">
+          <!-- Add New Worker Form Box (Dedicated, Sleek) -->
+          <div class="worker-add-card p-2 rounded mb-3 border bg-light">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="fs-8 fw-bold text-dark">
+                <i class="bi bi-person-plus-fill text-success me-1"></i> Add New Worker:
+              </span>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-8">
+                {{ selectedCenterForWorkers?.workers?.length || 0 }} Assigned
+              </span>
+            </div>
+            <div class="row g-1 align-items-end">
+              <div class="col-12 col-md-4">
+                <label class="fs-8 text-muted mb-0">Worker Name *</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm form-compact-input"
+                  placeholder="e.g. Sunil Yadav"
+                  [(ngModel)]="newWorkerData.name"
+                />
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="fs-8 text-muted mb-0">Role / Designation</label>
+                <select class="form-select form-select-sm form-compact-input" [(ngModel)]="newWorkerData.role">
+                  <option *ngFor="let role of commonWorkerRoles" [value]="role">{{ role }}</option>
+                </select>
+              </div>
+              <div class="col-6 col-md-3">
+                <label class="fs-8 text-muted mb-0">Mobile Number</label>
+                <input
+                  type="tel"
+                  class="form-control form-control-sm form-compact-input"
+                  placeholder="9876543212"
+                  [(ngModel)]="newWorkerData.contactNumber"
+                  maxlength="10"
+                />
+              </div>
+              <div class="col-6 col-md-2">
+                <button class="btn btn-sm btn-success w-100 py-1 fs-8 fw-bold" (click)="addWorkerToSelectedCenter()">
+                  <i class="bi bi-plus-lg"></i> Add
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Workers List -->
+          <div class="workers-list-wrapper">
+            <div *ngIf="!selectedCenterForWorkers?.workers || selectedCenterForWorkers!.workers.length === 0" class="text-center py-4 text-muted border rounded bg-white">
+              <i class="bi bi-person-slash fs-3 d-block text-secondary mb-1"></i>
+              <div class="fs-8 fw-semibold">No workers assigned to this center yet.</div>
+              <small class="fs-8">Use the form above to add weighing staff, officers, and helpers.</small>
+            </div>
+
+            <div *ngIf="selectedCenterForWorkers?.workers && selectedCenterForWorkers!.workers.length > 0" class="table-scroll-container border rounded bg-white" style="max-height: 260px;">
+              <table class="table table-hover table-sm align-middle mb-0 compact-table">
+                <thead class="table-light fs-8 text-muted">
+                  <tr>
+                    <th style="width: 35px;">#</th>
+                    <th style="min-width: 140px;">Worker Name</th>
+                    <th style="min-width: 120px;">Role</th>
+                    <th style="min-width: 100px;">Mobile</th>
+                    <th style="width: 80px;">Status</th>
+                    <th class="text-end sticky-action-col" style="width: 60px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let worker of selectedCenterForWorkers!.workers; let idx = index">
+                    <td class="fs-8 text-muted">{{ idx + 1 }}</td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="worker-avatar-badge">
+                          {{ getWorkerInitials(worker.name) }}
+                        </div>
+                        <strong class="text-dark fs-8">{{ worker.name }}</strong>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark border py-0 px-2 fs-8">
+                        {{ worker.role || 'Worker' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="fs-8 text-muted">
+                        <i class="bi bi-telephone text-success me-1" *ngIf="worker.contactNumber"></i>
+                        {{ worker.contactNumber || '-' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge py-0 px-1 fs-8" [ngClass]="worker.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-secondary-subtle text-secondary border border-secondary'">
+                        {{ worker.status }}
+                      </span>
+                    </td>
+                    <td class="text-end sticky-action-col">
+                      <button
+                        type="button"
+                        class="action-icon-btn btn-delete-action"
+                        (click)="removeWorkerFromSelectedCenter(worker._id!)"
+                        title="Remove Worker"
+                      >
+                        <i class="bi bi-trash3-fill"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="custom-modal-footer p-2 border-top text-end">
+          <button class="btn btn-xs btn-secondary px-3" (click)="closeWorkersModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

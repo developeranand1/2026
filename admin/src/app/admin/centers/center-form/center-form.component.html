@@ -1,0 +1,382 @@
+<div class="center-form-page">
+  <!-- Compact Breadcrumb Header -->
+  <div class="form-header d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <a routerLink="/admin/centers" class="btn btn-sm btn-outline-secondary back-btn">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div>
+        <h4 class="form-title m-0">{{ isEditing ? 'Edit Krishi Center' : 'Add New Krishi Center' }}</h4>
+        <small class="text-muted">Fill center address, in-charge details, and workers roster</small>
+      </div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+      <a routerLink="/admin/centers" class="btn btn-sm btn-light border">Cancel</a>
+      <button class="btn btn-sm btn-success fw-bold px-3" (click)="saveCenter()" [disabled]="isSaving">
+        <i *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></i>
+        <i *ngIf="!isSaving" class="bi bi-check2-circle me-1"></i>
+        {{ isEditing ? 'Update Center' : 'Save & Publish Center' }}
+      </button>
+    </div>
+  </div>
+
+  <form (ngSubmit)="saveCenter()" #formRef="ngForm">
+    <div class="row g-2">
+      <!-- LEFT COLUMN: CENTER BASIC DETAILS -->
+      <div class="col-12 col-lg-7">
+        <!-- Center Information Card -->
+        <div class="card compact-card mb-2 shadow-sm border-0">
+          <div class="card-header py-2 px-3 bg-white border-bottom">
+            <span class="card-section-title text-primary">
+              <i class="bi bi-building me-1"></i> 1. Center Identity & Address
+            </span>
+          </div>
+          <div class="card-body p-3">
+            <div class="row g-2">
+              <!-- Center Name -->
+              <div class="col-12 col-md-8">
+                <label class="compact-label required">Center Name (केंद्र का नाम)</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="e.g. Kisan Suvidha Kendra - Khalilabad"
+                  [(ngModel)]="formData.centerName"
+                  name="centerName"
+                  required
+                />
+              </div>
+
+              <!-- Status -->
+              <div class="col-12 col-md-4">
+                <label class="compact-label">Operating Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="formData.status" name="status">
+                  <option value="active">Active (Operational)</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+
+              <!-- Address -->
+              <div class="col-12 col-md-8">
+                <label class="compact-label required">Full Street Address</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Near APMC Mandi Gate, Basti Road"
+                  [(ngModel)]="formData.address"
+                  name="address"
+                  required
+                />
+              </div>
+
+              <!-- Pin Code -->
+              <div class="col-12 col-md-4">
+                <label class="compact-label required">Postal PIN Code</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="272175"
+                  [(ngModel)]="formData.pinCode"
+                  name="pinCode"
+                  maxlength="6"
+                  required
+                />
+              </div>
+
+              <!-- Opening Hours -->
+              <div class="col-12 col-md-6">
+                <label class="compact-label required">Opening Hours</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    placeholder="09:00 AM - 06:00 PM (Mon-Sat)"
+                    [(ngModel)]="formData.openingTime"
+                    name="openingTime"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Helpline Number -->
+              <div class="col-12 col-md-6">
+                <label class="compact-label required">Helpline Phone</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    placeholder="1800-180-1551 / 9876543210"
+                    [(ngModel)]="formData.helplineNumber"
+                    name="helplineNumber"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Center Image Upload (Compact Dropzone) -->
+              <div class="col-12">
+                <label class="compact-label">Center Photo / Building Image</label>
+                <div class="compact-upload-box d-flex align-items-center gap-3 p-2 rounded border">
+                  <input
+                    type="file"
+                    id="pageImageUpload"
+                    class="d-none"
+                    accept="image/*"
+                    (change)="onImageSelected($event)"
+                  />
+                  <div *ngIf="imagePreview" class="thumb-preview position-relative">
+                    <img [src]="imagePreview" alt="Preview" class="img-thumbnail thumb-img" />
+                    <button type="button" class="btn btn-danger btn-xs remove-img-btn" (click)="removeImage()">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                  <div class="upload-trigger" (click)="$any($event.target).ownerDocument.getElementById('pageImageUpload').click()">
+                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2 fs-8">
+                      <i class="bi bi-cloud-arrow-up me-1"></i> Choose Photo
+                    </button>
+                    <small class="text-muted d-block fs-8 mt-1">PNG, JPG, WebP up to 10MB</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workers Roster Card (Best UI) -->
+        <div class="card compact-card shadow-sm border-0 mb-2">
+          <div class="card-header py-2 px-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+            <span class="card-section-title text-warning">
+              <i class="bi bi-people-fill me-1"></i> 2. Center Staff & Field Workers (कार्यकर्ता रोस्टर)
+            </span>
+            <span class="badge bg-warning-subtle text-dark border border-warning-subtle py-0 px-2 fs-8">
+              {{ formData.workers.length }} Staff Assigned
+            </span>
+          </div>
+          <div class="card-body p-2">
+            <!-- Dedicated Worker Add Bar -->
+            <div class="worker-add-card p-2 rounded mb-2 border bg-light">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fs-8 fw-bold text-dark">
+                  <i class="bi bi-person-plus-fill text-success me-1"></i> Add Worker to this Center:
+                </span>
+                <small class="text-muted fs-8">Fill & click Add</small>
+              </div>
+              <div class="row g-1 align-items-end">
+                <div class="col-12 col-md-4">
+                  <label class="fs-8 text-muted mb-0">Worker Name *</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm form-compact-input"
+                    placeholder="e.g. Sunil Yadav"
+                    [(ngModel)]="newWorker.name"
+                    name="nwName"
+                  />
+                </div>
+                <div class="col-12 col-md-3">
+                  <label class="fs-8 text-muted mb-0">Role / Designation</label>
+                  <select class="form-select form-select-sm form-compact-input" [(ngModel)]="newWorker.role" name="nwRole">
+                    <option *ngFor="let role of commonWorkerRoles" [value]="role">{{ role }}</option>
+                  </select>
+                </div>
+                <div class="col-6 col-md-3">
+                  <label class="fs-8 text-muted mb-0">Mobile Number</label>
+                  <input
+                    type="tel"
+                    class="form-control form-control-sm form-compact-input"
+                    placeholder="9876543212"
+                    [(ngModel)]="newWorker.contactNumber"
+                    name="nwPhone"
+                    maxlength="10"
+                  />
+                </div>
+                <div class="col-6 col-md-2">
+                  <button type="button" class="btn btn-sm btn-success w-100 py-1 fs-8 fw-bold" (click)="addWorkerFromInput()">
+                    <i class="bi bi-plus-lg"></i> Add
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Workers Display Table -->
+            <div *ngIf="formData.workers.length === 0" class="text-center py-3 text-muted border rounded bg-white">
+              <i class="bi bi-person-slash fs-4 d-block text-secondary mb-1"></i>
+              <div class="fs-8 fw-semibold">No Workers Added Yet</div>
+              <small class="fs-8">Use the form above to add weighing operators, field officers, and staff members.</small>
+            </div>
+
+            <div *ngIf="formData.workers.length > 0" class="table-scroll-container border rounded bg-white">
+              <table class="table table-hover table-sm align-middle mb-0 compact-table">
+                <thead class="table-light fs-8 text-muted">
+                  <tr>
+                    <th style="width: 35px;">#</th>
+                    <th style="min-width: 140px;">Worker Name</th>
+                    <th style="min-width: 130px;">Role / Designation</th>
+                    <th style="min-width: 100px;">Mobile</th>
+                    <th style="width: 80px;">Status</th>
+                    <th class="text-end sticky-action-col" style="width: 60px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let worker of formData.workers; let i = index">
+                    <td class="fs-8 text-muted">{{ i + 1 }}</td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="worker-avatar-badge">
+                          {{ getWorkerInitials(worker.name) }}
+                        </div>
+                        <strong class="text-dark fs-8">{{ worker.name }}</strong>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark border py-0 px-2 fs-8">
+                        {{ worker.role || 'Worker' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="fs-8 text-muted">
+                        <i class="bi bi-telephone text-success me-1" *ngIf="worker.contactNumber"></i>
+                        {{ worker.contactNumber || '-' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge py-0 px-1 fs-8" [ngClass]="worker.status === 'active' ? 'bg-success-subtle text-success border border-success' : 'bg-secondary-subtle text-secondary border border-secondary'">
+                        {{ worker.status }}
+                      </span>
+                    </td>
+                    <td class="text-end sticky-action-col">
+                      <button
+                        type="button"
+                        class="action-icon-btn btn-delete-action"
+                        (click)="removeWorker(i)"
+                        title="Remove Worker"
+                      >
+                        <i class="bi bi-trash3-fill"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: LEADERSHIP & HELPING STAFF -->
+      <div class="col-12 col-lg-5">
+        <!-- Director Card -->
+        <div class="card compact-card shadow-sm border-0 mb-2">
+          <div class="card-header py-2 px-3 bg-white border-bottom">
+            <span class="card-section-title text-success">
+              <i class="bi bi-person-badge-fill me-1"></i> 3. Main Center Director / Head
+            </span>
+          </div>
+          <div class="card-body p-3">
+            <div class="row g-2">
+              <div class="col-12">
+                <label class="compact-label required">Director Full Name</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="e.g. Dr. Rajesh Kumar Chaudhary"
+                  [(ngModel)]="formData.director.name"
+                  name="dirName"
+                  required
+                />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="compact-label">Mobile Number</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="9876543210"
+                  [(ngModel)]="formData.director.contactNumber"
+                  name="dirPhone"
+                />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="compact-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control form-control-sm"
+                  placeholder="rajesh@krisimarg.com"
+                  [(ngModel)]="formData.director.email"
+                  name="dirEmail"
+                />
+              </div>
+
+              <div class="col-12">
+                <label class="compact-label">Official Designation</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Center Director / Senior Agri Lead"
+                  [(ngModel)]="formData.director.designation"
+                  name="dirDesignation"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Helping Staff Card -->
+        <div class="card compact-card shadow-sm border-0 mb-2">
+          <div class="card-header py-2 px-3 bg-white border-bottom">
+            <span class="card-section-title text-info">
+              <i class="bi bi-person-heart me-1"></i> 4. Helping Staff / Coordinator
+            </span>
+          </div>
+          <div class="card-body p-3">
+            <div class="row g-2">
+              <div class="col-12">
+                <label class="compact-label">Helping Staff Name</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="e.g. Atul Kumar"
+                  [(ngModel)]="formData.helpingStaff.name"
+                  name="helperName"
+                />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="compact-label">Contact Number</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="9876543211"
+                  [(ngModel)]="formData.helpingStaff.contactNumber"
+                  name="helperPhone"
+                />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="compact-label">Role / Title</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Assistant Coordinator"
+                  [(ngModel)]="formData.helpingStaff.role"
+                  name="helperRole"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button Card -->
+        <div class="card compact-card shadow-sm border-0 p-3 bg-light text-end">
+          <div class="d-flex justify-content-end gap-2">
+            <a routerLink="/admin/centers" class="btn btn-sm btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-sm btn-success fw-bold px-4" [disabled]="isSaving">
+              <i *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></i>
+              {{ isEditing ? 'Update Center Details' : 'Save & Publish Center' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
