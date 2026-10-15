@@ -43,8 +43,12 @@ const centerSellerSchema = new mongoose.Schema(
         },
         quantity: {
             type: Number,
-            required: [true, "Quantity / Weight is required"],
-            min: [0.01, "Quantity must be greater than 0"]
+            default: 0,
+            min: [0, "Quantity cannot be negative"]
+        },
+        expectedQuantity: {
+            type: Number,
+            default: 0
         },
         unit: {
             type: String,
@@ -53,23 +57,27 @@ const centerSellerSchema = new mongoose.Schema(
         },
         pricePerQuintal: {
             type: Number,
-            required: [true, "Rate / Price per quintal is required"],
+            default: 0,
             min: [0, "Price cannot be negative"]
         },
         totalAmount: {
             type: Number,
-            required: true
+            default: 0
+        },
+        sellingDate: {
+            type: Date,
+            default: Date.now
         },
         paymentDetails: {
             paymentMode: {
                 type: String,
                 enum: ["Cash", "UPI", "Bank Transfer", "Cheque"],
-                default: "Cash"
+                default: "Bank Transfer"
             },
             paymentStatus: {
                 type: String,
                 enum: ["Paid", "Pending", "Partial"],
-                default: "Paid"
+                default: "Pending"
             },
             paidAmount: {
                 type: Number,
@@ -103,7 +111,7 @@ const centerSellerSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: ["Token Issued", "Weighed & Verified", "Payment Completed", "Cancelled"],
-            default: "Payment Completed"
+            default: "Token Issued"
         },
         weighedBy: {
             type: String,

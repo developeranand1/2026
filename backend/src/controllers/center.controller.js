@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Center = require("../models/Center");
 const CenterSeller = require("../models/CenterSeller");
 const User = require("../models/User");
+const FarmerProfile = require("../models/FarmerProfile");
 const cloudinary = require("../config/cloudinary");
 
 /**
@@ -543,10 +544,10 @@ exports.addSellerEntry = async (req, res, next) => {
             status = "Payment Completed"
         } = req.body;
 
-        if (!farmerName || !farmerMobile || !cropName || !quantity || !pricePerQuintal) {
+        if (!farmerName || !farmerMobile || !cropName) {
             return res.status(400).json({
                 success: false,
-                message: "Farmer Name, Mobile, Crop Name, Quantity, and Price per Quintal are required"
+                message: "Farmer Name, Mobile, and Crop Name are required to issue token"
             });
         }
 
@@ -578,29 +579,58 @@ exports.addSellerEntry = async (req, res, next) => {
         }
         const tokenNumber = String(nextTokenNum);
 
-        // Check if a Farmer user exists with this mobile; if not, auto-create farmer account
+        // Check if a Farmer user exists with this mobile; if not, create farmer account with role "farmer"
         let farmerUser = await User.findOne({ mobile: farmerMobile.trim() });
+        const farmerPass = (req.body.farmerPassword && req.body.farmerPassword.trim()) || ("Farmer@" + farmerMobile.trim().slice(-4));
         if (!farmerUser) {
             try {
                 farmerUser = await User.create({
                     name: farmerName.trim(),
                     mobile: farmerMobile.trim(),
                     role: "farmer",
-                    password: "Farmer@" + farmerMobile.trim().slice(-4),
+                    password: farmerPass,
                     status: "active",
                     isVerified: true
+                });
+                await FarmerProfile.create({
+                    user: farmerUser._id,
+                    location: {
+                        village: (village && village.trim()) || ""
+                    }
                 });
             } catch (userErr) {
                 console.warn("Could not auto-create user for farmer:", userErr.message);
             }
+        } else {
+            try {
+                if (farmerUser.role !== "farmer") {
+                    farmerUser.role = "farmer";
+                    await farmerUser.save();
+                }
+                const existingProfile = await FarmerProfile.findOne({ user: farmerUser._id });
+                if (!existingProfile) {
+                    await FarmerProfile.create({
+                        user: farmerUser._id,
+                        location: {
+                            village: (village && village.trim()) || ""
+                        }
+                    });
+                }
+            } catch (pErr) {
+                console.warn("Could not ensure farmer profile:", pErr.message);
+            }
         }
 
-        const numQty = parseFloat(quantity);
-        const numPrice = parseFloat(pricePerQuintal);
+        const numQty = parseFloat(quantity) || parseFloat(req.body.expectedQuantity) || 0;
+        const numPrice = parseFloat(pricePerQuintal) || 0;
         const totalAmount = Math.round(numQty * numPrice * 100) / 100;
 
         const actualPaid = paidAmount !== undefined ? parseFloat(paidAmount) : (paymentStatus === "Paid" ? totalAmount : 0);
         const actualDue = dueAmount !== undefined ? parseFloat(dueAmount) : (totalAmount - actualPaid);
+
+        // If no price/payment details provided yet, initial status is "Token Issued"
+        const finalStatus = status || (numPrice > 0 && paymentStatus === "Paid" ? "Payment Completed" : "Token Issued");
+        const finalPaymentStatus = paymentStatus || (numPrice > 0 ? "Paid" : "Pending");
 
         const sellerEntry = await CenterSeller.create({
             center: centerId,
@@ -612,12 +642,14 @@ exports.addSellerEntry = async (req, res, next) => {
             cropName: cropName.trim(),
             variety: (variety && variety.trim()) || "Standard / Grade A",
             quantity: numQty,
+            expectedQuantity: parseFloat(req.body.expectedQuantity) || numQty,
             unit: unit || "Quintal",
             pricePerQuintal: numPrice,
             totalAmount,
+            sellingDate: req.body.sellingDate ? new Date(req.body.sellingDate) : new Date(),
             paymentDetails: {
-                paymentMode: paymentMode || "Cash",
-                paymentStatus: paymentStatus || "Paid",
+                paymentMode: paymentMode || "Bank Transfer",
+                paymentStatus: finalPaymentStatus,
                 paidAmount: actualPaid,
                 dueAmount: actualDue > 0 ? actualDue : 0,
                 transactionId: transactionId || "",
@@ -625,7 +657,7 @@ exports.addSellerEntry = async (req, res, next) => {
                 accountNumber: accountNumber || "",
                 ifscCode: ifscCode || ""
             },
-            status: status || "Payment Completed",
+            status: finalStatus,
             weighedBy: weighedBy || "",
             notes: notes || "",
             entryDate: new Date(),
@@ -634,8 +666,76 @@ exports.addSellerEntry = async (req, res, next) => {
 
         return res.status(201).json({
             success: true,
-            message: `Farmer token #${tokenNumber} generated and entry recorded successfully`,
+            message: `Farmer token #${tokenNumber} generated successfully`,
             data: sellerEntry
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @desc    Record actual weighing, sale rate, and payment for an issued token
+ * @route   PUT /api/centers/sellers/:entryId/complete-sale
+ * @access  Private (Admin)
+ */
+exports.completeSellerSale = async (req, res, next) => {
+    try {
+        const { entryId } = req.params;
+        const {
+            quantity,
+            pricePerQuintal,
+            paymentMode = "Bank Transfer",
+            paymentStatus = "Paid",
+            paidAmount,
+            dueAmount,
+            transactionId,
+            bankName,
+            accountNumber,
+            ifscCode,
+            weighedBy,
+            notes
+        } = req.body;
+
+        const entry = await CenterSeller.findById(entryId);
+        if (!entry) {
+            return res.status(404).json({
+                success: false,
+                message: "Seller token entry not found"
+            });
+        }
+
+        const numQty = parseFloat(quantity) || 0;
+        const numPrice = parseFloat(pricePerQuintal) || 0;
+        const totalAmount = Math.round(numQty * numPrice * 100) / 100;
+
+        const actualPaid = paidAmount !== undefined ? parseFloat(paidAmount) : (paymentStatus === "Paid" ? totalAmount : 0);
+        const actualDue = dueAmount !== undefined ? parseFloat(dueAmount) : (totalAmount - actualPaid);
+
+        entry.quantity = numQty;
+        entry.pricePerQuintal = numPrice;
+        entry.totalAmount = totalAmount;
+        if (weighedBy) entry.weighedBy = weighedBy;
+        if (notes !== undefined) entry.notes = notes;
+        entry.status = "Payment Completed";
+
+        entry.paymentDetails = {
+            paymentMode: paymentMode || entry.paymentDetails?.paymentMode || "Bank Transfer",
+            paymentStatus: paymentStatus || "Paid",
+            paidAmount: actualPaid,
+            dueAmount: actualDue > 0 ? actualDue : 0,
+            transactionId: transactionId || entry.paymentDetails?.transactionId || "",
+            bankName: bankName || entry.paymentDetails?.bankName || "",
+            accountNumber: accountNumber || entry.paymentDetails?.accountNumber || "",
+            ifscCode: ifscCode || entry.paymentDetails?.ifscCode || ""
+        };
+
+        await entry.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Sale completed & payment recorded for Token #${entry.tokenNumber}`,
+            data: entry
         });
     } catch (error) {
         next(error);
@@ -748,6 +848,124 @@ exports.deleteSellerEntry = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: "Seller entry deleted successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @desc    Search registered farmers for center produce intake
+ * @route   GET /api/centers/farmers/search
+ * @access  Public / Admin
+ */
+exports.searchFarmers = async (req, res, next) => {
+    try {
+        const { q } = req.query;
+        let query = { role: "farmer" };
+
+        if (q && q.trim()) {
+            const regex = new RegExp(q.trim(), "i");
+            query.$or = [
+                { name: regex },
+                { mobile: regex }
+            ];
+        }
+
+        const farmers = await User.find(query)
+            .select("name mobile email status isVerified createdAt")
+            .sort({ createdAt: -1 })
+            .limit(20)
+            .lean();
+
+        const userIds = farmers.map(f => f._id);
+        const profiles = await FarmerProfile.find({ user: { $in: userIds } }).lean();
+        const profileMap = new Map(profiles.map(p => [p.user.toString(), p]));
+
+        const results = farmers.map(f => {
+            const prof = profileMap.get(f._id.toString());
+            return {
+                _id: f._id,
+                name: f.name,
+                mobile: f.mobile,
+                email: f.email,
+                village: prof?.location?.village || "",
+                district: prof?.location?.district || "",
+                state: prof?.location?.state || "",
+                bankDetails: prof?.bankDetails || null,
+                isVerified: f.isVerified,
+                status: f.status
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            count: results.length,
+            data: results
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @desc    Quick-register new Farmer user with role "farmer" and password
+ * @route   POST /api/centers/farmers/quick-register
+ * @access  Public / Admin
+ */
+exports.quickRegisterFarmer = async (req, res, next) => {
+    try {
+        const { name, mobile, village, password, bankDetails } = req.body;
+
+        if (!name || !mobile) {
+            return res.status(400).json({
+                success: false,
+                message: "Farmer Name and 10-digit Mobile number are required"
+            });
+        }
+
+        const cleanMobile = mobile.trim();
+        const cleanName = name.trim();
+
+        let existingUser = await User.findOne({ mobile: cleanMobile });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: `Farmer with mobile ${cleanMobile} is already registered (${existingUser.name})`,
+                data: existingUser
+            });
+        }
+
+        const farmerPass = (password && password.trim()) || ("Farmer@" + cleanMobile.slice(-4));
+
+        const newUser = await User.create({
+            name: cleanName,
+            mobile: cleanMobile,
+            password: farmerPass,
+            role: "farmer",
+            status: "active",
+            isVerified: true
+        });
+
+        const newProfile = await FarmerProfile.create({
+            user: newUser._id,
+            location: {
+                village: (village && village.trim()) || ""
+            },
+            bankDetails: bankDetails || {}
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: `Farmer ${cleanName} registered successfully as Farmer!`,
+            data: {
+                _id: newUser._id,
+                name: newUser.name,
+                mobile: newUser.mobile,
+                village: newProfile.location?.village || "",
+                role: newUser.role,
+                bankDetails: newProfile.bankDetails
+            }
         });
     } catch (error) {
         next(error);

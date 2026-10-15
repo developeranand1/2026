@@ -211,6 +211,66 @@
   align-items: center;
 }
 
+/* Farmer Lookup & Quick Register */
+.farmer-select-box {
+  border-color: #cbd5e1 !important;
+}
+
+.selected-farmer-banner {
+  border-radius: 8px;
+}
+
+.farmer-avatar-badge-lg {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #059669, #10b981);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.farmer-avatar-badge-sm {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.farmer-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin-top: 4px;
+  border-color: #cbd5e1 !important;
+}
+
+.farmer-result-item {
+  transition: background 0.15s ease-in-out;
+  &:hover {
+    background-color: #f0fdf4 !important;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.quick-register-form {
+  border-color: #93c5fd !important;
+  background-color: #f8fafc !important;
+}
+
 /* Table */
 .procurement-card {
   border-radius: 10px;

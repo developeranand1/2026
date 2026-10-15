@@ -15,7 +15,10 @@ const {
     addSellerEntry,
     getCenterSellerEntries,
     getSellerEntryById,
-    deleteSellerEntry
+    deleteSellerEntry,
+    searchFarmers,
+    quickRegisterFarmer,
+    completeSellerSale
 } = require("../controllers/center.controller");
 
 // Optional auth helper to attach user if token exists
@@ -37,6 +40,10 @@ const optionalAuth = async (req, res, next) => {
 // Center Image Upload
 router.post("/upload-image", optionalAuth, uploadCenterImage);
 
+// Farmer Search & Quick Register for Centers (Must be before /:id)
+router.get("/farmers/search", searchFarmers);
+router.post("/farmers/quick-register", optionalAuth, quickRegisterFarmer);
+
 // Centers CRUD
 router.post("/", optionalAuth, createCenter);
 router.get("/", getAllCenters);
@@ -53,6 +60,7 @@ router.delete("/:id/workers/:workerId", optionalAuth, removeWorkerFromCenter);
 router.post("/:id/sellers", optionalAuth, addSellerEntry);
 router.get("/:id/sellers", getCenterSellerEntries);
 router.get("/sellers/:entryId", getSellerEntryById);
+router.put("/sellers/:entryId/complete-sale", optionalAuth, completeSellerSale);
 router.delete("/sellers/:entryId", optionalAuth, deleteSellerEntry);
 
 module.exports = router;

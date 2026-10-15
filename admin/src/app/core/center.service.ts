@@ -80,9 +80,11 @@ export interface CenterSellerEntry {
   cropName: string;
   variety?: string;
   quantity: number;
+  expectedQuantity?: number;
   unit: string;
   pricePerQuintal: number;
   totalAmount: number;
+  sellingDate?: string | Date;
   paymentDetails: CenterSellerPayment;
   status: 'Token Issued' | 'Weighed & Verified' | 'Payment Completed' | 'Cancelled';
   weighedBy?: string;
@@ -172,7 +174,35 @@ export class CenterService {
     return this.http.post<{ success: boolean; message: string; data: CenterSellerEntry }>(`${this.apiUrl}/${centerId}/sellers`, entryData);
   }
 
+  // Farmer Search & Quick Registration
+  searchFarmers(query?: string): Observable<{ success: boolean; count: number; data: FarmerSearchResult[] }> {
+    let params = new HttpParams();
+    if (query) params = params.set('q', query);
+    return this.http.get<{ success: boolean; count: number; data: FarmerSearchResult[] }>(`${this.apiUrl}/farmers/search`, { params });
+  }
+
+  quickRegisterFarmer(data: { name: string; mobile: string; village?: string; password?: string; bankDetails?: any }): Observable<{ success: boolean; message: string; data: FarmerSearchResult }> {
+    return this.http.post<{ success: boolean; message: string; data: FarmerSearchResult }>(`${this.apiUrl}/farmers/quick-register`, data);
+  }
+
+  completeCenterSale(entryId: string, data: any): Observable<{ success: boolean; message: string; data: CenterSellerEntry }> {
+    return this.http.put<{ success: boolean; message: string; data: CenterSellerEntry }>(`${this.apiUrl}/sellers/${entryId}/complete-sale`, data);
+  }
+
   deleteCenterSeller(entryId: string): Observable<{ success: boolean; message: string }> {
     return this.http.delete<{ success: boolean; message: string }>(`${this.apiUrl}/sellers/${entryId}`);
   }
+}
+
+export interface FarmerSearchResult {
+  _id: string;
+  name: string;
+  mobile: string;
+  email?: string;
+  village?: string;
+  district?: string;
+  state?: string;
+  bankDetails?: any;
+  isVerified?: boolean;
+  status?: string;
 }
