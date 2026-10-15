@@ -6,28 +6,29 @@
     <!-- Live Mandi Rate Top Ticker Bar -->
     <div class="mandi-ticker-bar">
         <div class="container d-flex align-items-center justify-content-between text-nowrap overflow-hidden">
-            <div class="ticker-label me-3">
+            <div class="ticker-label me-3 d-flex align-items-center gap-2">
                 <span class="pulse-dot"></span>
-                <strong>LIVE MANDI RATES</strong>
+                <strong>🇮🇳 LIVE MANDI BHAV:</strong>
             </div>
 
             <div class="ticker-items d-flex align-items-center gap-3 gap-md-4 overflow-auto py-1">
-                <span><i class="bi bi-flower1 text-warning me-1"></i> Wheat: <strong>₹2,275/qtl</strong> <small class="text-success">▲ +2.4%</small></span>
-                <span><i class="bi bi-tag-fill text-warning me-1"></i> Onion: <strong>₹1,850/qtl</strong> <small class="text-success">▲ +1.8%</small></span>
-                <span><i class="bi bi-box-seam text-warning me-1"></i> Potato: <strong>₹1,420/qtl</strong> <small class="text-danger">▼ -0.5%</small></span>
-                <span><i class="bi bi-basket2 text-warning me-1"></i> Tomato: <strong>₹2,100/qtl</strong> <small class="text-success">▲ +3.1%</small></span>
-                <span><i class="bi bi-tree text-warning me-1"></i> Maize: <strong>₹1,950/qtl</strong> <small class="text-success">▲ +0.9%</small></span>
+                <span><i class="bi bi-flower1 text-warning me-1"></i> गेहूँ (Wheat): <strong>₹2,425/qtl</strong> <small class="text-success fw-bold">▲ +2.4%</small></span>
+                <span><i class="bi bi-tag-fill text-warning me-1"></i> धान (Paddy): <strong>₹2,320/qtl</strong> <small class="text-success fw-bold">▲ +1.9%</small></span>
+                <span><i class="bi bi-flower2 text-warning me-1"></i> सरसों (Mustard): <strong>₹5,650/qtl</strong> <small class="text-success fw-bold">▲ +3.2%</small></span>
+                <span><i class="bi bi-box-seam text-warning me-1"></i> मक्का (Maize): <strong>₹2,050/qtl</strong> <small class="text-success fw-bold">▲ +1.1%</small></span>
+                <span><i class="bi bi-basket2 text-warning me-1"></i> सोयाबीन (Soybean): <strong>₹4,890/qtl</strong> <small class="text-danger fw-bold">▼ -0.4%</small></span>
             </div>
 
-            <a routerLink="/farmer/mandi-rates" class="ticker-link d-none d-lg-inline-flex ms-3">
-                View All Rates <i class="bi bi-chevron-right ms-1"></i>
+            <a routerLink="/mandi-rates" class="ticker-link d-none d-lg-inline-flex ms-3 align-items-center gap-1">
+                <span>सभी मंडी भाव</span>
+                <i class="bi bi-arrow-right"></i>
             </a>
         </div>
     </div>
 
-    <!-- Main Hero Carousel -->
+    <!-- Main Hero Container -->
     <div class="container position-relative py-3 py-md-4 py-lg-5">
-        <div class="row align-items-center g-3 g-md-4 g-lg-5">
+        <div class="row align-items-center g-4 g-lg-5">
 
             <!-- Left Text Content -->
             <div class="col-lg-7">
@@ -35,40 +36,52 @@
                 @if (i === activeSlideIndex) {
                 <div class="slide-text-wrapper animate-fade-in">
 
-                    <span class="hero-badge">
-                        <i class="bi {{ slide.badgeIcon }} text-warning"></i>
-                        {{ slide.badgeText }}
-                    </span>
+                    <!-- Official India's #1 National Badge -->
+                    <div class="hero-top-badge-wrapper mb-3">
+                        <span class="hero-badge d-inline-flex align-items-center gap-2 shadow-sm">
+                            <span class="badge-flag-icon">🇮🇳</span>
+                            <span class="badge-text fw-bold">{{ slide.badgeText }}</span>
+                            <i class="bi bi-patch-check-fill text-warning ms-1"></i>
+                        </span>
+                    </div>
 
-                    <h1 class="hero-title">
+                    <!-- Hero Main Title -->
+                    <h1 class="hero-title fw-bold">
                         {{ slide.titlePrefix }}
-                        <span class="highlight-text">{{ slide.titleHighlight }}</span>
+                        <span class="highlight-text d-block">{{ slide.titleHighlight }}</span>
                     </h1>
 
-                    <p class="hero-description">
+                    <!-- Hero Description -->
+                    <p class="hero-description text-white-90 mt-2 mb-3">
                         {{ slide.description }}
                     </p>
 
-                    <!-- Search Input & Quick Tags -->
+                    <!-- Search Input Box & Quick Crop Tags -->
                     <div class="search-box-wrapper mt-3 mt-md-4">
-                        <div class="search-box">
-                            <i class="bi bi-search search-icon"></i>
+                        <div class="search-box shadow-lg">
+                            <i class="bi bi-search search-icon text-success"></i>
 
-                            <input #searchInput type="search" placeholder="Search crops, fresh veggies, fruits, seeds..."
+                            <input 
+                                #searchInput 
+                                type="search" 
+                                placeholder="फसल, मंडी भाव, जैविक सब्जियां या केंद्र खोजें..."
                                 (keyup.enter)="searchProduct(searchInput.value)">
 
-                            <button type="button" class="btn-search" (click)="searchProduct(searchInput.value)">
-                                <span>Search</span>
+                            <button type="button" class="btn-search d-flex align-items-center gap-1" (click)="searchProduct(searchInput.value)">
+                                <span>खोजें</span>
                                 <i class="bi bi-arrow-right"></i>
                             </button>
                         </div>
 
+                        <!-- Quick Category/Crop Chips -->
                         <div class="quick-tags d-flex flex-wrap align-items-center gap-2 mt-2 pt-1">
-                            <small class="text-white-50 me-1 d-none d-sm-inline">Popular:</small>
+                            <span class="quick-tags-label text-warning fw-semibold fs-8 d-none d-sm-inline">
+                                <i class="bi bi-lightning-charge-fill me-0.5"></i> लोकप्रिय:
+                            </span>
                             @for (tag of quickTags; track tag.label) {
-                            <button type="button" class="tag-chip d-inline-flex align-items-center gap-1" (click)="applyTag(tag.query)">
+                            <button type="button" class="tag-chip d-inline-flex align-items-center gap-1.5" (click)="applyTag(tag.query)">
                                 <i class="bi {{ tag.icon }} text-warning"></i>
-                                {{ tag.label }}
+                                <span>{{ tag.label }}</span>
                             </button>
                             }
                         </div>
@@ -76,14 +89,14 @@
 
                     <!-- Action Buttons -->
                     <div class="hero-actions mt-3 mt-md-4 d-flex flex-wrap align-items-center gap-2 gap-sm-3">
-                        <a [routerLink]="slide.primaryCtaLink" class="btn btn-warning btn-lg rounded-pill px-4 shadow-sm hero-primary-btn w-xs-100">
-                            {{ slide.primaryCtaText }}
-                            <i class="bi bi-arrow-right-short fs-5 ms-1"></i>
+                        <a [routerLink]="slide.primaryCtaLink" class="btn btn-warning btn-lg rounded-pill px-4 fw-bold shadow-md hero-primary-btn w-xs-100 d-inline-flex align-items-center justify-content-center gap-2 text-dark">
+                            <span>{{ slide.primaryCtaText }}</span>
+                            <i class="bi bi-arrow-right fs-6"></i>
                         </a>
 
-                        <a [routerLink]="slide.secondaryCtaLink" class="btn btn-outline-light btn-lg rounded-pill px-4 hero-secondary-btn w-xs-100">
-                            <i class="bi bi-person-plus me-2"></i>
-                            {{ slide.secondaryCtaText }}
+                        <a [routerLink]="slide.secondaryCtaLink" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold hero-secondary-btn w-xs-100 d-inline-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-geo-alt-fill text-warning"></i>
+                            <span>{{ slide.secondaryCtaText }}</span>
                         </a>
                     </div>
 
@@ -91,84 +104,107 @@
                 }
                 }
 
-                <!-- Stats Grid -->
-                <div class="row g-2 g-sm-3 hero-stats mt-3 mt-md-4 pt-3 border-top border-white-10">
+                <!-- Stats Grid - Mobile-Optimized 4 Pillars -->
+                <div class="hero-stats-row row g-2 g-sm-3 mt-3 mt-md-4 pt-3 border-top border-white-15">
                     <div class="col-6 col-sm-3">
-                        <div class="stat-item text-center text-sm-start">
-                            <strong class="stat-number">2,500+</strong>
-                            <span class="stat-label">Verified Farmers</span>
+                        <div class="stat-pill-box text-center text-sm-start p-2 rounded-3">
+                            <strong class="stat-number text-warning d-block">50,000+</strong>
+                            <span class="stat-label text-white-75">सत्यापित किसान</span>
                         </div>
                     </div>
 
                     <div class="col-6 col-sm-3">
-                        <div class="stat-item text-center text-sm-start">
-                            <strong class="stat-number">8,000+</strong>
-                            <span class="stat-label">Agri Listings</span>
+                        <div class="stat-pill-box text-center text-sm-start p-2 rounded-3">
+                            <strong class="stat-number text-white d-block">₹150 Cr+</strong>
+                            <span class="stat-label text-white-75">पारदर्शी कृषि व्यापार</span>
                         </div>
                     </div>
 
                     <div class="col-6 col-sm-3">
-                        <div class="stat-item text-center text-sm-start">
-                            <strong class="stat-number">50+</strong>
-                            <span class="stat-label">Mandi Hubs</span>
+                        <div class="stat-pill-box text-center text-sm-start p-2 rounded-3">
+                            <strong class="stat-number text-warning d-block">50+</strong>
+                            <span class="stat-label text-white-75">अधिकृत मंडी केंद्र</span>
                         </div>
                     </div>
 
                     <div class="col-6 col-sm-3">
-                        <div class="stat-item text-center text-sm-start">
-                            <strong class="stat-number">99.4%</strong>
-                            <span class="stat-label">On-Time Delivery</span>
+                        <div class="stat-pill-box text-center text-sm-start p-2 rounded-3">
+                            <strong class="stat-number text-success-light d-block">0% दलाली</strong>
+                            <span class="stat-label text-white-75">सीधा बैंक DBT</span>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Right Visual Image Slider -->
+            <!-- Right Visual Image Banner Card -->
             <div class="col-lg-5">
                 <div class="hero-visual-card position-relative">
 
                     @for (slide of slides; track slide.id; let i = $index) {
                     @if (i === activeSlideIndex) {
-                    <div class="visual-slide-content animate-zoom-in position-relative">
-                        <img [src]="slide.image" [alt]="slide.altText" class="img-fluid hero-main-img shadow-lg" />
+                    <div class="visual-slide-content animate-zoom-in position-relative rounded-4 overflow-hidden shadow-2xl">
+                        
+                        <!-- High Quality Crop & Farmer Image -->
+                        <img 
+                            [src]="slide.image" 
+                            [alt]="slide.altText" 
+                            class="img-fluid hero-main-img w-100 object-fit-cover" 
+                            loading="eager" />
+                        
                         <div class="img-overlay-gradient"></div>
 
-                        <!-- Floating Glassmorphic Pill 1: Mandi Price -->
-                        <div class="floating-glass-pill pill-mandi animate-bounce-slow">
-                            <i class="bi {{ slide.mandiIcon }} text-warning me-2 fs-6"></i>
-                            <span>{{ slide.mandiRatePill }}</span>
-                        </div>
-
-                        <!-- Floating Glassmorphic Badge 2: Direct Farmer -->
-                        <div class="floating-glass-pill pill-farmer">
-                            <div class="badge-avatar me-2">
-                                <i class="bi bi-person-badge-fill text-warning"></i>
+                        <!-- Prestigious Floating Rank Badge (Top Right) -->
+                        <div class="floating-rank-banner animate-bounce-slow">
+                            <div class="rank-trophy-box">
+                                <span>🏆</span>
                             </div>
                             <div>
-                                <strong class="d-block text-white font-sm">100% Direct Trade</strong>
-                                <small class="text-white-50">Zero Middlemen Fee</small>
+                                <strong class="d-block text-white fs-8 fw-bold">भारत का #1 कृषि पोर्टल</strong>
+                                <small class="text-warning fs-9 d-block">50K+ किसान व व्यापारी</small>
                             </div>
                         </div>
 
-                        <!-- Floating Glassmorphic Badge 3: Fresh Guarantee -->
-                        <div class="floating-glass-pill pill-fresh">
-                            <i class="bi bi-shield-check text-success fs-5 me-2"></i>
+                        <!-- Floating Glassmorphic Pill 1: Mandi Price (Top Left) -->
+                        <div class="floating-glass-pill pill-mandi shadow-sm">
+                            <i class="bi {{ slide.mandiIcon }} text-warning me-1.5 fs-6"></i>
+                            <span class="fw-bold">{{ slide.mandiRatePill }}</span>
+                        </div>
+
+                        <!-- Floating Glassmorphic Badge 2: Direct Farmer Guarantee (Bottom Left) -->
+                        <div class="floating-glass-pill pill-farmer shadow-md">
+                            <div class="badge-avatar-circle me-2 bg-success text-white">
+                                <i class="bi bi-patch-check-fill"></i>
+                            </div>
                             <div>
-                                <strong class="d-block text-white font-sm">Quality Verified</strong>
-                                <small class="text-white-50">Farm Fresh Guarantee</small>
+                                <strong class="d-block text-white fs-7">100% पारदर्शी तौल</strong>
+                                <small class="text-white-75 fs-8">धर्मकांटा व पक्की रसीद</small>
                             </div>
                         </div>
+
+                        <!-- Floating Glassmorphic Badge 3: Fast Settlement (Bottom Right) -->
+                        <div class="floating-glass-pill pill-fresh shadow-md d-none d-sm-flex">
+                            <i class="bi bi-lightning-charge-fill text-warning fs-5 me-2"></i>
+                            <div>
+                                <strong class="d-block text-white fs-7">सीधा DBT भुगतान</strong>
+                                <small class="text-white-75 fs-8">24 घंटे में खाते में</small>
+                            </div>
+                        </div>
+
                     </div>
                     }
                     }
 
-                    <!-- Slider Controls -->
+                    <!-- Carousel Dots & Direction Controls -->
                     <div class="carousel-controls-wrapper d-flex align-items-center justify-content-between mt-3 px-2">
                         <div class="carousel-dots d-flex align-items-center gap-2">
                             @for (slide of slides; track slide.id; let i = $index) {
-                            <button type="button" class="dot-btn" [class.active]="i === activeSlideIndex"
-                                [attr.aria-label]="'Go to slide ' + (i + 1)" (click)="setSlide(i)">
+                            <button 
+                                type="button" 
+                                class="dot-btn" 
+                                [class.active]="i === activeSlideIndex"
+                                [attr.aria-label]="'Go to slide ' + (i + 1)" 
+                                (click)="setSlide(i)">
                             </button>
                             }
                         </div>
@@ -191,35 +227,35 @@
 </section>
 
 <!-- Trust Banner Section -->
-<section class="trust-bar">
+<section class="trust-bar py-3 bg-white border-bottom shadow-xs">
     <div class="container">
-        <div class="row g-2 g-md-3 py-2 py-md-3 align-items-center text-center">
+        <div class="row g-2 g-md-3 align-items-center text-center">
 
             <div class="col-6 col-md-3">
-                <div class="trust-item">
-                    <i class="bi bi-shield-lock-fill trust-icon text-success me-1 me-md-2"></i>
-                    <span><strong>Escrow Secured</strong> Payments</span>
+                <div class="trust-item d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-patch-check-fill trust-icon text-success"></i>
+                    <span><strong>सरकारी e-NAM</strong> आधारित प्रणाली</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="trust-item">
-                    <i class="bi bi-truck-flatbed trust-icon text-warning me-1 me-md-2"></i>
-                    <span><strong>Fast Logistics</strong> Doorstep Delivery</span>
+                <div class="trust-item d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-shield-fill-check trust-icon text-primary"></i>
+                    <span><strong>100% सुरक्षित DBT</strong> सीधा बैंक खाता</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="trust-item">
-                    <i class="bi bi-check-circle-fill trust-icon text-info me-1 me-md-2"></i>
-                    <span><strong>Direct Harvest</strong> Fair Pricing</span>
+                <div class="trust-item d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-truck trust-icon text-warning"></i>
+                    <span><strong>फार्म-गेट खरीद</strong> निःशुल्क आवक टोकन</span>
                 </div>
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="trust-item">
-                    <i class="bi bi-headset trust-icon text-primary me-1 me-md-2"></i>
-                    <span><strong>24/7 Support</strong> Dedicated Help</span>
+                <div class="trust-item d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-headset trust-icon text-danger"></i>
+                    <span><strong>24×7 किसान सहायता</strong> लाइव हेल्पलाइन</span>
                 </div>
             </div>
 
