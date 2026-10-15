@@ -1,0 +1,446 @@
+<!-- Hero Section -->
+<section class="centers-hero-section py-5 text-white position-relative overflow-hidden">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2 text-white-50 fs-7">
+                        <li class="breadcrumb-item"><a routerLink="/" class="text-white text-decoration-none">होम</a></li>
+                        <li class="breadcrumb-item active text-warning" aria-current="page">हमारे अधिकृत केंद्र</li>
+                    </ol>
+                </nav>
+                <span class="badge bg-white text-success fw-bold rounded-pill px-3 py-1 fs-7 mb-3 d-inline-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-patch-check-fill text-success"></i> भारत सरकार व ई-मंडी मान्यता प्राप्त केंद्र
+                </span>
+                <h1 class="display-6 fw-bold mb-2">हमारे कृषि सेवा एवं खरीद केंद्र</h1>
+                <p class="lead fs-6 text-white-90 mb-4">
+                    नजदीकी केंद्र खोजें, लाइव हेल्पलाइन पर बात करें, Google Maps द्वारा सटीक लोकेशन प्राप्त करें और न्यूनतम समर्थन मूल्य (MSP) पर पारदर्शी फसल खरीद का लाभ उठाएं।
+                </p>
+
+                <!-- Stats Badges -->
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="hero-stat-pill bg-white bg-opacity-15 backdrop-blur rounded-pill px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-building-check text-warning fs-5"></i>
+                        <span class="fs-7 fw-semibold">{{ centers.length }} अधिकृत खरीद केंद्र</span>
+                    </div>
+                    <div class="hero-stat-pill bg-white bg-opacity-15 backdrop-blur rounded-pill px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-info fs-5"></i>
+                        <span class="fs-7 fw-semibold">09:00 AM - 06:00 PM प्रतिदिन</span>
+                    </div>
+                    <div class="hero-stat-pill bg-white bg-opacity-15 backdrop-blur rounded-pill px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check text-success-light fs-5"></i>
+                        <span class="fs-7 fw-semibold">100% कम्प्यूटरीकृत तौल व DBT भुगतान</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-center d-none d-lg-block">
+                <div class="hero-illustration-box bg-white bg-opacity-10 backdrop-blur rounded-4 p-4 border border-white border-opacity-25 shadow-lg">
+                    <div class="circle-icon-badge bg-warning text-dark mx-auto mb-3 shadow">
+                        <i class="bi bi-geo-alt-fill fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">आवक टोकन व खरीद</h5>
+                    <p class="fs-7 text-white-75 mb-3">केंद्र पर फसल लाने से पहले टोकन प्राप्त करें और बिना कतार के तुलाई करवाएं।</p>
+                    <a href="#centers-list" class="btn btn-warning rounded-pill px-4 fw-bold text-dark w-100 shadow-sm">
+                        नीचे केंद्र सूची देखें <i class="bi bi-arrow-down ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter & Search Toolbar -->
+<section class="filter-toolbar-section py-3 bg-white border-bottom shadow-xs sticky-top-custom" id="centers-list">
+    <div class="container">
+        <div class="row g-2 align-items-center">
+            <!-- Search by Name/Address -->
+            <div class="col-md-6 col-lg-5">
+                <div class="input-group input-group-sm rounded-pill overflow-hidden border">
+                    <span class="input-group-text bg-white border-0 text-muted ps-3">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        class="form-control border-0 py-2 fs-7" 
+                        placeholder="केंद्र का नाम, जिला, शहर या पता खोजें..." 
+                        [(ngModel)]="searchQuery" 
+                        (input)="onSearch()">
+                    <button *ngIf="searchQuery" class="btn btn-link text-muted border-0 pe-3" (click)="searchQuery=''; onSearch()">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter by PIN Code -->
+            <div class="col-md-4 col-lg-3">
+                <div class="input-group input-group-sm rounded-pill overflow-hidden border">
+                    <span class="input-group-text bg-white border-0 text-muted ps-3">
+                        <i class="bi bi-pin-map-fill text-danger"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        class="form-control border-0 py-2 fs-7" 
+                        placeholder="पिन कोड (PIN Code)" 
+                        [(ngModel)]="pinCodeFilter" 
+                        (input)="onSearch()">
+                    <button *ngIf="pinCodeFilter" class="btn btn-link text-muted border-0 pe-3" (click)="pinCodeFilter=''; onSearch()">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Counter & Reset -->
+            <div class="col-md-2 col-lg-4 d-flex align-items-center justify-content-md-end gap-2">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fs-7">
+                    <i class="bi bi-check2-circle me-1"></i> {{ filteredCenters.length }} केंद्र उपलब्ध
+                </span>
+                <button 
+                    *ngIf="searchQuery || pinCodeFilter" 
+                    (click)="clearFilter()" 
+                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 fs-7">
+                    <i class="bi bi-arrow-counterclockwise"></i> रीसेट
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Centers Grid Section -->
+<section class="centers-grid-section py-5 bg-light-subtle min-vh-60">
+    <div class="container">
+        
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+            <h5 class="fw-bold text-dark">अधिकृत केंद्रों की जानकारी लोड हो रही है...</h5>
+            <p class="text-muted fs-7">कृपया प्रतीक्षा करें।</p>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="!isLoading && errorMessage" class="alert alert-danger rounded-4 shadow-sm text-center p-4 my-4">
+            <i class="bi bi-exclamation-triangle-fill fs-2 mb-2 d-block"></i>
+            <h6 class="fw-bold mb-1">{{ errorMessage }}</h6>
+            <button class="btn btn-danger btn-sm rounded-pill px-4 mt-2" (click)="loadCenters()">पुनः प्रयास करें</button>
+        </div>
+
+        <!-- No Results Found -->
+        <div *ngIf="!isLoading && !errorMessage && filteredCenters.length === 0" class="text-center py-5 bg-white rounded-4 border shadow-sm p-5 my-4">
+            <div class="empty-icon-box bg-light text-muted rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+                <i class="bi bi-geo-alt-slash fs-1"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">कोई केंद्र नहीं मिला</h4>
+            <p class="text-muted fs-6 mb-4">आपके खोजे गए शब्द या पिन कोड से मेल खाता कोई केंद्र वर्तमान में पंजीकृत नहीं है।</p>
+            <button class="btn btn-success rounded-pill px-4" (click)="clearFilter()">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> सभी केंद्र देखें
+            </button>
+        </div>
+
+        <!-- Centers Cards Grid -->
+        <div *ngIf="!isLoading && filteredCenters.length > 0" class="row g-4">
+            <div *ngFor="let center of filteredCenters" class="col-md-6 col-lg-6 col-xl-4">
+                <div class="center-card-detailed bg-white rounded-4 overflow-hidden border shadow-sm h-100 d-flex flex-column transition-hover">
+                    
+                    <!-- Card Media Banner -->
+                    <div class="center-banner-box position-relative overflow-hidden">
+                        <img 
+                            [src]="center.image || defaultImage" 
+                            [alt]="center.centerName" 
+                            class="w-100 h-100 object-fit-cover center-card-img"
+                            onerror="this.src='https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80'">
+                        
+                        <!-- Open Hours Badge -->
+                        <span class="badge bg-dark bg-opacity-80 backdrop-blur text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 fs-8 shadow-sm d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-clock-fill text-warning"></i> {{ center.openingTime || '09:00 AM - 06:00 PM' }}
+                        </span>
+
+                        <!-- PIN Badge -->
+                        <span class="badge bg-success text-white position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1 fs-8 shadow-sm d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-pin-map-fill"></i> PIN: {{ center.pinCode }}
+                        </span>
+
+                        <!-- Verified Center Tag -->
+                        <div class="banner-bottom-overlay position-absolute bottom-0 start-0 w-100 py-1 px-3 d-flex align-items-center justify-content-between text-white fs-8">
+                            <span class="d-inline-flex align-items-center gap-1 fw-semibold">
+                                <i class="bi bi-patch-check-fill text-success-light"></i> अधिकृत ई-मंडी केंद्र
+                            </span>
+                            <span class="badge bg-emerald rounded-pill">सक्रिय सेवा</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                        
+                        <!-- Center Name -->
+                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                            <h3 class="center-card-title text-dark fw-bold fs-5 mb-0 line-clamp-1">
+                                {{ center.centerName }}
+                            </h3>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="address-box mb-3 d-flex align-items-start gap-2 text-secondary fs-7">
+                            <i class="bi bi-geo-alt-fill text-danger fs-6 flex-shrink-0 mt-1"></i>
+                            <span class="line-clamp-2">{{ center.address }} - {{ center.pinCode }}</span>
+                        </div>
+
+                        <!-- Key People in Charge (Director & Coordinator) -->
+                        <div class="people-strip bg-light rounded-3 p-3 mb-3 border border-light-subtle">
+                            <!-- Director -->
+                            <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-light-subtle">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-badge bg-success text-white fw-bold">
+                                        {{ center.director.name ? center.director.name.charAt(0) : 'D' }}
+                                    </div>
+                                    <div>
+                                        <span class="d-block text-muted fs-8 fw-semibold text-uppercase">केंद्र प्रभारी / Director</span>
+                                        <strong class="text-dark fs-7 d-block">{{ center.director.name || 'अधिकृत संचालक' }}</strong>
+                                    </div>
+                                </div>
+                                <a *ngIf="center.director.contactNumber" [href]="getTelLink(center.director.contactNumber)" class="btn btn-outline-success btn-xs rounded-pill px-2 py-1 fs-8" title="डायरेक्टर को कॉल करें">
+                                    <i class="bi bi-telephone-fill"></i> Call
+                                </a>
+                            </div>
+
+                            <!-- Helping Staff if available -->
+                            <div *ngIf="center.helpingStaff?.name" class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-badge bg-info text-white fw-bold">
+                                        {{ center.helpingStaff?.name ? center.helpingStaff!.name.charAt(0) : 'S' }}
+                                    </div>
+                                    <div>
+                                        <span class="d-block text-muted fs-8 fw-semibold text-uppercase">{{ center.helpingStaff?.role || 'सहायक / समन्वयक' }}</span>
+                                        <span class="text-dark fs-7 fw-semibold d-block">{{ center.helpingStaff?.name }}</span>
+                                    </div>
+                                </div>
+                                <a *ngIf="center.helpingStaff?.contactNumber" [href]="getTelLink(center.helpingStaff?.contactNumber)" class="btn btn-outline-info btn-xs rounded-pill px-2 py-1 fs-8" title="सहायक को कॉल करें">
+                                    <i class="bi bi-telephone-fill"></i>
+                                </a>
+                            </div>
+
+                            <!-- Staff counter tag -->
+                            <div *ngIf="center.workers?.length" class="mt-2 pt-1 border-top border-light-subtle d-flex align-items-center justify-content-between fs-8 text-muted">
+                                <span><i class="bi bi-people-fill text-success me-1"></i> कार्यरत स्टाफ:</span>
+                                <span class="badge bg-secondary-subtle text-secondary rounded-pill">{{ center.workers?.length }} कर्मचारी उपलब्ध</span>
+                            </div>
+                        </div>
+
+                        <!-- Direct Helpline Banner -->
+                        <div class="helpline-call-banner rounded-3 p-3 mb-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="helpline-ring-icon text-success fs-4">
+                                    <i class="bi bi-telephone-inbound-fill"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block text-muted fs-8 fw-bold text-uppercase">सीधी किसान हेल्पलाइन</span>
+                                    <a [href]="getTelLink(center.helplineNumber)" class="text-success fw-bold text-decoration-none fs-6 d-block">
+                                        {{ center.helplineNumber }}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Direct Call Button -->
+                            <a [href]="getTelLink(center.helplineNumber)" class="btn btn-success btn-sm rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-telephone-fill"></i> Call Now
+                            </a>
+                        </div>
+
+                        <!-- Services Checkmarks -->
+                        <div class="services-list mb-3 d-flex flex-wrap gap-2">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-8">
+                                <i class="bi bi-check2"></i> डिजिटल आवक टोकन
+                            </span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fs-8">
+                                <i class="bi bi-check2"></i> कम्प्यूटरीकृत तौल
+                            </span>
+                            <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill fs-8">
+                                <i class="bi bi-check2"></i> MSP खरीद
+                            </span>
+                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill fs-8">
+                                <i class="bi bi-check2"></i> सीधा DBT भुगतान
+                            </span>
+                        </div>
+
+                        <!-- Card Action Buttons -->
+                        <div class="mt-auto pt-3 border-top d-flex align-items-center gap-2">
+                            <!-- Click se location chal jaye (Google Maps) -->
+                            <a 
+                                [href]="getGoogleMapsUrl(center)" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                class="btn btn-outline-danger btn-sm rounded-pill flex-fill d-inline-flex align-items-center justify-content-center gap-2 fw-bold shadow-xs py-2"
+                                title="Google Maps पर रास्ता व लोकेशन देखें">
+                                <i class="bi bi-pin-map-fill text-danger fs-6"></i>
+                                <span>रास्ता देखें</span>
+                            </a>
+
+                            <!-- WhatsApp Help -->
+                            <a 
+                                [href]="getWhatsAppUrl(center)" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                class="btn btn-outline-success btn-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center"
+                                title="WhatsApp पर सहायता मांगें">
+                                <i class="bi bi-whatsapp fs-6"></i>
+                            </a>
+
+                            <!-- Details Modal trigger -->
+                            <button 
+                                (click)="openDetailModal(center)" 
+                                class="btn btn-success btn-sm rounded-pill flex-fill d-inline-flex align-items-center justify-content-center gap-1 fw-bold py-2 shadow-xs">
+                                <span>पूरा विवरण</span>
+                                <i class="bi bi-arrow-right fs-8"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Detailed Center Info Modal -->
+<div *ngIf="selectedCenterForModal" class="center-modal-backdrop d-flex align-items-center justify-content-center p-3">
+    <div class="modal-dialog-content bg-white rounded-4 shadow-xl overflow-hidden w-100 max-w-750 animate-zoom-in">
+        
+        <!-- Modal Media Banner -->
+        <div class="modal-header-banner position-relative">
+            <img 
+                [src]="selectedCenterForModal.image || defaultImage" 
+                [alt]="selectedCenterForModal.centerName" 
+                class="w-100 h-100 object-fit-cover"
+                onerror="this.src='https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80'">
+            
+            <button class="btn-close-modal position-absolute top-0 end-0 m-3 rounded-circle text-white bg-dark bg-opacity-70 border-0 p-2 d-flex align-items-center justify-content-center" (click)="closeDetailModal()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+            <div class="modal-banner-gradient position-absolute bottom-0 start-0 w-100 p-4 text-white">
+                <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1 fs-8 mb-2">
+                    <i class="bi bi-clock-fill"></i> {{ selectedCenterForModal.openingTime || '09:00 AM - 06:00 PM' }}
+                </span>
+                <h3 class="fw-bold mb-1">{{ selectedCenterForModal.centerName }}</h3>
+                <p class="mb-0 text-white-90 fs-7 d-flex align-items-center gap-1">
+                    <i class="bi bi-geo-alt-fill text-warning"></i> {{ selectedCenterForModal.address }} - {{ selectedCenterForModal.pinCode }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Modal Body Content -->
+        <div class="modal-body-scroll p-4">
+            
+            <!-- Quick Contact & Navigation Strip -->
+            <div class="row g-2 mb-4">
+                <div class="col-sm-6">
+                    <a [href]="getTelLink(selectedCenterForModal.helplineNumber)" class="btn btn-success w-100 rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>हेल्पलाइन: {{ selectedCenterForModal.helplineNumber }}</span>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a [href]="getGoogleMapsUrl(selectedCenterForModal)" target="_blank" rel="noopener noreferrer" class="btn btn-danger w-100 rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="bi bi-pin-map-fill"></i>
+                        <span>Google Maps पर रास्ता देखें</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- In-charge & Staff Details Section -->
+            <div class="row g-3 mb-4">
+                <!-- Director Box -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <span class="text-muted fs-8 fw-bold text-uppercase d-block mb-1">मुख्य केंद्र प्रभारी (Director)</span>
+                        <h6 class="fw-bold text-dark mb-1">{{ selectedCenterForModal.director.name || 'अधिकृत संचालक' }}</h6>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-8 mb-2">
+                            {{ selectedCenterForModal.director.designation || 'Center Director' }}
+                        </span>
+                        <div *ngIf="selectedCenterForModal.director.contactNumber" class="fs-7 text-secondary mt-1">
+                            <i class="bi bi-telephone me-1 text-success"></i>
+                            <a [href]="getTelLink(selectedCenterForModal.director.contactNumber)" class="text-success fw-semibold text-decoration-none">
+                                {{ selectedCenterForModal.director.contactNumber }}
+                            </a>
+                        </div>
+                        <div *ngIf="selectedCenterForModal.director.email" class="fs-7 text-secondary">
+                            <i class="bi bi-envelope me-1 text-primary"></i> {{ selectedCenterForModal.director.email }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Helping Staff Box -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <span class="text-muted fs-8 fw-bold text-uppercase d-block mb-1">सहायक / समन्वयक (Assistant)</span>
+                        <h6 class="fw-bold text-dark mb-1">{{ selectedCenterForModal.helpingStaff?.name || 'सहायक उपलब्ध नहीं' }}</h6>
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill fs-8 mb-2">
+                            {{ selectedCenterForModal.helpingStaff?.role || 'Assistant / Coordinator' }}
+                        </span>
+                        <div *ngIf="selectedCenterForModal.helpingStaff?.contactNumber" class="fs-7 text-secondary mt-1">
+                            <i class="bi bi-telephone me-1 text-info"></i>
+                            <a [href]="getTelLink(selectedCenterForModal.helpingStaff?.contactNumber)" class="text-info fw-semibold text-decoration-none">
+                                {{ selectedCenterForModal.helpingStaff?.contactNumber }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workers on Duty Table -->
+            <div *ngIf="selectedCenterForModal.workers?.length" class="mb-4">
+                <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-people-fill text-success"></i> केंद्र पर कार्यरत कर्मचारी (Staff On Duty)
+                </h6>
+                <div class="table-responsive border rounded-3 overflow-hidden">
+                    <table class="table table-sm table-hover mb-0 fs-7">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">कर्मचारी का नाम</th>
+                                <th>पद / भूमिका (Role)</th>
+                                <th>संपर्क नंबर</th>
+                                <th>स्थिति</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let worker of selectedCenterForModal.workers">
+                                <td class="ps-3 fw-semibold text-dark">{{ worker.name }}</td>
+                                <td><span class="badge bg-light text-dark border">{{ worker.role || 'Staff' }}</span></td>
+                                <td>
+                                    <a *ngIf="worker.contactNumber" [href]="getTelLink(worker.contactNumber)" class="text-success text-decoration-none fw-semibold">
+                                        <i class="bi bi-telephone-fill fs-8 me-1"></i>{{ worker.contactNumber }}
+                                    </a>
+                                    <span *ngIf="!worker.contactNumber" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success rounded-pill fs-8">सक्रिय</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- How it Works for Farmers at this center -->
+            <div class="p-4 bg-emerald-50 rounded-4 border border-emerald-200 mb-2">
+                <h6 class="fw-bold text-emerald-900 mb-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-info-circle-fill text-success"></i> किसान अपनी फसल बेचने हेतु यह प्रक्रिया अपनाएं:
+                </h6>
+                <ol class="fs-7 text-emerald-800 mb-0 ps-3">
+                    <li class="mb-1"><strong>टोकन प्राप्त करें:</strong> केंद्र पर उपस्थित होकर या हेल्पलाइन पर संपर्क करके 4-अंकीय आवक टोकन जारी करवाएं।</li>
+                    <li class="mb-1"><strong>फसल लेकर आएं:</strong> अपने निर्धारित बिक्री दिन पर उपज लेकर केंद्र पर आएं।</li>
+                    <li class="mb-1"><strong>इलेक्ट्रॉनिक धर्मकांटा तौल:</strong> पारदर्शी डिजिटल तौल करवाएं और मौके पर तौल पर्ची प्राप्त करें।</li>
+                    <li><strong>प्रत्यक्ष बैंक भुगतान (DBT):</strong> समर्थन मूल्य की राशि सीधे अपने बैंक खाते में सुरक्षित पाएं।</li>
+                </ol>
+            </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer p-3 bg-light border-top d-flex align-items-center justify-content-between">
+            <span class="text-muted fs-8">हेल्पलाइन समय: 09:00 AM - 06:00 PM</span>
+            <button class="btn btn-secondary btn-sm rounded-pill px-4" (click)="closeDetailModal()">बंद करें</button>
+        </div>
+
+    </div>
+</div>

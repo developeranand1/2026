@@ -1,0 +1,126 @@
+.home-centers-section {
+    background: linear-gradient(180deg, #f8fbf9 0%, #f1f8f4 100%);
+
+    .section-title {
+        font-size: 1.85rem;
+        letter-spacing: -0.02em;
+    }
+}
+
+.fs-7 {
+    font-size: 0.85rem;
+}
+
+.fs-8 {
+    font-size: 0.75rem;
+}
+
+.center-home-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 1px solid rgba(22, 101, 52, 0.12) !important;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 28px rgba(16, 185, 129, 0.12), 0 6px 12px rgba(0, 0, 0, 0.05) !important;
+        border-color: #10b981 !important;
+
+        .center-thumb-img {
+            transform: scale(1.06);
+        }
+    }
+}
+
+.center-img-wrapper {
+    height: 190px;
+    background: #e2e8f0;
+
+    .center-thumb-img {
+        transition: transform 0.4s ease;
+    }
+
+    .backdrop-blur {
+        backdrop-filter: blur(6px);
+    }
+
+    .verified-ribbon {
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(15, 23, 42, 0.85) 100%);
+    }
+
+    .text-success-light {
+        color: #4ade80;
+    }
+
+    .bg-emerald-badge {
+        background: #059669;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.55rem;
+    }
+}
+
+.hover-emerald {
+    transition: color 0.15s ease;
+    &:hover {
+        color: #059669 !important;
+    }
+}
+
+.avatar-circle-sm {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.helpline-box {
+    background: #ecfdf5;
+    border: 1px dashed #6ee7b7;
+
+    .helpline-icon-pulse {
+        animation: pulseIcon 2s infinite ease-in-out;
+    }
+}
+
+@keyframes pulseIcon {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+.btn-emerald-soft {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #0284c7;
+        color: #ffffff;
+    }
+}
+
+.guide-icon-box {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

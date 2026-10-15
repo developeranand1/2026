@@ -1,0 +1,175 @@
+<section class="home-centers-section py-5 bg-light-subtle border-top border-bottom position-relative">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+            <div>
+                <span class="badge bg-success text-white rounded-pill px-3 py-1 fs-7 mb-2 d-inline-flex align-items-center gap-1 shadow-sm">
+                    <i class="bi bi-geo-alt-fill"></i> हमारे अधिकृत केंद्र (Our Centers)
+                </span>
+                <h2 class="section-title text-dark fw-bold mb-1">
+                    निकटतम कृषि सेवा एवं खरीद केंद्र
+                </h2>
+                <p class="section-subtitle text-muted fs-6 mb-0">
+                    फसल आवक टोकन, आधुनिक धर्मकांटा तौल व पारदर्शी समर्थन मूल्य भुगतान के लिए नजदीकी केंद्र पर पधारें।
+                </p>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a routerLink="/our-centers" class="btn btn-success rounded-pill px-4 btn-sm fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                    <span>सभी केंद्र देखें</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-success mb-2" role="status"></div>
+            <p class="text-muted fs-7">अधिकृत केंद्रों की सूची लोड हो रही है...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && centers.length === 0" class="text-center py-5 bg-white rounded-4 border shadow-sm p-4">
+            <i class="bi bi-building-exclamation fs-1 text-muted mb-2 d-block"></i>
+            <h5 class="fw-bold text-dark mb-1">वर्तमान में केंद्र उपलब्ध नहीं हैं</h5>
+            <p class="text-muted fs-7 mb-3">शीघ्र ही नए अधिकृत केंद्र जोड़े जा रहे हैं। कृपया हेल्पलाइन पर संपर्क करें।</p>
+            <a routerLink="/contact" class="btn btn-outline-success btn-sm rounded-pill px-3">कस्टमर केयर से संपर्क करें</a>
+        </div>
+
+        <!-- Centers Cards Grid -->
+        <div *ngIf="!isLoading && centers.length > 0" class="row g-4">
+            <div *ngFor="let center of centers" class="col-md-6 col-lg-4">
+                <div class="center-home-card bg-white rounded-4 overflow-hidden border shadow-sm h-100 d-flex flex-column transition-hover">
+                    
+                    <!-- Center Image Header with Overlay Badges -->
+                    <div class="center-img-wrapper position-relative overflow-hidden">
+                        <img 
+                            [src]="center.image || defaultImage" 
+                            [alt]="center.centerName" 
+                            class="w-100 h-100 object-fit-cover card-img-top center-thumb-img"
+                            onerror="this.src='https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80'">
+                        
+                        <!-- Open Hours Badge -->
+                        <span class="badge bg-dark bg-opacity-75 backdrop-blur text-white position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 fs-8 shadow-sm d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-clock-fill text-warning"></i> {{ center.openingTime || '09:00 AM - 06:00 PM' }}
+                        </span>
+
+                        <!-- Pincode Badge -->
+                        <span class="badge bg-success text-white position-absolute top-0 end-0 m-3 rounded-pill px-3 py-1 fs-8 shadow-sm d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-pin-map-fill"></i> PIN: {{ center.pinCode }}
+                        </span>
+
+                        <!-- Verification Shield -->
+                        <div class="verified-ribbon position-absolute bottom-0 start-0 w-100 py-1 px-3 d-flex align-items-center justify-content-between text-white fs-8">
+                            <span class="d-inline-flex align-items-center gap-1 fw-semibold">
+                                <i class="bi bi-patch-check-fill text-success-light"></i> अधिकृत सरकारी ई-मंडी केंद्र
+                            </span>
+                            <span class="badge bg-emerald-badge rounded-pill">सक्रिय</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                        <!-- Center Name -->
+                        <h3 class="center-title text-dark fw-bold fs-5 mb-2 line-clamp-1">
+                            <a [routerLink]="['/our-centers']" [queryParams]="{ centerId: center._id }" class="text-dark text-decoration-none hover-emerald">
+                                {{ center.centerName }}
+                            </a>
+                        </h3>
+
+                        <!-- Full Address -->
+                        <p class="center-address text-secondary fs-7 mb-3 d-flex align-items-start gap-2">
+                            <i class="bi bi-geo-alt text-danger fs-6 flex-shrink-0 mt-1"></i>
+                            <span class="line-clamp-2">{{ center.address }}</span>
+                        </p>
+
+                        <!-- Director / Main Person in charge -->
+                        <div class="incharge-chip bg-light rounded-3 p-2 px-3 mb-3 d-flex align-items-center justify-content-between border border-light-subtle">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-circle-sm bg-success text-white fw-bold">
+                                    {{ center.director.name ? center.director.name.charAt(0) : 'K' }}
+                                </div>
+                                <div>
+                                    <span class="d-block text-muted fs-8 fw-semibold text-uppercase">प्रभारी / Director</span>
+                                    <strong class="text-dark fs-7 d-block">{{ center.director.name || 'अधिकृत केंद्र संचालक' }}</strong>
+                                </div>
+                            </div>
+                            <span *ngIf="center.workers?.length" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fs-8">
+                                {{ center.workers?.length }} स्टाफ कार्यरत
+                            </span>
+                        </div>
+
+                        <!-- Live Helpline Row -->
+                        <div class="helpline-box rounded-3 p-3 mb-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="helpline-icon-pulse text-success fs-5">
+                                    <i class="bi bi-telephone-inbound-fill"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block text-muted fs-8 fw-semibold">सीधी हेल्पलाइन सहायता:</span>
+                                    <a [href]="getTelLink(center.helplineNumber)" class="text-success fw-bold text-decoration-none fs-6">
+                                        {{ center.helplineNumber }}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <a [href]="getTelLink(center.helplineNumber)" class="btn btn-success btn-sm rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1 shadow-sm">
+                                <i class="bi bi-telephone-fill"></i> Call
+                            </a>
+                        </div>
+
+                        <!-- Action Buttons Footer -->
+                        <div class="mt-auto pt-2 border-top d-flex align-items-center gap-2">
+                            <!-- Direct Google Maps Location -->
+                            <a 
+                                [href]="getGoogleMapsUrl(center)" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                class="btn btn-outline-danger btn-sm rounded-pill flex-fill d-inline-flex align-items-center justify-content-center gap-2 fw-semibold shadow-xs">
+                                <i class="bi bi-pin-map-fill text-danger"></i>
+                                <span>लोकेशन देखें</span>
+                            </a>
+
+                            <!-- Direct WhatsApp -->
+                            <a 
+                                [href]="getWhatsAppUrl(center)" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                class="btn btn-outline-success btn-sm rounded-pill px-3 d-inline-flex align-items-center justify-content-center" 
+                                title="WhatsApp पर संपर्क करें">
+                                <i class="bi bi-whatsapp fs-6"></i>
+                            </a>
+
+                            <!-- View Details & Services -->
+                            <a 
+                                [routerLink]="['/our-centers']" 
+                                [queryParams]="{ centerId: center._id }" 
+                                class="btn btn-emerald-soft btn-sm rounded-pill flex-fill d-inline-flex align-items-center justify-content-center gap-1 fw-bold">
+                                <span>विवरण</span>
+                                <i class="bi bi-chevron-right fs-8"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner for Farmer Guidance -->
+        <div class="mt-4 p-4 bg-success text-white rounded-4 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="guide-icon-box bg-white text-success rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-card-checklist fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">फसल बेचने हेतु आवक टोकन अनिवार्य है!</h5>
+                    <p class="mb-0 text-white-50 fs-7">केंद्र पर आने से पहले अपना डिजिटल टोकन प्राप्त करें और सीधे अपनी बारी पर बिना कतार के तुलाई करवाएं।</p>
+                </div>
+            </div>
+            <a routerLink="/our-centers" class="btn btn-warning rounded-pill px-4 fw-bold text-dark shadow-sm">
+                टोकन व केंद्र विवरण देखें <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+    </div>
+</section>

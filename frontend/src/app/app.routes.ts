@@ -31,9 +31,27 @@ import { AgriSchemesComponent } from './pages/agri-schemes/agri-schemes.componen
 import { TrainingsPageComponent } from './pages/trainings/trainings-page.component';
 import { TrainingDetailComponent } from './pages/trainings/training-detail/training-detail.component';
 import { LevyRatesPageComponent } from './pages/levy-rates/levy-rates.component';
+import { OurCentersComponent } from './pages/our-centers/our-centers.component';
 
 // Route configuration with comprehensive SEO Meta data for KrisiMarg application
 export const routes: Routes = [
+    {
+        path: 'our-centers',
+        component: OurCentersComponent,
+        title: 'हमारे अधिकृत कृषि सेवा एवं खरीद केंद्र (Our Centers) | KrisiMarg',
+        data: {
+            seo: {
+                title: 'हमारे अधिकृत कृषि सेवा एवं खरीद केंद्र | KrisiMarg',
+                description: 'नजदीकी अधिकृत कृषि सेवा केंद्र खोजें, लाइव हेल्पलाइन से बात करें, Google Maps रास्ता देखें और समर्थन मूल्य पर सीधे फसल बेचें।',
+                keywords: 'Krishi Kendra, Mandi Procurement Centers, Kisan Seva Kendra, MSP Khareed Kendra, KrisiMarg Centers'
+            }
+        }
+    },
+    {
+        path: 'our-centers/:id',
+        component: OurCentersComponent,
+        title: 'केंद्र विवरण एवं सेवाएं | KrisiMarg'
+    },
     {
         path: '',
         component: HomeComponent,

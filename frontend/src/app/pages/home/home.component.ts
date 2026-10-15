@@ -10,6 +10,7 @@ import { FarmerCtaComponent } from './components/farmer-cta/farmer-cta.component
 import { NewsletterComponent } from './components/newsletter/newsletter.component';
 import { HomeNewsComponent } from './components/home-news/home-news.component';
 import { HomeLevyCardComponent } from './components/home-levy-card/home-levy-card.component';
+import { HomeCentersComponent } from './components/home-centers/home-centers.component';
 import { SeoService } from '../../core/seo.service';
 
 @Component({
@@ -21,6 +22,7 @@ import { SeoService } from '../../core/seo.service';
     ProductsComponent,
     MandiRatesComponent,
     HomeLevyCardComponent,
+    HomeCentersComponent,
     KisanLoanCalculatorComponent,
     HomeNewsComponent,
     BenefitsComponent,
