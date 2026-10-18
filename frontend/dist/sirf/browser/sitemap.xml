@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- ========================================== -->
+  <!-- 1. CORE & PRIMARY PAGES                     -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://krisimarg.com/</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://krisimarg.com/imgs/banner/banner-all.png</image:loc>
+      <image:title>KrisiMarg - Bharat Ka Digital Krishi &amp; Mandi Bhav Platform</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/weather</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/news</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/about</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/team</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/contact</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/faq</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/login</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/privacy-policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/terms</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/refund-policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/disclaimer</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- 2. PRODUCT & CROP MARKETPLACE CATEGORIES    -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Grains</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Pulses</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Oilseeds</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Vegetables</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Fruits</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Cash%20Crops</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?category=Spices</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- 3. TOP COMMODITY-WISE MANDI BHAV PAGES      -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Wheat%20(Gehu)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Paddy%20(Dhan)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Mustard%20(Sarson)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Soybean</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Gram%20(Chana)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Cotton%20(Kapas)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Potato%20(Aloo)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Onion%20(Pyaz)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Tomato%20(Tamatar)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Maize%20(Makka)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Garlic%20(Lahsun)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Ginger%20(Adrak)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Apple%20(Seb)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Banana%20(Kela)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?commodity=Mango%20(Aam)</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- 4. TOP STATE-WISE MANDI RATES PAGES        -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Uttar%20Pradesh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Madhya%20Pradesh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Rajasthan</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Punjab</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Haryana</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Maharashtra</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Gujarat</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Bihar</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=West%20Bengal</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Karnataka</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Andhra%20Pradesh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/mandi-rates?state=Telangana</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- 5. NEWS DESK CATEGORIES & ARTICLES          -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://krisimarg.com/news?category=Mandi-Updates</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/news?category=Govt-Yojana</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/news?category=Crop-Advisory</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/news?category=Weather-Alerts</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://krisimarg.com/news?category=Organic-Farming</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.78</priority>
+  </url>
+
+</urlset>
