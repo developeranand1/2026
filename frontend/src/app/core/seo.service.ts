@@ -29,7 +29,7 @@ export class SeoService {
   private readonly DEFAULT_TITLE = 'KrisiMarg - भारत का डिजिटल कृषि बाज़ार | Mandi Bhav & Direct Farm Produce';
   private readonly DEFAULT_DESCRIPTION = 'KrisiMarg भारत का अग्रणी डिजिटल कृषि मंच है। लाइव मंडी भाव (APMC Mandi Rates), फसल खरीद-बिक्री (Direct Farm Gate Procurement), कृषि मौसम पूर्वानुमान और ताज़ा समाचार की सम्पूर्ण जानकारी प्राप्त करें।';
   private readonly DEFAULT_KEYWORDS = 'KrisiMarg, Krishi Marg, Mandi Bhav, APMC Mandi Rates, Kisan Marketplace, Gehu Bhav, Chana Rate, Soybean Price, Direct Farm Produce, Agriculture News India, Mausam Forecast, Barish Alert, किसान बाज़ार, मंडी भाव';
-  private readonly DEFAULT_IMAGE = 'https://krisimarg.com/imgs/banner/banner-all.png';
+  private readonly DEFAULT_IMAGE = 'https://krisimarg.com/imgs/og/krisimarg-og.png';
   private readonly BASE_URL = 'https://krisimarg.com';
   private readonly SITE_NAME = 'KrisiMarg';
 

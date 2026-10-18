@@ -100,7 +100,7 @@ export class CropDetailComponent implements OnInit {
       "@context": "https://schema.org",
       "@type": "Product",
       "name": name,
-      "image": img || "https://krisimarg.com/imgs/banner/banner-all.png",
+      "image": img || "https://krisimarg.com/imgs/og/krisimarg-og.png",
       "description": `Direct farm produce ${name} listed on KisanMarg from ${loc}`,
       "category": this.cropDetails.category || "Agricultural Produce",
       "offers": {
