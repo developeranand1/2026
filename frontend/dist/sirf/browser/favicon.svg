@@ -1,1 +1,89 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="41" height="45" viewBox="0 0 41 45"><metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description><dc:creator>RealFaviconGenerator</dc:creator><dc:source>https://realfavicongenerator.net</dc:source></rdf:Description></rdf:RDF></metadata><image width="41" height="45" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAtCAYAAAAz8ULgAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAA3pJREFUeAHFmV1W2kAUx++NVIl9KK6g9k09PugKCiuorqC4AnEFxhWoKxBXIDuQHUBPW/XNdAXlSWjF3N6ZhBDI1wzJpP9zgEyYj1/unY87EwAN0WN9m57sAT3axJ97kYYKZOlkxt2Jyz9ukGwC4oB+vDsAw9KClBpvnABCT14TNKBWu6eHzSP4n6JBo5F4/8m+C9xOfP3bpEUzLSkB63/ulvtekG7Ob7BFrZoDhpTt7trkwIfBcJD4v3gvwaJC+gCGlAMZXm1L0O/1pgSU6VhVLhhSJiSP5j7/9IPkNtTSAEVmGoEhYV6G0L1pcIvVObj7crFQXvTrjXEbCBuA1hD3XnqgqVzIIqCJ5RB7uPNyDBpSggwbJLzkEkdByaFsfHkA+blbICf9lAd7oxPcn3RBUcqTuVhtcG98DJONLYb4hDvjQ5hOWwy71BfpNhNQqGad6syrypZMk2yMVx3fogw4qXd4bh2AWtfoctc4yculvyzO4J5stka9jfuvQ2lRgmu2dhvsv4p9V9bSpp91Jy/XSpakx81z/naCKrow9W5hyi6uW+J+G/TU5y50jIejUWmQwnqwhjdQuvhhJ+tnSbD67l7Dr2BE7IH1SSfpHy3IWGBRtiz8nHgbdPRmENBXk/v7zXLUpQdp4RcwLjHw8JlBm2GzoCNLdWopQYSdebOqZeSyCMb3M6Es+Di/VC9laFSnyINfs8uaSv7FybsCyXiAOvNkDIjd6gHHf289ueTJezZBpeIoaXceJVkxQBG9WHgut6phpEK5QUB5fHAWBYQoZCxAne2pGdQvVAUoXfA2pCeX3mXI1Mi7UlAS0XxXcnBs4I8DX6i0NRAdmcMx0Uc5f5tvlBxgRACjHML1e+MrhrSfQSX+MwZKF+wlRxyEJc/D1LJANUA14no5ih3/kq4Ts3jQtAJTK9ZZEqg/D7aiozi1PvSGcp5k9zmcOgdVrep6Uc6DWx4JV8ExYkxyjCDesWUbvH5fyz4Z+dNZGfTB7nD6MjEPUY8/38Dz+vD63s3aJqQ3tfgUTgGLLpYNRiaUoKRl0SkEinjKloutGkWUuBErBMpnP6u4NLv6FBUBhZKVuaVdBZSPX7agZOWdTzqa8+go7Yy9iFSP/hwFi7rBBO1CydI5+nMyQF1TgEJaxywpoK5JwJUkQMP3NxxBVfXqTlsSVL5jrAbwH1A72Xw3Ae0+AAAAAElFTkSuQmCC"></image></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#198754" />
+      <stop offset="60%" stop-color="#146c43" />
+      <stop offset="100%" stop-color="#0d472b" />
+    </linearGradient>
+
+    <!-- Golden Wheat Gradient -->
+    <linearGradient id="wheatGrad" x1="0%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffe066" />
+      <stop offset="40%" stop-color="#ffc107" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <!-- Sprout Leaf Gradient -->
+    <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4ade80" />
+      <stop offset="50%" stop-color="#86efac" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+
+    <!-- Sun Glow Gradient -->
+    <linearGradient id="sunGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#eab308" stop-opacity="0.4" />
+    </linearGradient>
+
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Rounded Squircle Base -->
+  <rect x="4" y="4" width="120" height="120" rx="30" ry="30" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Highlight on Top Edge -->
+  <path d="M 34 6 L 94 6 C 114 6, 122 14, 122 34 L 122 44 C 118 20, 100 10, 80 10 L 48 10 C 28 10, 10 20, 6 44 L 6 34 C 6 14, 14 6, 34 6 Z" fill="#ffffff" opacity="0.12" />
+
+  <!-- Subtle Sun / Growth Aura in Background -->
+  <circle cx="84" cy="44" r="24" fill="url(#sunGlow)" opacity="0.45" filter="blur(2px)" />
+
+  <!-- Agricultural Golden Wheat & Green Sprout Emblem -->
+  <g filter="url(#shadow)" transform="translate(6, 6) scale(0.9)">
+    
+    <!-- Left: Golden Wheat Stalk -->
+    <!-- Stalk Stem Arc -->
+    <path d="M 62 108 C 54 88, 48 64, 52 38" fill="none" stroke="url(#wheatGrad)" stroke-width="4.5" stroke-linecap="round" />
+
+    <!-- Wheat Grains / Kernels -->
+    <!-- Top Tip -->
+    <path d="M 52 38 C 50 30, 54 22, 55 18 C 56 22, 60 30, 52 38 Z" fill="url(#wheatGrad)" />
+    <!-- Wheat awns (whiskers) -->
+    <path d="M 54 24 Q 48 14 42 10" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M 56 24 Q 62 14 68 8" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+    
+    <!-- Grain Pair 1 -->
+    <path d="M 51 40 C 42 36, 37 42, 38 48 C 42 50, 49 46, 51 40 Z" fill="url(#wheatGrad)" />
+    <path d="M 39 44 Q 30 38 24 34" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M 53 42 C 62 38, 67 44, 66 50 C 62 52, 55 48, 53 42 Z" fill="url(#wheatGrad)" />
+    <path d="M 65 46 Q 74 40 80 36" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+
+    <!-- Grain Pair 2 -->
+    <path d="M 50 54 C 40 50, 36 56, 37 63 C 42 65, 48 60, 50 54 Z" fill="url(#wheatGrad)" />
+    <path d="M 38 58 Q 28 54 22 50" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M 52 56 C 62 52, 66 58, 65 65 C 60 67, 54 62, 52 56 Z" fill="url(#wheatGrad)" />
+    <path d="M 64 60 Q 74 56 82 52" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+
+    <!-- Grain Pair 3 -->
+    <path d="M 50 68 C 42 65, 38 72, 40 78 C 44 80, 49 74, 50 68 Z" fill="url(#wheatGrad)" />
+    <path d="M 40 72 Q 32 68 26 64" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M 53 70 C 62 67, 65 74, 64 80 C 59 82, 55 76, 53 70 Z" fill="url(#wheatGrad)" />
+    <path d="M 63 74 Q 72 70 78 67" fill="none" stroke="#ffe066" stroke-width="1.8" stroke-linecap="round" />
+
+    <!-- Right: Vibrant Agricultural Green Leaf Sprout branching out -->
+    <!-- Main Leaf -->
+    <path d="M 58 78 C 65 68, 82 55, 96 58 C 98 72, 85 90, 68 88 C 62 87, 59 82, 58 78 Z" fill="url(#leafGrad)" />
+    <!-- Leaf Center Rib -->
+    <path d="M 58 78 Q 74 72 96 58" fill="none" stroke="#15803d" stroke-width="1.8" stroke-linecap="round" opacity="0.6" />
+
+    <!-- Small Upper Leaflet -->
+    <path d="M 66 58 C 72 50, 84 46, 92 48 C 93 57, 85 66, 74 65 C 69 64, 67 60, 66 58 Z" fill="#bbf7d0" />
+    <path d="M 66 58 Q 78 54 92 48" fill="none" stroke="#16a34a" stroke-width="1.4" opacity="0.5" />
+
+    <!-- Swooping Base Flourish (representing growth & road/Marg) -->
+    <path d="M 46 96 C 54 104, 70 108, 86 102 C 94 99, 100 93, 104 86" fill="none" stroke="url(#wheatGrad)" stroke-width="3.5" stroke-linecap="round" />
+  </g>
+</svg>

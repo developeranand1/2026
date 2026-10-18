@@ -1,9 +1,11 @@
-# Compiled output (admin/dist is allowed for direct deployment)
+# Compiled output (admin/dist and frontend/dist allowed for direct deployment)
 /tmp
 /out-tsc
 /bazel-out
 !admin/dist/
 !admin/dist/**
+!frontend/dist/
+!frontend/dist/**
 
 # Node
 node_modules/

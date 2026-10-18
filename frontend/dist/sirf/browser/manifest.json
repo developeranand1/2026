@@ -1,7 +1,7 @@
 {
   "name": "KrisiMarg - डिजिटल कृषि बाज़ार",
   "short_name": "KrisiMarg",
-  "description": "Bharat Ka Digital Krishi & Mandi Bhav Platform. Buy & Sell direct farm produce with live APMC mandi rates and weather advisories.",
+  "description": "भारत का डिजिटल कृषि मंच। लाइव मंडी भाव (APMC Rates), सीधी फसल खरीद-बिक्री व कृषि मौसम पूर्वानुमान।",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -10,8 +10,26 @@
   "lang": "hi",
   "icons": [
     {
-      "src": "imgs/logo/logo.png",
+      "src": "favicon.svg",
       "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "imgs/logo/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "imgs/logo/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     }
