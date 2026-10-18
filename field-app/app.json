@@ -26,11 +26,14 @@
         "backgroundColor": "#198754"
       },
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -46,6 +49,11 @@
           "photosPermission": "Allow KrisiMarg to access photos to upload expense receipts."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "36c6434e-5856-48f5-81a9-eb466b87d025"
+      }
+    }
   }
 }
