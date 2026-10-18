@@ -20,6 +20,10 @@ const paymentRoutes = require("./routes/payment.routes");
 const levyRateRoutes = require("./routes/levyRate.routes");
 const farmerRoutes = require("./routes/farmer.routes");
 const centerRoutes = require("./routes/center.routes");
+const staffRoutes = require("./routes/staff.routes");
+const officeFundRoutes = require("./routes/officeFund.routes");
+const fieldWorkRoutes = require("./routes/fieldWork.routes");
+const expenseRoutes = require("./routes/expense.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -69,6 +73,10 @@ app.use("/api/admin/levy-rates", levyRateRoutes);
 app.use("/api/admin/mandi-rates", levyRateRoutes);
 app.use("/api/centers", centerRoutes);
 app.use("/api/admin/centers", centerRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/office-fund", officeFundRoutes);
+app.use("/api/field-work", fieldWorkRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 // Also mount routes on /api/v1 to support v1 endpoints seamlessly
 app.use("/api/v1/auth", authRoutes);
@@ -87,6 +95,10 @@ app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/centers", centerRoutes);
 app.use("/api/v1/admin/centers", centerRoutes);
+app.use("/api/v1/staff", staffRoutes);
+app.use("/api/v1/office-fund", officeFundRoutes);
+app.use("/api/v1/field-work", fieldWorkRoutes);
+app.use("/api/v1/expenses", expenseRoutes);
 
 app.use(errorMiddleware);
 

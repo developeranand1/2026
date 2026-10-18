@@ -14,6 +14,10 @@ import { PaymentManagementComponent } from './admin/payments/payment-management.
 import { CenterManagementComponent } from './admin/centers/center-management.component';
 import { CenterDetailComponent } from './admin/centers/center-detail/center-detail.component';
 import { CenterFormComponent } from './admin/centers/center-form/center-form.component';
+import { FundsManagementComponent } from './admin/funds/funds-management.component';
+import { StaffManagementComponent } from './admin/staff/staff-management.component';
+import { FieldWorkManagementComponent } from './admin/field-work/field-work-management.component';
+import { ExpenseManagementComponent } from './admin/expenses/expense-management.component';
 
 export const routes: Routes = [
   {
@@ -122,6 +126,22 @@ export const routes: Routes = [
       {
         path: 'centers/:id',
         component: CenterDetailComponent
+      },
+      {
+        path: 'funds',
+        component: FundsManagementComponent
+      },
+      {
+        path: 'staff',
+        component: StaffManagementComponent
+      },
+      {
+        path: 'field-work',
+        component: FieldWorkManagementComponent
+      },
+      {
+        path: 'expenses',
+        component: ExpenseManagementComponent
       }
     ]
   },

@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  font-family: inherit;
+}
+
+.table th {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-label {
+  margin-bottom: 2px;
+}
+
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}

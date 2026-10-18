@@ -1,0 +1,279 @@
+<div class="container-fluid p-3">
+  <!-- Top Header Title & Actions -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h5 class="fw-bold m-0 text-dark">Office Funds & Investor Treasury</h5>
+      <small class="text-muted">Manage company capital, investor inflows, team disbursements & ledger</small>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-success btn-sm px-3" (click)="openCreateModal('OFFICE_EXPENSE')">
+        <i class="bi bi-dash-circle me-1"></i> Record Outflow
+      </button>
+      <button class="btn btn-success btn-sm px-3" (click)="openCreateModal('INVESTMENT_IN')">
+        <i class="bi bi-plus-circle me-1"></i> + Record Inflow / Investor
+      </button>
+    </div>
+  </div>
+
+  <!-- Metric Overview Cards -->
+  <div class="row g-2 mb-3">
+    <!-- Current Treasury Balance -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Current Balance</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Active</span>
+        </div>
+        <h4 class="fw-bold mb-1 text-success">
+          ₹{{ (overview?.currentBalance || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">Net available funds in company treasury</small>
+      </div>
+    </div>
+
+    <!-- Total Inflows / Investments -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Total Investments In</span>
+          <i class="bi bi-arrow-down-left text-success fs-5"></i>
+        </div>
+        <h4 class="fw-bold mb-1 text-dark">
+          ₹{{ (overview?.totalInvestments || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">From investors, founders & angels</small>
+      </div>
+    </div>
+
+    <!-- Field Disbursements -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Field Team Disbursements</span>
+          <i class="bi bi-geo-alt text-warning fs-5"></i>
+        </div>
+        <h4 class="fw-bold mb-1 text-warning">
+          ₹{{ (overview?.totalFieldExpensesDisbursed || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">Travel, DA, petrol & farmer meetings</small>
+      </div>
+    </div>
+
+    <!-- Total Outflows -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Total Outflow (Expenses)</span>
+          <i class="bi bi-arrow-up-right text-danger fs-5"></i>
+        </div>
+        <h4 class="fw-bold mb-1 text-danger">
+          ₹{{ (overview?.totalOutflow || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">Rent, tech, operations & payouts</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Ledger Table -->
+  <div class="card border-0 shadow-sm bg-white rounded-3">
+    <div class="card-header bg-white border-bottom p-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-semibold text-dark" style="font-size: 13px;">Ledger Transactions</span>
+        <span class="badge bg-light text-muted border">{{ transactions.length }} Records</span>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <!-- Direction Filter -->
+        <select class="form-select form-select-sm" style="width: 140px; font-size: 12px;" [(ngModel)]="filterDirection" (change)="loadTransactions()">
+          <option value="">All Flows</option>
+          <option value="INFLOW">Inflows (+)</option>
+          <option value="OUTFLOW">Outflows (-)</option>
+        </select>
+
+        <!-- Type Filter -->
+        <select class="form-select form-select-sm" style="width: 170px; font-size: 12px;" [(ngModel)]="filterType" (change)="loadTransactions()">
+          <option value="">All Categories</option>
+          <option value="INVESTMENT_IN">Investor Capital In</option>
+          <option value="FIELD_DISBURSEMENT">Field Team Payout</option>
+          <option value="OFFICE_EXPENSE">Office Expense</option>
+          <option value="SALARY_PAYOUT">Salary Payout</option>
+          <option value="REVENUE_IN">Platform Revenue</option>
+        </select>
+
+        <button class="btn btn-outline-secondary btn-sm" (click)="loadOverview(); loadTransactions()" title="Refresh">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive p-0">
+      <table class="table table-hover table-sm align-middle mb-0" style="font-size: 12px;">
+        <thead class="table-light text-uppercase text-muted" style="font-size: 11px;">
+          <tr>
+            <th class="ps-3 py-2">Date</th>
+            <th class="py-2">Description / Title</th>
+            <th class="py-2">Category</th>
+            <th class="py-2">Party / Investor / Staff</th>
+            <th class="py-2">Payment Mode</th>
+            <th class="py-2">Reference</th>
+            <th class="text-end pe-3 py-2">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="7" class="text-center py-4 text-muted">
+              <span class="spinner-border spinner-border-sm me-2 text-success"></span> Loading ledger records...
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && transactions.length === 0">
+            <td colspan="7" class="text-center py-4 text-muted">
+              No transactions recorded matching the selected filter.
+            </td>
+          </tr>
+          <tr *ngFor="let tx of transactions">
+            <td class="ps-3 py-2 text-muted fw-semibold">
+              {{ tx.date | date:'dd MMM yyyy' }}
+            </td>
+            <td class="py-2">
+              <span class="fw-semibold text-dark">{{ tx.title }}</span>
+              <div *ngIf="tx.notes" class="text-muted" style="font-size: 11px;">{{ tx.notes }}</div>
+            </td>
+            <td class="py-2">
+              <span class="badge" [ngClass]="{
+                'bg-success-subtle text-success border border-success-subtle': tx.type === 'INVESTMENT_IN',
+                'bg-warning-subtle text-warning-emphasis border border-warning-subtle': tx.type === 'FIELD_DISBURSEMENT',
+                'bg-info-subtle text-info border border-info-subtle': tx.type === 'REVENUE_IN',
+                'bg-danger-subtle text-danger border border-danger-subtle': tx.type === 'OFFICE_EXPENSE' || tx.type === 'SALARY_PAYOUT'
+              }">
+                {{ tx.type }}
+              </span>
+            </td>
+            <td class="py-2">
+              <div *ngIf="tx.investorDetails?.name" class="fw-semibold text-dark">
+                <i class="bi bi-briefcase me-1 text-primary"></i>{{ tx.investorDetails.name }}
+                <small *ngIf="tx.investorDetails.organization" class="text-muted d-block" style="font-size: 11px;">
+                  {{ tx.investorDetails.organization }}
+                </small>
+              </div>
+              <div *ngIf="tx.recipientStaff" class="fw-semibold text-dark">
+                <i class="bi bi-person me-1 text-warning"></i>{{ tx.recipientStaff.name }} ({{ tx.recipientStaff.designation }})
+              </div>
+              <div *ngIf="!tx.investorDetails?.name && !tx.recipientStaff" class="text-muted">
+                Company General
+              </div>
+            </td>
+            <td class="py-2 text-muted">
+              <span class="badge bg-light text-dark border">{{ tx.paymentMode }}</span>
+            </td>
+            <td class="py-2 text-muted" style="font-size: 11px; font-family: monospace;">
+              {{ tx.transactionReference || '—' }}
+            </td>
+            <td class="text-end pe-3 py-2 fw-bold" [ngClass]="tx.direction === 'INFLOW' ? 'text-success' : 'text-danger'">
+              {{ tx.direction === 'INFLOW' ? '+' : '-' }} ₹{{ tx.amount | number:'1.0-0' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Record Inflow / Outflow -->
+<div class="modal fade show d-block" *ngIf="showModal" style="background-color: rgba(0, 0, 0, 0.5);" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-3">
+      <div class="modal-header border-bottom p-3">
+        <h6 class="modal-title fw-bold text-dark m-0">
+          <i class="bi bi-cash-coin text-success me-1"></i> Record Fund Transaction
+        </h6>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body p-3">
+        <form (ngSubmit)="submitTransaction()">
+          <!-- Type Picker -->
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-muted" style="font-size: 11px;">TRANSACTION CATEGORY *</label>
+            <select class="form-select form-select-sm" [(ngModel)]="newTx.type" name="type" (change)="onTypeChange()" required>
+              <option value="INVESTMENT_IN">Investor Capital Inflow (+)</option>
+              <option value="REVENUE_IN">Platform Revenue Inflow (+)</option>
+              <option value="OFFICE_EXPENSE">Office Expense Outflow (-)</option>
+              <option value="FIELD_DISBURSEMENT">Field Team Disbursement (-)</option>
+              <option value="SALARY_PAYOUT">Salary Payout Outflow (-)</option>
+              <option value="OTHER_OUT">Miscellaneous Outflow (-)</option>
+            </select>
+          </div>
+
+          <!-- Title -->
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-muted" style="font-size: 11px;">TITLE / DESCRIPTION *</label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="newTx.title" name="title" placeholder="e.g. Seed Angel Investment or Office Internet Bill" required>
+          </div>
+
+          <!-- Amount & Payment Mode -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">AMOUNT (₹) *</label>
+              <input type="number" class="form-control form-control-sm" [(ngModel)]="newTx.amount" name="amount" placeholder="50000" min="1" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">PAYMENT MODE</label>
+              <select class="form-select form-select-sm" [(ngModel)]="newTx.paymentMode" name="paymentMode">
+                <option value="BANK_TRANSFER">Bank Transfer (NEFT/RTGS)</option>
+                <option value="UPI">UPI / GPay / PhonePe</option>
+                <option value="CHEQUE">Cheque</option>
+                <option value="CASH">Cash</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- If Investment Inflow: Investor Details Section -->
+          <div *ngIf="newTx.type === 'INVESTMENT_IN'" class="p-2 mb-2 border rounded-2 bg-light">
+            <div class="fw-semibold text-success mb-2" style="font-size: 11px;">INVESTOR / FUNDER INFORMATION</div>
+            <div class="row g-2 mb-1">
+              <div class="col-6">
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="newTx.investorDetails.name" name="invName" placeholder="Investor Name (e.g. Rajesh Kumar)">
+              </div>
+              <div class="col-6">
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="newTx.investorDetails.organization" name="invOrg" placeholder="Fund/Firm Name">
+              </div>
+            </div>
+            <div class="row g-2">
+              <div class="col-6">
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="newTx.investorDetails.mobile" name="invMobile" placeholder="Contact Mobile">
+              </div>
+              <div class="col-6">
+                <input type="number" class="form-control form-control-sm" [(ngModel)]="newTx.investorDetails.equityPercentage" name="invEquity" placeholder="Equity % (Optional)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Reference & Date -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">REF NO. / UTR</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="newTx.transactionReference" name="transactionReference" placeholder="UTR / Txn Ref ID">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">DATE</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="newTx.date" name="date">
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-muted" style="font-size: 11px;">REMARKS / NOTES</label>
+            <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="newTx.notes" name="notes" placeholder="Additional details or terms..."></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-success btn-sm px-3">
+              <i class="bi bi-check2-circle me-1"></i> Save to Ledger
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

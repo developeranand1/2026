@@ -1,0 +1,240 @@
+<div class="container-fluid p-3">
+  <!-- Top Title & Action -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h5 class="fw-bold m-0 text-dark">Staff & HR Management</h5>
+      <small class="text-muted">Separate internal roles (CEO, HR, Admin, Accountant, Field Officers) from public users</small>
+    </div>
+    <div>
+      <button class="btn btn-success btn-sm px-3" (click)="openCreateModal()">
+        <i class="bi bi-person-plus-fill me-1"></i> + Add Internal Staff
+      </button>
+    </div>
+  </div>
+
+  <!-- Role Filters & Search -->
+  <div class="card border-0 shadow-sm bg-white rounded-3 mb-3">
+    <div class="card-body p-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <input type="text" class="form-control form-control-sm" style="width: 220px; font-size: 12px;"
+          placeholder="Search name, mobile or role..." [(ngModel)]="searchQuery" (keyup.enter)="loadStaff()">
+
+        <select class="form-select form-select-sm" style="width: 150px; font-size: 12px;" [(ngModel)]="filterRole" (change)="loadStaff()">
+          <option value="">All Roles</option>
+          <option value="superadmin">Super Admin / CEO</option>
+          <option value="admin">Operations Admin</option>
+          <option value="hr">HR Manager</option>
+          <option value="accountant">Accountant</option>
+          <option value="ceo">CEO</option>
+          <option value="cto">CTO</option>
+          <option value="field_officer">Field Officer</option>
+          <option value="investor">Investor</option>
+        </select>
+
+        <select class="form-select form-select-sm" style="width: 130px; font-size: 12px;" [(ngModel)]="filterStatus" (change)="loadStaff()">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+        </select>
+
+        <button class="btn btn-primary btn-sm px-3" (click)="loadStaff()" style="font-size: 12px;">
+          Filter
+        </button>
+      </div>
+
+      <div class="text-muted fw-semibold" style="font-size: 12px;">
+        Total Personnel: <span class="badge bg-light text-dark border">{{ staffList.length }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Staff Members Table -->
+  <div class="card border-0 shadow-sm bg-white rounded-3">
+    <div class="table-responsive p-0">
+      <table class="table table-hover table-sm align-middle mb-0" style="font-size: 12px;">
+        <thead class="table-light text-uppercase text-muted" style="font-size: 11px;">
+          <tr>
+            <th class="ps-3 py-2">Staff Name</th>
+            <th class="py-2">Mobile / Login</th>
+            <th class="py-2">Role</th>
+            <th class="py-2">Department & Designation</th>
+            <th class="py-2">Field Area</th>
+            <th class="py-2">Daily Limit</th>
+            <th class="py-2">Status</th>
+            <th class="text-end pe-3 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="8" class="text-center py-4 text-muted">
+              <span class="spinner-border spinner-border-sm me-2 text-success"></span> Loading staff list...
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && staffList.length === 0">
+            <td colspan="8" class="text-center py-4 text-muted">
+              No staff members found matching criteria.
+            </td>
+          </tr>
+          <tr *ngFor="let staff of staffList">
+            <td class="ps-3 py-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center fw-bold"
+                  style="width: 30px; height: 30px; font-size: 12px;">
+                  {{ staff.name.charAt(0) }}
+                </div>
+                <div>
+                  <span class="fw-semibold text-dark">{{ staff.name }}</span>
+                  <div *ngIf="staff.email" class="text-muted" style="font-size: 11px;">{{ staff.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-2 font-monospace fw-semibold text-dark">
+              {{ staff.mobile }}
+            </td>
+            <td class="py-2">
+              <span class="badge" [ngClass]="{
+                'bg-dark text-white': staff.role === 'superadmin' || staff.role === 'ceo',
+                'bg-primary-subtle text-primary border border-primary-subtle': staff.role === 'admin' || staff.role === 'cto',
+                'bg-info-subtle text-info-emphasis border border-info-subtle': staff.role === 'hr',
+                'bg-warning-subtle text-warning-emphasis border border-warning-subtle': staff.role === 'accountant',
+                'bg-success-subtle text-success border border-success-subtle': staff.role === 'field_officer',
+                'bg-secondary-subtle text-secondary border border-secondary-subtle': staff.role === 'investor'
+              }">
+                {{ staff.role?.toUpperCase() }}
+              </span>
+            </td>
+            <td class="py-2">
+              <div class="fw-semibold text-dark">{{ staff.designation }}</div>
+              <small class="text-muted" style="font-size: 11px;">{{ staff.department }}</small>
+            </td>
+            <td class="py-2 text-muted">
+              <span *ngIf="staff.assignedArea?.district">
+                <i class="bi bi-geo-alt text-danger me-1"></i>{{ staff.assignedArea.district }}, {{ staff.assignedArea.state }}
+              </span>
+              <span *ngIf="!staff.assignedArea?.district">— Head Office</span>
+            </td>
+            <td class="py-2 fw-semibold text-dark">
+              ₹{{ staff.dailyExpenseLimit || 2000 }} / day
+            </td>
+            <td class="py-2">
+              <span class="badge" [ngClass]="staff.status === 'active' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                {{ staff.status }}
+              </span>
+            </td>
+            <td class="text-end pe-3 py-2">
+              <button class="btn btn-outline-secondary btn-sm py-0 px-2" (click)="toggleStatus(staff)" style="font-size: 11px;">
+                {{ staff.status === 'active' ? 'Suspend' : 'Activate' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add New Staff -->
+<div class="modal fade show d-block" *ngIf="showModal" style="background-color: rgba(0, 0, 0, 0.5);" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-3">
+      <div class="modal-header border-bottom p-3">
+        <h6 class="modal-title fw-bold text-dark m-0">
+          <i class="bi bi-person-badge text-success me-1"></i> Add Internal Staff Member
+        </h6>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body p-3">
+        <form (ngSubmit)="createStaff()">
+          <!-- Role Selector -->
+          <div class="mb-2">
+            <label class="form-label fw-semibold text-muted" style="font-size: 11px;">INTERNAL ROLE *</label>
+            <select class="form-select form-select-sm" [(ngModel)]="newStaff.role" name="role" (change)="onRolePresetChange()" required>
+              <option value="field_officer">Field Officer (Mobile App / Ground Duty)</option>
+              <option value="hr">HR Manager (Personnel & Expense Approvals)</option>
+              <option value="accountant">Accountant (Treasury & Payouts)</option>
+              <option value="admin">Operations Administrator</option>
+              <option value="ceo">CEO / Executive</option>
+              <option value="cto">CTO / Tech Lead</option>
+              <option value="investor">Strategic Investor (Read-only Fund Oversight)</option>
+            </select>
+          </div>
+
+          <!-- Name & Mobile -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">FULL NAME *</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="newStaff.name" name="name" placeholder="Staff Name" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">MOBILE (LOGIN ID) *</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="newStaff.mobile" name="mobile" placeholder="10-digit mobile" required>
+            </div>
+          </div>
+
+          <!-- Email & Password -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">EMAIL ADDRESS</label>
+              <input type="email" class="form-control form-control-sm" [(ngModel)]="newStaff.email" name="email" placeholder="staff@krisimarg.com">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">SET PASSWORD *</label>
+              <input type="password" class="form-control form-control-sm" [(ngModel)]="newStaff.password" name="password" placeholder="Min 6 chars" required>
+            </div>
+          </div>
+
+          <!-- Designation & Department -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">DESIGNATION</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="newStaff.designation" name="designation">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">DEPARTMENT</label>
+              <select class="form-select form-select-sm" [(ngModel)]="newStaff.department" name="department">
+                <option value="Operations">Operations</option>
+                <option value="Human Resources">Human Resources</option>
+                <option value="Finance">Finance</option>
+                <option value="Technology">Technology</option>
+                <option value="Executive">Executive</option>
+                <option value="Field Sourcing">Field Sourcing</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Salary & Daily Claim Limit -->
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">MONTHLY SALARY (₹)</label>
+              <input type="number" class="form-control form-control-sm" [(ngModel)]="newStaff.salary" name="salary" placeholder="30000">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">DAILY EXPENSE CLAIM LIMIT (₹)</label>
+              <input type="number" class="form-control form-control-sm" [(ngModel)]="newStaff.dailyExpenseLimit" name="dailyLimit" placeholder="2000">
+            </div>
+          </div>
+
+          <!-- Assigned Area -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">ASSIGNED DISTRICT</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="newStaff.assignedArea.district" name="district" placeholder="e.g. Sant Kabir Nagar">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold text-muted" style="font-size: 11px;">STATE</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="newStaff.assignedArea.state" name="state" placeholder="e.g. Uttar Pradesh">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-success btn-sm px-3">
+              <i class="bi bi-check2-circle me-1"></i> Create Staff Member
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

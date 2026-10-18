@@ -22,10 +22,10 @@ export class AdminLoginComponent implements OnInit {
   errorMessage = '';
 
   ngOnInit(): void {
-    // If already logged in as admin, auto-redirect to dashboard
     if (this.authService.isLoggedIn()) {
       const user = this.authService.getUser();
-      if (user && user.role === 'admin') {
+      const allowedRoles = ['admin', 'superadmin', 'hr', 'accountant', 'ceo', 'cto'];
+      if (user && allowedRoles.includes((user.role || '').toLowerCase())) {
         this.router.navigate(['/admin/dashboard']);
       }
     }
@@ -40,15 +40,19 @@ export class AdminLoginComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
+    const allowedRoles = ['admin', 'superadmin', 'hr', 'accountant', 'ceo', 'cto'];
+
+    // Try Staff Login first
     this.authService.login({ mobile: this.mobile, password: this.password }).subscribe({
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          if (response.data.role !== 'admin') {
-            this.errorMessage = 'Access denied. Account is not registered as an Admin.';
+          const role = (response.data.role || '').toLowerCase();
+          if (!allowedRoles.includes(role)) {
+            this.errorMessage = 'Access denied. Account is not authorized for Admin/Staff Portal.';
             Swal.fire({
               title: 'Access Restricted',
-              text: 'This account does not have Admin privileges.',
+              text: 'This account does not have Staff/Admin access rights.',
               icon: 'warning',
               confirmButtonColor: '#d33'
             });
@@ -56,8 +60,8 @@ export class AdminLoginComponent implements OnInit {
           }
 
           Swal.fire({
-            title: 'Welcome Admin!',
-            text: 'Logged into KrisiMarg Admin Dashboard successfully.',
+            title: `Welcome, ${response.data.name}!`,
+            text: `Signed in as [${response.data.role?.toUpperCase()}]`,
             icon: 'success',
             timer: 1500,
             showConfirmButton: false
@@ -67,13 +71,40 @@ export class AdminLoginComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Invalid credentials or database offline.';
-        Swal.fire({
-          title: 'Authentication Failed',
-          text: this.errorMessage,
-          icon: 'error',
-          confirmButtonColor: '#d33'
+        // Fallback to legacy user login (if admin exists in User table)
+        this.authService.loginGeneral({ mobile: this.mobile, password: this.password }).subscribe({
+          next: (res) => {
+            this.isLoading = false;
+            if (res.success && res.data.role === 'admin') {
+              Swal.fire({
+                title: 'Welcome Admin!',
+                text: 'Logged into KrisiMarg Admin Portal successfully.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                this.router.navigate(['/admin/dashboard']);
+              });
+            } else {
+              this.errorMessage = 'Access denied. Admin rights required.';
+              Swal.fire({
+                title: 'Access Restricted',
+                text: 'This account does not have Admin privileges.',
+                icon: 'warning',
+                confirmButtonColor: '#d33'
+              });
+            }
+          },
+          error: (legacyErr) => {
+            this.isLoading = false;
+            this.errorMessage = legacyErr.error?.message || err.error?.message || 'Invalid credentials or database connection failed.';
+            Swal.fire({
+              title: 'Authentication Failed',
+              text: this.errorMessage,
+              icon: 'error',
+              confirmButtonColor: '#d33'
+            });
+          }
         });
       }
     });

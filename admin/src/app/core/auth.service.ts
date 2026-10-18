@@ -9,12 +9,27 @@ import { environment } from '../../environments/environment';
 export class AuthService {
   private http = inject(HttpClient);
   private backendUrl = `${environment.apiUrl}/auth`;
+  private staffUrl = `${environment.apiUrl}/staff`;
 
-  
   /**
-   * Logs in a user (farmer, buyer, or admin)
+   * Logs in staff/admin or user
    */
   login(payload: any): Observable<any> {
+    // Try staff login first (for CEO, Admin, HR, Accountant)
+    return this.http.post<any>(`${this.staffUrl}/login`, payload).pipe(
+      tap(response => {
+        if (response && response.success) {
+          this.saveToken(response.token);
+          this.saveUser(response.data);
+        }
+      })
+    );
+  }
+
+  /**
+   * Fallback login directly to general auth
+   */
+  loginGeneral(payload: any): Observable<any> {
     return this.http.post<any>(`${this.backendUrl}/login`, payload).pipe(
       tap(response => {
         if (response && response.success) {
@@ -81,5 +96,22 @@ export class AuthService {
    */
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  /**
+   * Returns current user's role
+   */
+  getUserRole(): string {
+    const user = this.getUser();
+    return (user?.role || '').toLowerCase();
+  }
+
+  /**
+   * Checks if current staff has one of the allowed roles
+   */
+  hasRole(...allowedRoles: string[]): boolean {
+    const role = this.getUserRole();
+    if (role === 'superadmin') return true;
+    return allowedRoles.map(r => r.toLowerCase()).includes(role);
   }
 }

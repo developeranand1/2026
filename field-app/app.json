@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "KrisiMarg Field Officer",
+    "slug": "krisimarg-field-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#198754",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "KrisiMarg needs your GPS location to record field check-in and visit coordinates."
+      }
+    },
+    "android": {
+      "package": "com.krisimarg.fieldofficer",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#198754"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow KrisiMarg to access your location for field attendance and location-tagged reports."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow KrisiMarg to access photos to upload expense receipts."
+        }
+      ]
+    ]
+  }
+}

@@ -13,11 +13,14 @@ export class AdminGuard implements CanActivate {
     const user = this.authService.getUser();
     const token = this.authService.getToken();
 
-    if (token && user && user.role === 'admin') {
+    const allowedRoles = ['admin', 'superadmin', 'hr', 'accountant', 'ceo', 'cto'];
+    const role = (user?.role || '').toLowerCase();
+
+    if (token && user && allowedRoles.includes(role)) {
       return true;
     }
 
-    // Redirect to admin login if not logged in as admin
+    // Redirect to admin login if not authenticated with staff/admin role
     this.router.navigate(['/admin/login']);
     return false;
   }

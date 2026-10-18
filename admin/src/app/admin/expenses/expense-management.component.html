@@ -1,0 +1,209 @@
+<div class="container-fluid p-3">
+  <!-- Title & Action -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h5 class="fw-bold m-0 text-dark">Employee Expense Claims & Reimbursements</h5>
+      <small class="text-muted">Review field staff petrol, DA, lodging & farm visit bills, approve via HR, and disburse from Treasury</small>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm px-3" (click)="loadExpenses()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Refresh Claims
+      </button>
+    </div>
+  </div>
+
+  <!-- Metric Overview Cards -->
+  <div class="row g-2 mb-3">
+    <!-- Pending Approval -->
+    <div class="col-12 col-sm-4">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Pending HR Review</span>
+          <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">Action Required</span>
+        </div>
+        <h4 class="fw-bold mb-1 text-warning">
+          ₹{{ (summary?.totalPending || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">Submitted claims awaiting HR verification</small>
+      </div>
+    </div>
+
+    <!-- Approved Awaiting Payment -->
+    <div class="col-12 col-sm-4">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Approved (Awaiting Payout)</span>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Ready</span>
+        </div>
+        <h4 class="fw-bold mb-1 text-primary">
+          ₹{{ (summary?.totalApproved || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">Approved by HR, pending fund disbursement</small>
+      </div>
+    </div>
+
+    <!-- Total Reimbursed -->
+    <div class="col-12 col-sm-4">
+      <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-uppercase text-muted fw-semibold" style="font-size: 11px;">Paid & Reimbursed</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Completed</span>
+        </div>
+        <h4 class="fw-bold mb-1 text-success">
+          ₹{{ (summary?.totalPaid || 0) | number:'1.0-0' }}
+        </h4>
+        <small class="text-muted" style="font-size: 12px;">Disbursed from Treasury to employees</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card border-0 shadow-sm bg-white rounded-3 mb-3">
+    <div class="card-body p-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <select class="form-select form-select-sm" style="width: 170px; font-size: 12px;" [(ngModel)]="filterStatus" (change)="loadExpenses()">
+          <option value="">All Statuses</option>
+          <option value="PENDING">Pending Review</option>
+          <option value="APPROVED_BY_HR">Approved by HR</option>
+          <option value="PAID_REIMBURSED">Paid & Reimbursed</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+
+        <select class="form-select form-select-sm" style="width: 170px; font-size: 12px;" [(ngModel)]="filterCategory" (change)="loadExpenses()">
+          <option value="">All Categories</option>
+          <option value="TRAVEL_FUEL">Petrol / Travel Allowance</option>
+          <option value="FOOD_DA">Food / Daily Allowance</option>
+          <option value="LODGING">Night Stay / Lodging</option>
+          <option value="FARMER_MEETING">Farmer Meeting / Sourcing</option>
+          <option value="MOBILE_INTERNET">Mobile & Data</option>
+          <option value="STATIONERY">Stationery & Print</option>
+          <option value="MISCELLANEOUS">Miscellaneous</option>
+        </select>
+
+        <button class="btn btn-primary btn-sm px-3" (click)="loadExpenses()" style="font-size: 12px;">
+          Filter
+        </button>
+      </div>
+
+      <div class="text-muted fw-semibold" style="font-size: 12px;">
+        Total Claims: <span class="badge bg-light text-dark border">{{ expenses.length }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses Table -->
+  <div class="card border-0 shadow-sm bg-white rounded-3">
+    <div class="table-responsive p-0">
+      <table class="table table-hover table-sm align-middle mb-0" style="font-size: 12px;">
+        <thead class="table-light text-uppercase text-muted" style="font-size: 11px;">
+          <tr>
+            <th class="ps-3 py-2">Date</th>
+            <th class="py-2">Employee / Staff</th>
+            <th class="py-2">Category</th>
+            <th class="py-2">Purpose / Description</th>
+            <th class="py-2">Receipt Proof</th>
+            <th class="py-2">Amount</th>
+            <th class="py-2">Status</th>
+            <th class="text-end pe-3 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="8" class="text-center py-4 text-muted">
+              <span class="spinner-border spinner-border-sm me-2 text-success"></span> Loading expense claims...
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && expenses.length === 0">
+            <td colspan="8" class="text-center py-4 text-muted">
+              No expense claims found matching filter.
+            </td>
+          </tr>
+          <tr *ngFor="let exp of expenses">
+            <td class="ps-3 py-2 text-muted fw-semibold">
+              {{ exp.billDate | date:'dd MMM yyyy' }}
+            </td>
+            <td class="py-2">
+              <div class="fw-semibold text-dark">{{ exp.staff?.name || 'Staff' }}</div>
+              <small class="text-muted" style="font-size: 11px;">{{ exp.staff?.designation || exp.staff?.mobile }}</small>
+            </td>
+            <td class="py-2">
+              <span class="badge bg-light text-dark border">
+                {{ exp.category }}
+              </span>
+            </td>
+            <td class="py-2">
+              <div class="fw-semibold text-dark" style="max-width: 250px;">{{ exp.description }}</div>
+              <small *ngIf="exp.hrRemarks" class="text-muted d-block" style="font-size: 10px;">
+                <strong>HR Note:</strong> {{ exp.hrRemarks }}
+              </small>
+            </td>
+            <td class="py-2">
+              <button *ngIf="exp.billPhotoUrl" class="btn btn-outline-primary btn-sm py-0 px-2" (click)="viewBill(exp.billPhotoUrl)" style="font-size: 11px;">
+                <i class="bi bi-image me-1"></i> View Receipt
+              </button>
+              <span *ngIf="!exp.billPhotoUrl" class="text-muted fst-italic">No photo</span>
+            </td>
+            <td class="py-2 fw-bold text-dark" style="font-size: 13px;">
+              ₹{{ exp.amount | number:'1.0-0' }}
+            </td>
+            <td class="py-2">
+              <span class="badge" [ngClass]="{
+                'bg-warning-subtle text-warning-emphasis border border-warning-subtle': exp.status === 'PENDING',
+                'bg-primary-subtle text-primary border border-primary-subtle': exp.status === 'APPROVED_BY_HR' || exp.status === 'APPROVED_BY_ADMIN',
+                'bg-success-subtle text-success border border-success-subtle': exp.status === 'PAID_REIMBURSED',
+                'bg-danger-subtle text-danger border border-danger-subtle': exp.status === 'REJECTED'
+              }">
+                {{ exp.status }}
+              </span>
+            </td>
+            <td class="text-end pe-3 py-2">
+              <div class="d-flex align-items-center justify-content-end gap-1">
+                <!-- If PENDING: HR Approval / Rejection buttons -->
+                <ng-container *ngIf="exp.status === 'PENDING'">
+                  <button class="btn btn-success btn-sm py-0 px-2" (click)="reviewByHr(exp, 'APPROVE')" style="font-size: 11px;" title="Approve Claim">
+                    <i class="bi bi-check-lg"></i> Approve
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm py-0 px-2" (click)="reviewByHr(exp, 'REJECT')" style="font-size: 11px;" title="Reject Claim">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </ng-container>
+
+                <!-- If APPROVED: Disburse & Reimburse button -->
+                <ng-container *ngIf="exp.status === 'APPROVED_BY_HR' || exp.status === 'APPROVED_BY_ADMIN'">
+                  <button class="btn btn-primary btn-sm py-0 px-2" (click)="reimburseClaim(exp)" style="font-size: 11px;" title="Payout / Disburse">
+                    <i class="bi bi-cash-stack me-1"></i> Payout
+                  </button>
+                </ng-container>
+
+                <!-- If PAID: Show Payment reference -->
+                <ng-container *ngIf="exp.status === 'PAID_REIMBURSED'">
+                  <span class="badge bg-light text-muted border" style="font-size: 10px;">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i> Paid
+                  </span>
+                </ng-container>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Receipt Image Preview -->
+<div class="modal fade show d-block" *ngIf="previewBillUrl" style="background-color: rgba(0, 0, 0, 0.6);" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-3">
+      <div class="modal-header border-bottom p-2">
+        <span class="fw-semibold text-dark" style="font-size: 13px;">Receipt / Bill Proof Preview</span>
+        <button type="button" class="btn-close" (click)="closeBillPreview()"></button>
+      </div>
+      <div class="modal-body p-2 text-center bg-light">
+        <img [src]="previewBillUrl" class="img-fluid rounded" alt="Bill Preview" style="max-height: 450px;">
+      </div>
+      <div class="modal-footer border-top p-2">
+        <button type="button" class="btn btn-secondary btn-sm px-3" (click)="closeBillPreview()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
