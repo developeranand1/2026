@@ -565,14 +565,6 @@ export default function App() {
                   <Text style={styles.primaryBtnText}>Sign In to Field App</Text>
                 )}
               </TouchableOpacity>
-
-              {/* Demo Quick Fill for Instant Testing */}
-              <TouchableOpacity
-                style={styles.demoBtn}
-                onPress={() => handleLogin('9876543212', 'password123')}
-              >
-                <Text style={styles.demoBtnText}>⚡ 1-Tap Field Officer Demo Login</Text>
-              </TouchableOpacity>
             </View>
 
             <Text style={styles.footerNote}>KrisiMarg Technologies • Secure Field Sourcing</Text>
@@ -1610,16 +1602,6 @@ const styles = StyleSheet.create({
     marginTop: 6
   },
   primaryBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  demoBtn: {
-    marginTop: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#c6ebd0',
-    backgroundColor: '#e5f4e9',
-    alignItems: 'center'
-  },
-  demoBtnText: { color: '#198754', fontSize: 12, fontWeight: '700' },
   footerNote: { textAlign: 'center', color: '#999', fontSize: 11, marginTop: 24 },
 
   // App Header
