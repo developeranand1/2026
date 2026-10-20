@@ -13,11 +13,12 @@ import {
   Image,
   StatusBar,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Linking
 } from 'react-native';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { AuthService, FieldService, ExpenseService } from './src/services/api';
+import { AuthService, FieldService, ExpenseService, RegistrationService } from './src/services/api';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -47,9 +48,53 @@ export default function App() {
   const [expReceipt, setExpReceipt] = useState(null);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'history', 'expenses'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'register', 'registrations', 'expenses', 'history'
   const [historyList, setHistoryList] = useState([]);
   const [expenseList, setExpenseList] = useState([]);
+
+  // Registration Mode & Form States
+  const [regSubTab, setRegSubTab] = useState('farmer'); // 'farmer' | 'buyer'
+  const [registerSubmitting, setRegisterSubmitting] = useState(false);
+
+  // Farmer form fields
+  const [farmerName, setFarmerName] = useState('');
+  const [farmerMobile, setFarmerMobile] = useState('');
+  const [farmerFather, setFarmerFather] = useState('');
+  const [farmerLand, setFarmerLand] = useState('');
+  const [farmerLandUnit, setFarmerLandUnit] = useState('Bigha');
+  const [farmerIrrigation, setFarmerIrrigation] = useState('Irrigated');
+  const [farmerVillage, setFarmerVillage] = useState('');
+  const [farmerCity, setFarmerCity] = useState('');
+  const [farmerDistrict, setFarmerDistrict] = useState('');
+  const [farmerState, setFarmerState] = useState('Uttar Pradesh');
+  const [farmerPincode, setFarmerPincode] = useState('');
+  const [farmerAadhaar, setFarmerAadhaar] = useState('');
+  const [farmerPassword, setFarmerPassword] = useState('');
+  const [showFarmerPass, setShowFarmerPass] = useState(false);
+
+  // Buyer form fields
+  const [buyerName, setBuyerName] = useState('');
+  const [buyerMobile, setBuyerMobile] = useState('');
+  const [buyerCompany, setBuyerCompany] = useState('');
+  const [buyerGst, setBuyerGst] = useState('');
+  const [buyerStreet, setBuyerStreet] = useState('');
+  const [buyerCity, setBuyerCity] = useState('');
+  const [buyerDistrict, setBuyerDistrict] = useState('');
+  const [buyerState, setBuyerState] = useState('Uttar Pradesh');
+  const [buyerPincode, setBuyerPincode] = useState('');
+  const [buyerPassword, setBuyerPassword] = useState('');
+  const [showBuyerPass, setShowBuyerPass] = useState(false);
+
+  // Geo-tagging for registration
+  const [capturedGps, setCapturedGps] = useState(null);
+  const [gpsFetching, setGpsFetching] = useState(false);
+
+  // My Registrations List State
+  const [registrationsList, setRegistrationsList] = useState([]);
+  const [registrationsStats, setRegistrationsStats] = useState({ total: 0, farmers: 0, buyers: 0 });
+  const [regRoleFilter, setRegRoleFilter] = useState('all');
+  const [regSearch, setRegSearch] = useState('');
+  const [regLoading, setRegLoading] = useState(false);
 
   useEffect(() => {
     checkLoggedInUser();
@@ -130,6 +175,199 @@ export default function App() {
       if (res.success) setExpenseList(res.data);
     } catch (e) {
       console.log('Error loading expenses:', e);
+    }
+  };
+
+  // Load registered farmers & buyers for current field officer
+  const loadMyRegistrations = async (role = regRoleFilter, search = regSearch) => {
+    setRegLoading(true);
+    try {
+      const res = await RegistrationService.getMyRegistrations({ role, search });
+      if (res.success) {
+        setRegistrationsList(res.data);
+        if (res.stats) setRegistrationsStats(res.stats);
+      }
+    } catch (e) {
+      console.log('Error loading my registrations:', e);
+    } finally {
+      setRegLoading(false);
+    }
+  };
+
+  // Capture GPS coordinates for Registration
+  const handleCaptureRegistrationLocation = async () => {
+    setGpsFetching(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'GPS Location access is needed to geo-tag farmer/buyer registration.');
+        setGpsFetching(false);
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      let addressStr = `Lat: ${loc.coords.latitude.toFixed(4)}, Lng: ${loc.coords.longitude.toFixed(4)}`;
+      try {
+        const reverse = await Location.reverseGeocodeAsync({
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude
+        });
+        if (reverse && reverse.length > 0) {
+          const r = reverse[0];
+          addressStr = `${r.name || r.street || ''}, ${r.district || r.city || ''}, ${r.region || ''}`.replace(/^,\s*/, '');
+          if (r.district) {
+            setFarmerDistrict(r.district);
+            setBuyerDistrict(r.district);
+          }
+          if (r.city) {
+            setFarmerCity(r.city);
+            setBuyerCity(r.city);
+          }
+          if (r.region) {
+            setFarmerState(r.region);
+            setBuyerState(r.region);
+          }
+          if (r.postalCode) {
+            setFarmerPincode(r.postalCode);
+            setBuyerPincode(r.postalCode);
+          }
+        }
+      } catch (e) {
+        console.log('Reverse geocode error:', e);
+      }
+      setCapturedGps({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+        address: addressStr
+      });
+      Alert.alert('GPS Tagged', `Location locked:\n${addressStr}`);
+    } catch (e) {
+      Alert.alert('GPS Error', e.message);
+    } finally {
+      setGpsFetching(false);
+    }
+  };
+
+  // Submit Farmer Registration
+  const handleRegisterFarmerSubmit = async () => {
+    if (!farmerName.trim() || !farmerMobile.trim()) {
+      Alert.alert('Missing Required Fields', 'Please enter Farmer Name and 10-digit Mobile Number.');
+      return;
+    }
+    if (farmerMobile.trim().length !== 10) {
+      Alert.alert('Invalid Mobile', 'Mobile number must be exactly 10 digits.');
+      return;
+    }
+    if (farmerPassword.trim() && farmerPassword.trim().length < 6) {
+      Alert.alert('Short Password', 'Custom password must be at least 6 characters (or leave blank to use mobile number).');
+      return;
+    }
+    setRegisterSubmitting(true);
+    try {
+      const payload = {
+        name: farmerName.trim(),
+        mobile: farmerMobile.trim(),
+        password: farmerPassword.trim() || farmerMobile.trim(),
+        fatherName: farmerFather.trim(),
+        totalLand: farmerLand.trim(),
+        landUnit: farmerLandUnit,
+        irrigationType: farmerIrrigation,
+        village: farmerVillage.trim(),
+        city: farmerCity.trim(),
+        district: farmerDistrict.trim() || user?.assignedArea?.district || '',
+        state: farmerState.trim() || user?.assignedArea?.state || 'Uttar Pradesh',
+        pincode: farmerPincode.trim(),
+        aadhaarNumber: farmerAadhaar.trim(),
+        latitude: capturedGps?.latitude || null,
+        longitude: capturedGps?.longitude || null,
+        address: capturedGps?.address || `${farmerVillage}, ${farmerDistrict}`
+      };
+
+      const res = await RegistrationService.registerFarmer(payload);
+      if (res.success) {
+        Alert.alert(
+          '🌾 Farmer Registered Successfully!',
+          `${res.data.name} (${res.data.mobile}) has been enrolled.\nLogin ID: ${res.data.mobile}\nPassword: ${payload.password}`
+        );
+        // Clear fields
+        setFarmerName('');
+        setFarmerMobile('');
+        setFarmerPassword('');
+        setShowFarmerPass(false);
+        setFarmerFather('');
+        setFarmerLand('');
+        setFarmerVillage('');
+        setFarmerCity('');
+        setFarmerPincode('');
+        setFarmerAadhaar('');
+        setCapturedGps(null);
+        // Switch to list tab & refresh
+        setActiveTab('registrations');
+        loadMyRegistrations('farmer');
+      }
+    } catch (err) {
+      Alert.alert('Registration Failed', err.message);
+    } finally {
+      setRegisterSubmitting(false);
+    }
+  };
+
+  // Submit Buyer Registration
+  const handleRegisterBuyerSubmit = async () => {
+    if (!buyerName.trim() || !buyerMobile.trim()) {
+      Alert.alert('Missing Required Fields', 'Please enter Buyer / Contact Person Name and 10-digit Mobile Number.');
+      return;
+    }
+    if (buyerMobile.trim().length !== 10) {
+      Alert.alert('Invalid Mobile', 'Mobile number must be exactly 10 digits.');
+      return;
+    }
+    if (buyerPassword.trim() && buyerPassword.trim().length < 6) {
+      Alert.alert('Short Password', 'Custom password must be at least 6 characters (or leave blank to use mobile number).');
+      return;
+    }
+    setRegisterSubmitting(true);
+    try {
+      const payload = {
+        name: buyerName.trim(),
+        mobile: buyerMobile.trim(),
+        password: buyerPassword.trim() || buyerMobile.trim(),
+        companyName: buyerCompany.trim() || `${buyerName.trim()} Traders`,
+        gstNumber: buyerGst.trim(),
+        street: buyerStreet.trim(),
+        city: buyerCity.trim(),
+        district: buyerDistrict.trim() || user?.assignedArea?.district || '',
+        state: buyerState.trim() || user?.assignedArea?.state || 'Uttar Pradesh',
+        pincode: buyerPincode.trim(),
+        latitude: capturedGps?.latitude || null,
+        longitude: capturedGps?.longitude || null,
+        address: capturedGps?.address || `${buyerStreet}, ${buyerDistrict}`
+      };
+
+      const res = await RegistrationService.registerBuyer(payload);
+      if (res.success) {
+        Alert.alert(
+          '🏬 Buyer / Trader Registered Successfully!',
+          `${res.data.name} - ${payload.companyName} (${res.data.mobile}) has been enrolled.\nLogin ID: ${res.data.mobile}\nPassword: ${payload.password}`
+        );
+        // Clear fields
+        setBuyerName('');
+        setBuyerMobile('');
+        setBuyerPassword('');
+        setShowBuyerPass(false);
+        setBuyerCompany('');
+        setBuyerGst('');
+        setBuyerStreet('');
+        setBuyerCity('');
+        setBuyerPincode('');
+        setCapturedGps(null);
+        // Switch to list tab & refresh
+        setActiveTab('registrations');
+        loadMyRegistrations('buyer');
+      }
+    } catch (err) {
+      Alert.alert('Registration Failed', err.message);
+    } finally {
+      setRegisterSubmitting(false);
     }
   };
 
@@ -366,7 +604,30 @@ export default function App() {
           style={[styles.tabItem, activeTab === 'dashboard' && styles.tabItemActive]}
           onPress={() => setActiveTab('dashboard')}
         >
-          <Text style={[styles.tabText, activeTab === 'dashboard' && styles.tabTextActive]}>Today Duty</Text>
+          <Text style={[styles.tabText, activeTab === 'dashboard' && styles.tabTextActive]}>Duty</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'register' && styles.tabItemActive]}
+          onPress={() => {
+            setActiveTab('register');
+            if (user?.assignedArea?.district && !farmerDistrict) {
+              setFarmerDistrict(user.assignedArea.district);
+              setBuyerDistrict(user.assignedArea.district);
+            }
+          }}
+        >
+          <Text style={[styles.tabText, activeTab === 'register' && styles.tabTextActive]}>+ Enroll</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'registrations' && styles.tabItemActive]}
+          onPress={() => {
+            setActiveTab('registrations');
+            loadMyRegistrations();
+          }}
+        >
+          <Text style={[styles.tabText, activeTab === 'registrations' && styles.tabTextActive]}>My Leads</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -376,7 +637,7 @@ export default function App() {
             loadExpenses();
           }}
         >
-          <Text style={[styles.tabText, activeTab === 'expenses' && styles.tabTextActive]}>My Claims</Text>
+          <Text style={[styles.tabText, activeTab === 'expenses' && styles.tabTextActive]}>Claims</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -386,7 +647,7 @@ export default function App() {
             loadHistory();
           }}
         >
-          <Text style={[styles.tabText, activeTab === 'history' && styles.tabTextActive]}>Shift Logs</Text>
+          <Text style={[styles.tabText, activeTab === 'history' && styles.tabTextActive]}>Logs</Text>
         </TouchableOpacity>
       </View>
 
@@ -454,10 +715,71 @@ export default function App() {
               )}
             </View>
 
-            {/* Quick Actions Card */}
+            {/* Quick Operations Card */}
             <View style={styles.actionCard}>
-              <Text style={styles.sectionHeading}>Quick Operations</Text>
+              <Text style={styles.sectionHeading}>Field Operations & Registration</Text>
 
+              {/* Action 1: Register Farmer */}
+              <TouchableOpacity
+                style={styles.actionRowBtn}
+                onPress={() => {
+                  setRegSubTab('farmer');
+                  setActiveTab('register');
+                  if (user?.assignedArea?.district && !farmerDistrict) {
+                    setFarmerDistrict(user.assignedArea.district);
+                  }
+                }}
+              >
+                <View style={[styles.actionIconBox, { backgroundColor: '#eaf7ed' }]}>
+                  <Text style={{ fontSize: 20 }}>🌾</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.actionRowTitle}>Enroll New Farmer (किसान जोड़ें)</Text>
+                  <Text style={styles.actionRowSub}>Register farmer land, crops, village & phone</Text>
+                </View>
+                <Text style={{ color: '#198754', fontWeight: 'bold' }}>+ Add</Text>
+              </TouchableOpacity>
+
+              {/* Action 2: Register Buyer */}
+              <TouchableOpacity
+                style={styles.actionRowBtn}
+                onPress={() => {
+                  setRegSubTab('buyer');
+                  setActiveTab('register');
+                  if (user?.assignedArea?.district && !buyerDistrict) {
+                    setBuyerDistrict(user.assignedArea.district);
+                  }
+                }}
+              >
+                <View style={[styles.actionIconBox, { backgroundColor: '#e0f2fe' }]}>
+                  <Text style={{ fontSize: 20 }}>🏬</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.actionRowTitle}>Enroll Buyer / Trader (खरीदार जोड़ें)</Text>
+                  <Text style={styles.actionRowSub}>Onboard mandi traders, millers & buyers</Text>
+                </View>
+                <Text style={{ color: '#0369a1', fontWeight: 'bold' }}>+ Add</Text>
+              </TouchableOpacity>
+
+              {/* Action 3: View My Leads */}
+              <TouchableOpacity
+                style={styles.actionRowBtn}
+                onPress={() => {
+                  setActiveTab('registrations');
+                  loadMyRegistrations();
+                }}
+              >
+                <View style={[styles.actionIconBox, { backgroundColor: '#fef3c7' }]}>
+                  <Text style={{ fontSize: 20 }}>📋</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.actionRowTitle}>My Registered Farmers & Buyers</Text>
+                  <Text style={styles.actionRowSub}>View and call your enrolled field contacts</Text>
+                </View>
+                <Text style={{ color: '#92400e', fontWeight: 'bold' }}>View →</Text>
+              </TouchableOpacity>
+
+              {/* Action 4: Log Expense */}
               <TouchableOpacity
                 style={styles.actionRowBtn}
                 onPress={() => setShowExpenseModal(true)}
@@ -478,10 +800,533 @@ export default function App() {
               <Text style={styles.infoBannerTitle}>💡 Field Officer Guidelines</Text>
               <Text style={styles.infoBannerText}>
                 • Start work with active GPS before reaching farmer fields.
+                {'\n'}• Verify farmer Aadhaar & land details during village visits.
                 {'\n'}• Keep petrol bills/receipts for claims exceeding ₹500.
                 {'\n'}• Daily maximum claim allowance: ₹{user.dailyExpenseLimit || 2000}.
               </Text>
             </View>
+          </View>
+        )}
+
+        {/* ================= TAB 2: REGISTER FARMER / BUYER ================= */}
+        {activeTab === 'register' && (
+          <View>
+            {/* Toggle Segment: Farmer vs Buyer */}
+            <View style={styles.regToggleRow}>
+              <TouchableOpacity
+                style={[styles.regToggleBtn, regSubTab === 'farmer' && styles.regToggleBtnActive]}
+                onPress={() => setRegSubTab('farmer')}
+              >
+                <Text style={[styles.regToggleText, regSubTab === 'farmer' && styles.regToggleTextActive]}>
+                  🌾 Farmer Registration
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.regToggleBtn, regSubTab === 'buyer' && styles.regToggleBtnActive]}
+                onPress={() => setRegSubTab('buyer')}
+              >
+                <Text style={[styles.regToggleText, regSubTab === 'buyer' && styles.regToggleTextActive]}>
+                  🏬 Buyer / Trader
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* GPS Tagging Header Card */}
+            <View style={[styles.gpsTagBtn, capturedGps ? styles.gpsTagBtnLocked : null]}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.gpsTagText}>
+                  {capturedGps ? '📍 GPS Location Tagged' : '📍 Auto-Tag Current GPS Location'}
+                </Text>
+                <Text style={styles.gpsTagSub} numberOfLines={1}>
+                  {capturedGps ? capturedGps.address : 'Click button to attach current latitude/longitude proof'}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.gpsTagActionBtn}
+                onPress={handleCaptureRegistrationLocation}
+                disabled={gpsFetching}
+              >
+                {gpsFetching ? (
+                  <ActivityIndicator size="small" color="#198754" />
+                ) : (
+                  <Text style={styles.gpsTagActionBtnText}>
+                    {capturedGps ? 'Retag' : 'Tag GPS'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            {/* FORM 1: FARMER REGISTRATION */}
+            {regSubTab === 'farmer' && (
+              <View style={styles.formCard}>
+                <Text style={styles.formSectionTitle}>🌾 Farmer Details (किसान विवरण)</Text>
+                <Text style={styles.formSectionSub}>Registered farmer will be auto-verified and linked to your office ID.</Text>
+
+                <Text style={styles.inputLabel}>FARMER FULL NAME *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Ram Lakhan Verma"
+                  value={farmerName}
+                  onChangeText={setFarmerName}
+                />
+
+                <Text style={styles.inputLabel}>MOBILE NUMBER (LOGIN ID) *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="10-digit mobile number"
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  value={farmerMobile}
+                  onChangeText={setFarmerMobile}
+                />
+
+                <Text style={styles.inputLabel}>APP LOGIN PASSWORD (कस्टम पासवर्ड)</Text>
+                <View style={styles.passInputWrapper}>
+                  <TextInput
+                    style={styles.passInput}
+                    placeholder="Default: Mobile Number (or set custom)"
+                    secureTextEntry={!showFarmerPass}
+                    value={farmerPassword}
+                    onChangeText={setFarmerPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.passToggleBtn}
+                    onPress={() => setShowFarmerPass(!showFarmerPass)}
+                  >
+                    <Text style={{ fontSize: 16 }}>{showFarmerPass ? '🙈' : '👁️'}</Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.passNote}>
+                  {farmerPassword
+                    ? `🔑 Custom Password: "${farmerPassword}"`
+                    : '💡 Khali chhodne par farmer ka mobile number hi password banega.'}
+                </Text>
+
+                <Text style={styles.inputLabel}>FATHER'S NAME (पिता का नाम)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Late Shri Sukhdev Verma"
+                  value={farmerFather}
+                  onChangeText={setFarmerFather}
+                />
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>TOTAL LAND HOLDING</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. 5"
+                      keyboardType="numeric"
+                      value={farmerLand}
+                      onChangeText={setFarmerLand}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>UNIT</Text>
+                    <View style={styles.unitRow}>
+                      {['Bigha', 'Acre', 'Hectare'].map((unit) => (
+                        <TouchableOpacity
+                          key={unit}
+                          style={[styles.unitChip, farmerLandUnit === unit && styles.unitChipActive]}
+                          onPress={() => setFarmerLandUnit(unit)}
+                        >
+                          <Text style={[styles.unitChipText, farmerLandUnit === unit && styles.unitChipTextActive]}>
+                            {unit}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+
+                <Text style={styles.inputLabel}>IRRIGATION TYPE (सिंचाई प्रकार)</Text>
+                <View style={styles.unitRow}>
+                  {['Irrigated', 'Rainfed / Barani', 'Semi-irrigated'].map((irr) => (
+                    <TouchableOpacity
+                      key={irr}
+                      style={[styles.unitChip, farmerIrrigation === irr && styles.unitChipActive]}
+                      onPress={() => setFarmerIrrigation(irr)}
+                    >
+                      <Text style={[styles.unitChipText, farmerIrrigation === irr && styles.unitChipTextActive]}>
+                        {irr}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <Text style={[styles.inputLabel, { marginTop: 10 }]}>VILLAGE / GRAM PANCHAYAT *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Bankata, Rampur"
+                  value={farmerVillage}
+                  onChangeText={setFarmerVillage}
+                />
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>TEHSIL / CITY</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Khalilabad"
+                      value={farmerCity}
+                      onChangeText={setFarmerCity}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>DISTRICT *</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Sant Kabir Nagar"
+                      value={farmerDistrict}
+                      onChangeText={setFarmerDistrict}
+                    />
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>STATE</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Uttar Pradesh"
+                      value={farmerState}
+                      onChangeText={setFarmerState}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>PINCODE</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. 272175"
+                      keyboardType="numeric"
+                      maxLength={6}
+                      value={farmerPincode}
+                      onChangeText={setFarmerPincode}
+                    />
+                  </View>
+                </View>
+
+                <Text style={styles.inputLabel}>AADHAAR NUMBER (OPTIONAL)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="12-digit Aadhaar number"
+                  keyboardType="numeric"
+                  maxLength={12}
+                  value={farmerAadhaar}
+                  onChangeText={setFarmerAadhaar}
+                />
+
+                <TouchableOpacity
+                  style={[styles.submitRegBtn, registerSubmitting && { opacity: 0.7 }]}
+                  onPress={handleRegisterFarmerSubmit}
+                  disabled={registerSubmitting}
+                >
+                  {registerSubmitting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.submitRegBtnText}>🌾 Complete Farmer Enrollment</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* FORM 2: BUYER / TRADER REGISTRATION */}
+            {regSubTab === 'buyer' && (
+              <View style={styles.formCard}>
+                <Text style={styles.formSectionTitle}>🏬 Buyer & Trader Details (खरीदार विवरण)</Text>
+                <Text style={styles.formSectionSub}>Onboard mandi arhatiyas, millers, and corporate grain procurement traders.</Text>
+
+                <Text style={styles.inputLabel}>CONTACT PERSON / OWNER NAME *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Suresh Kumar Agarwal"
+                  value={buyerName}
+                  onChangeText={setBuyerName}
+                />
+
+                <Text style={styles.inputLabel}>MOBILE NUMBER (LOGIN ID) *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="10-digit mobile number"
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  value={buyerMobile}
+                  onChangeText={setBuyerMobile}
+                />
+
+                <Text style={styles.inputLabel}>APP LOGIN PASSWORD (कस्टम पासवर्ड)</Text>
+                <View style={styles.passInputWrapper}>
+                  <TextInput
+                    style={styles.passInput}
+                    placeholder="Default: Mobile Number (or set custom)"
+                    secureTextEntry={!showBuyerPass}
+                    value={buyerPassword}
+                    onChangeText={setBuyerPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.passToggleBtn}
+                    onPress={() => setShowBuyerPass(!showBuyerPass)}
+                  >
+                    <Text style={{ fontSize: 16 }}>{showBuyerPass ? '🙈' : '👁️'}</Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.passNote}>
+                  {buyerPassword
+                    ? `🔑 Custom Password: "${buyerPassword}"`
+                    : '💡 Khali chhodne par buyer ka mobile number hi password banega.'}
+                </Text>
+
+                <Text style={styles.inputLabel}>TRADING FIRM / COMPANY NAME *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Agarwal Agro Commodities Ltd"
+                  value={buyerCompany}
+                  onChangeText={setBuyerCompany}
+                />
+
+                <Text style={styles.inputLabel}>GST NUMBER (OPTIONAL)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. 09ABCDE1234F1Z5"
+                  autoCapitalize="characters"
+                  value={buyerGst}
+                  onChangeText={setBuyerGst}
+                />
+
+                <Text style={styles.inputLabel}>MANDI SHOP / STREET ADDRESS *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Shop No. 14, Anaj Mandi Road"
+                  value={buyerStreet}
+                  onChangeText={setBuyerStreet}
+                />
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>MANDI / CITY</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Gorakhpur Mandi"
+                      value={buyerCity}
+                      onChangeText={setBuyerCity}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>DISTRICT *</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Gorakhpur"
+                      value={buyerDistrict}
+                      onChangeText={setBuyerDistrict}
+                    />
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>STATE</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Uttar Pradesh"
+                      value={buyerState}
+                      onChangeText={setBuyerState}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.inputLabel}>PINCODE</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. 273001"
+                      keyboardType="numeric"
+                      maxLength={6}
+                      value={buyerPincode}
+                      onChangeText={setBuyerPincode}
+                    />
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.submitRegBtn, { backgroundColor: '#0369a1' }, registerSubmitting && { opacity: 0.7 }]}
+                  onPress={handleRegisterBuyerSubmit}
+                  disabled={registerSubmitting}
+                >
+                  {registerSubmitting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.submitRegBtnText}>🏬 Complete Buyer Enrollment</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ================= TAB 3: MY LEADS / REGISTRATIONS ================= */}
+        {activeTab === 'registrations' && (
+          <View>
+            {/* Metric Banner */}
+            <View style={styles.leadsMetricCard}>
+              <View style={styles.leadsMetricItem}>
+                <Text style={styles.leadsMetricNum}>{registrationsStats.total || 0}</Text>
+                <Text style={styles.leadsMetricLabel}>Total Leads</Text>
+              </View>
+              <View style={styles.leadsMetricDivider} />
+              <View style={styles.leadsMetricItem}>
+                <Text style={[styles.leadsMetricNum, { color: '#198754' }]}>{registrationsStats.farmers || 0}</Text>
+                <Text style={styles.leadsMetricLabel}>🌾 Farmers</Text>
+              </View>
+              <View style={styles.leadsMetricDivider} />
+              <View style={styles.leadsMetricItem}>
+                <Text style={[styles.leadsMetricNum, { color: '#0369a1' }]}>{registrationsStats.buyers || 0}</Text>
+                <Text style={styles.leadsMetricLabel}>🏬 Buyers</Text>
+              </View>
+            </View>
+
+            {/* Search Box with Clear Button */}
+            <View style={styles.searchBox}>
+              <View style={styles.searchBarContainer}>
+                <Text style={{ fontSize: 16, marginRight: 6 }}>🔍</Text>
+                <TextInput
+                  style={styles.searchInputField}
+                  placeholder="Search by name, mobile, village, city, firm..."
+                  value={regSearch}
+                  onChangeText={(text) => {
+                    setRegSearch(text);
+                    loadMyRegistrations(regRoleFilter, text);
+                  }}
+                />
+                {regSearch ? (
+                  <TouchableOpacity
+                    style={styles.searchClearBtn}
+                    onPress={() => {
+                      setRegSearch('');
+                      loadMyRegistrations(regRoleFilter, '');
+                    }}
+                  >
+                    <Text style={{ fontSize: 13, color: '#888', fontWeight: 'bold' }}>✕</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            </View>
+
+            {/* Filter Pills */}
+            <View style={styles.filterPillsRow}>
+              {[
+                { label: 'All Leads', value: 'all' },
+                { label: '🌾 Farmers', value: 'farmer' },
+                { label: '🏬 Buyers', value: 'buyer' }
+              ].map((pill) => (
+                <TouchableOpacity
+                  key={pill.value}
+                  style={[styles.filterPill, regRoleFilter === pill.value && styles.filterPillActive]}
+                  onPress={() => {
+                    setRegRoleFilter(pill.value);
+                    loadMyRegistrations(pill.value, regSearch);
+                  }}
+                >
+                  <Text style={[styles.filterPillText, regRoleFilter === pill.value && styles.filterPillTextActive]}>
+                    {pill.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* List */}
+            {regLoading ? (
+              <View style={styles.emptyBox}>
+                <ActivityIndicator size="small" color="#198754" />
+                <Text style={{ marginTop: 8, color: '#666', fontSize: 12 }}>Loading registered leads...</Text>
+              </View>
+            ) : registrationsList.length === 0 ? (
+              <View style={styles.emptyBox}>
+                <Text style={{ fontSize: 32, marginBottom: 8 }}>📋</Text>
+                <Text style={styles.emptyText}>No registered farmers or buyers found.</Text>
+                <TouchableOpacity
+                  style={[styles.smallAddBtn, { marginTop: 12 }]}
+                  onPress={() => setActiveTab('register')}
+                >
+                  <Text style={styles.smallAddBtnText}>+ Enroll First Lead Now</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              registrationsList.map((item) => (
+                <View key={item._id} style={styles.leadCard}>
+                  <View style={styles.leadCardTop}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <Text style={[styles.roleBadge, item.role === 'farmer' ? styles.roleBadgeFarmer : styles.roleBadgeBuyer]}>
+                        {item.role === 'farmer' ? '🌾 Farmer' : '🏬 Buyer / Trader'}
+                      </Text>
+                      <Text style={styles.fieldVerifiedTag}>✓ Field Verified</Text>
+                    </View>
+                    <Text style={styles.leadDateText}>
+                      {new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </Text>
+                  </View>
+
+                  <View style={{ marginTop: 8 }}>
+                    <Text style={styles.leadName}>{item.name}</Text>
+                    {item.role === 'buyer' && item.buyerProfile?.companyName ? (
+                      <Text style={styles.leadCompanyText}>🏢 {item.buyerProfile.companyName}</Text>
+                    ) : null}
+                    {item.role === 'farmer' && item.farmerProfile?.fatherName ? (
+                      <Text style={styles.leadFatherText}>s/o {item.farmerProfile.fatherName}</Text>
+                    ) : null}
+                  </View>
+
+                  {/* Location Info */}
+                  <Text style={styles.leadLocText}>
+                    📍 {item.role === 'farmer'
+                      ? `${item.farmerProfile?.location?.village || ''}, ${item.farmerProfile?.location?.district || ''}, ${item.farmerProfile?.location?.state || ''}`.replace(/^,\s*/, '')
+                      : `${item.buyerProfile?.address?.street || ''}, ${item.buyerProfile?.address?.district || ''}, ${item.buyerProfile?.address?.state || ''}`.replace(/^,\s*/, '')
+                    }
+                  </Text>
+
+                  {/* Additional details */}
+                  {item.role === 'farmer' && item.farmerProfile?.totalLand ? (
+                    <Text style={styles.leadMetaText}>
+                      🌱 Land: {item.farmerProfile.totalLand} {item.farmerProfile.landUnit || 'Bigha'} • {item.farmerProfile.irrigationType || 'Irrigated'}
+                    </Text>
+                  ) : null}
+
+                  {item.role === 'buyer' && item.buyerProfile?.gstNumber ? (
+                    <Text style={styles.leadMetaText}>
+                      📜 GST: {item.buyerProfile.gstNumber}
+                    </Text>
+                  ) : null}
+
+                  {/* Credentials Reminder Box */}
+                  <View style={styles.credRow}>
+                    <Text style={styles.credText}>
+                      🔑 <Text style={{ fontWeight: 'bold' }}>Login ID:</Text> {item.mobile}  •  <Text style={{ fontWeight: 'bold' }}>Pass:</Text> Mobile / Custom
+                    </Text>
+                  </View>
+
+                  {/* Action Row: Call & WhatsApp */}
+                  <View style={styles.leadBottomRow}>
+                    <Text style={styles.leadPhoneText}>📱 {item.mobile}</Text>
+                    <View style={{ flexDirection: 'row', gap: 6 }}>
+                      <TouchableOpacity
+                        style={styles.whatsappBtn}
+                        onPress={() => {
+                          const msg = `Namaste ${item.name}, aapka KrisiMarg account ban gaya hai. Mobile: ${item.mobile}`;
+                          Linking.openURL(`https://wa.me/91${item.mobile}?text=${encodeURIComponent(msg)}`);
+                        }}
+                      >
+                        <Text style={styles.whatsappBtnText}>💬 WhatsApp</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.callBtn}
+                        onPress={() => Linking.openURL(`tel:${item.mobile}`)}
+                      >
+                        <Text style={styles.callBtnText}>📞 Call</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              ))
+            )}
           </View>
         )}
 
@@ -964,5 +1809,227 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
     backgroundColor: '#fbfdfc'
-  }
+  },
+
+  // Registration Segment & Form Styles
+  regToggleRow: {
+    flexDirection: 'row',
+    backgroundColor: '#e2e8f0',
+    borderRadius: 10,
+    padding: 3,
+    marginBottom: 12
+  },
+  regToggleBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 8
+  },
+  regToggleBtnActive: {
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2
+  },
+  regToggleText: { fontSize: 12, fontWeight: '600', color: '#64748b' },
+  regToggleTextActive: { color: '#0f172a', fontWeight: 'bold' },
+
+  gpsTagBtn: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: 10,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12
+  },
+  gpsTagBtnLocked: {
+    backgroundColor: '#f0fdf4',
+    borderColor: '#86efac'
+  },
+  gpsTagText: { fontSize: 12, fontWeight: 'bold', color: '#166534' },
+  gpsTagSub: { fontSize: 11, color: '#64748b', marginTop: 2 },
+  gpsTagActionBtn: {
+    backgroundColor: '#e2e8f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6
+  },
+  gpsTagActionBtnText: { fontSize: 11, fontWeight: 'bold', color: '#1e293b' },
+
+  formCard: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 16
+  },
+  formSectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#0f172a', marginBottom: 2 },
+  formSectionSub: { fontSize: 11, color: '#64748b', marginBottom: 14 },
+
+  unitRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 },
+  unitChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, backgroundColor: '#f1f5f9' },
+  unitChipActive: { backgroundColor: '#198754' },
+  unitChipText: { fontSize: 11, color: '#475569', fontWeight: '600' },
+  unitChipTextActive: { color: '#fff', fontWeight: 'bold' },
+
+  submitRegBtn: {
+    backgroundColor: '#198754',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10
+  },
+  submitRegBtnText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
+
+  // Leads & Directory Styles
+  leadsMetricCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 12
+  },
+  leadsMetricItem: { alignItems: 'center' },
+  leadsMetricNum: { fontSize: 20, fontWeight: 'bold', color: '#0f172a' },
+  leadsMetricLabel: { fontSize: 11, color: '#64748b', marginTop: 2 },
+  leadsMetricDivider: { width: 1, height: 28, backgroundColor: '#e2e8f0' },
+
+  searchBox: { marginBottom: 10 },
+  searchInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13
+  },
+
+  filterPillsRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  filterPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9'
+  },
+  filterPillActive: { backgroundColor: '#198754' },
+  filterPillText: { fontSize: 11, color: '#475569', fontWeight: '600' },
+  filterPillTextActive: { color: '#fff', fontWeight: 'bold' },
+
+  leadCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#e2e8f0'
+  },
+  leadCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  roleBadge: { fontSize: 10, fontWeight: 'bold', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  roleBadgeFarmer: { backgroundColor: '#dcfce7', color: '#15803d' },
+  roleBadgeBuyer: { backgroundColor: '#e0f2fe', color: '#0369a1' },
+  fieldVerifiedTag: { fontSize: 10, color: '#16a34a', fontWeight: '700' },
+  leadDateText: { fontSize: 10, color: '#94a3b8' },
+
+  leadName: { fontSize: 15, fontWeight: 'bold', color: '#0f172a' },
+  leadCompanyText: { fontSize: 12, color: '#0369a1', fontWeight: '600', marginTop: 2 },
+  leadFatherText: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  leadLocText: { fontSize: 12, color: '#475569', marginTop: 6 },
+  leadMetaText: { fontSize: 11, color: '#64748b', marginTop: 4 },
+
+  leadBottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9'
+  },
+  leadPhoneText: { fontSize: 13, fontWeight: 'bold', color: '#0f172a' },
+  callBtn: {
+    backgroundColor: '#198754',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6
+  },
+  callBtnText: { color: '#fff', fontSize: 11, fontWeight: 'bold' },
+
+  // Password Input Styles
+  passInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    backgroundColor: '#fbfcfd',
+    marginBottom: 4
+  },
+  passInput: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#0f172a'
+  },
+  passToggleBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 10
+  },
+  passNote: {
+    fontSize: 11,
+    color: '#64748b',
+    marginBottom: 14,
+    fontStyle: 'italic'
+  },
+
+  // Enhanced Search Bar
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4
+  },
+  searchInputField: {
+    flex: 1,
+    fontSize: 13,
+    color: '#0f172a',
+    paddingVertical: 6
+  },
+  searchClearBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4
+  },
+
+  // Credentials Box & Buttons
+  credRow: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0'
+  },
+  credText: { fontSize: 11, color: '#334155' },
+  whatsappBtn: {
+    backgroundColor: '#25D366',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6
+  },
+  whatsappBtnText: { color: '#fff', fontSize: 11, fontWeight: 'bold' }
 });

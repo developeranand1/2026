@@ -199,6 +199,16 @@
               </td>
               <td class="fs-7 text-muted">
                 <div>{{ user.createdAt | date:'mediumDate' }}</div>
+                <div *ngIf="user.registeredBy" class="mt-1">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 10px;" [title]="'Onboarded by ' + (user.registeredBy.designation || 'Staff')">
+                    <i class="bi bi-person-badge me-1"></i>{{ user.registeredBy.name }}
+                  </span>
+                </div>
+                <div *ngIf="!user.registeredBy" class="mt-1">
+                  <span class="badge bg-light text-secondary border" style="font-size: 10px;">
+                    <i class="bi bi-globe me-1"></i>Direct / Web
+                  </span>
+                </div>
               </td>
               <td class="text-end pe-3" (click)="$event.stopPropagation()">
                 <button class="btn btn-sm btn-light text-primary me-1" title="View Full Profile Page" (click)="openUserDetailPage(user, $event)">

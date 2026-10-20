@@ -91,3 +91,32 @@ export const ExpenseService = {
     return authFetch('/expenses/my-expenses');
   }
 };
+
+export const RegistrationService = {
+  async registerFarmer(payload) {
+    return authFetch('/staff/register-farmer', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async registerBuyer(payload) {
+    return authFetch('/staff/register-buyer', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async getMyRegistrations(filterParams = {}) {
+    const keys = Object.keys(filterParams);
+    let query = '';
+    if (keys.length > 0) {
+      const q = keys
+        .filter(k => filterParams[k] !== undefined && filterParams[k] !== '')
+        .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(filterParams[k])}`)
+        .join('&');
+      if (q) query = `?${q}`;
+    }
+    return authFetch(`/staff/my-registrations${query}`);
+  }
+};

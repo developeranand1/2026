@@ -48,6 +48,15 @@ export interface UserAccount {
   createdAt: string;
   farmerProfile?: FarmerProfileInfo | null;
   buyerProfile?: BuyerProfileInfo | null;
+  registeredBy?: {
+    _id?: string;
+    name?: string;
+    mobile?: string;
+    designation?: string;
+    role?: string;
+    department?: string;
+  } | null;
+  registrationSource?: string;
 }
 
 export interface UserStats {

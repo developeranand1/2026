@@ -1,4 +1,7 @@
 const Staff = require("../models/Staff");
+const User = require("../models/User");
+const FarmerProfile = require("../models/FarmerProfile");
+const BuyerProfile = require("../models/BuyerProfile");
 const jwt = require("jsonwebtoken");
 
 const generateToken = (id) => {
@@ -130,12 +133,50 @@ exports.getAllStaff = async (req, res) => {
             ];
         }
 
-        const staffList = await Staff.find(query).sort({ createdAt: -1 });
+        const staffList = await Staff.find(query).sort({ createdAt: -1 }).lean();
+
+        // Aggregate registered farmers & buyers count per staff member
+        const staffIds = staffList.map(s => s._id);
+        const regStats = await User.aggregate([
+            { $match: { registeredBy: { $in: staffIds } } },
+            {
+                $group: {
+                    _id: { staffId: "$registeredBy", role: "$role" },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const statsMap = {};
+        regStats.forEach(item => {
+            if (!item._id || !item._id.staffId) return;
+            const sid = item._id.staffId.toString();
+            if (!statsMap[sid]) {
+                statsMap[sid] = { farmers: 0, buyers: 0, total: 0 };
+            }
+            if (item._id.role === "farmer") {
+                statsMap[sid].farmers += item.count;
+            } else if (item._id.role === "buyer") {
+                statsMap[sid].buyers += item.count;
+            }
+            statsMap[sid].total += item.count;
+        });
+
+        const staffWithStats = staffList.map(s => {
+            const sid = s._id.toString();
+            const counts = statsMap[sid] || { farmers: 0, buyers: 0, total: 0 };
+            return {
+                ...s,
+                farmersCount: counts.farmers,
+                buyersCount: counts.buyers,
+                totalRegistrations: counts.total
+            };
+        });
 
         res.json({
             success: true,
-            count: staffList.length,
-            data: staffList
+            count: staffWithStats.length,
+            data: staffWithStats
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -352,6 +393,276 @@ exports.seedStaffMembers = async (req, res) => {
             count: seeds.length
         });
     } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * Register Farmer on field (Called by Field Officer / Staff)
+ */
+exports.registerFarmerByStaff = async (req, res) => {
+    try {
+        const {
+            name,
+            mobile,
+            email,
+            password,
+            village,
+            city,
+            district,
+            state,
+            pincode,
+            fatherName,
+            aadhaarNumber,
+            totalLand,
+            landUnit,
+            irrigationType,
+            latitude,
+            longitude,
+            address
+        } = req.body;
+
+        if (!name || !mobile) {
+            return res.status(400).json({
+                success: false,
+                message: "Farmer name and mobile number are required"
+            });
+        }
+
+        const cleanMobile = String(mobile).trim();
+        const existing = await User.findOne({ mobile: cleanMobile });
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: `User with mobile number ${cleanMobile} is already registered (${existing.role})`
+            });
+        }
+
+        const finalPassword = password && password.length >= 6 ? password : cleanMobile;
+
+        const staffId = req.staff?._id || null;
+        const staffArea = req.staff?.assignedArea || {};
+
+        const user = await User.create({
+            name: name.trim(),
+            mobile: cleanMobile,
+            email: email ? email.trim() : "",
+            password: finalPassword,
+            role: "farmer",
+            isVerified: true, // In-person verification by field officer
+            registeredBy: staffId,
+            registrationSource: "field_app",
+            registeredAtLocation: {
+                latitude: Number(latitude) || null,
+                longitude: Number(longitude) || null,
+                address: address || `${village || ""}, ${district || ""}, ${state || ""}`.trim()
+            }
+        });
+
+        const profile = await FarmerProfile.create({
+            user: user._id,
+            fatherName: fatherName ? fatherName.trim() : "",
+            aadhaarNumber: aadhaarNumber ? aadhaarNumber.trim() : "",
+            totalLand: totalLand ? String(totalLand).trim() : "",
+            landUnit: landUnit || "Bigha",
+            irrigationType: irrigationType || "Irrigated",
+            location: {
+                village: village ? village.trim() : "",
+                city: city ? city.trim() : "",
+                district: district ? district.trim() : (staffArea.district || ""),
+                state: state ? state.trim() : (staffArea.state || "Uttar Pradesh"),
+                pincode: pincode ? pincode.trim() : ""
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            message: `Farmer ${user.name} registered successfully!`,
+            data: {
+                id: user._id,
+                name: user.name,
+                mobile: user.mobile,
+                role: user.role,
+                isVerified: user.isVerified,
+                profile
+            }
+        });
+    } catch (error) {
+        console.error("Register Farmer by Staff Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * Register Buyer on field (Called by Field Officer / Staff)
+ */
+exports.registerBuyerByStaff = async (req, res) => {
+    try {
+        const {
+            name,
+            mobile,
+            email,
+            password,
+            companyName,
+            gstNumber,
+            street,
+            city,
+            district,
+            state,
+            pincode,
+            latitude,
+            longitude,
+            address
+        } = req.body;
+
+        if (!name || !mobile) {
+            return res.status(400).json({
+                success: false,
+                message: "Buyer name and mobile number are required"
+            });
+        }
+
+        const cleanMobile = String(mobile).trim();
+        const existing = await User.findOne({ mobile: cleanMobile });
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: `User with mobile number ${cleanMobile} is already registered (${existing.role})`
+            });
+        }
+
+        const finalPassword = password && password.length >= 6 ? password : cleanMobile;
+        const staffId = req.staff?._id || null;
+        const staffArea = req.staff?.assignedArea || {};
+
+        const user = await User.create({
+            name: name.trim(),
+            mobile: cleanMobile,
+            email: email ? email.trim() : "",
+            password: finalPassword,
+            role: "buyer",
+            isVerified: true,
+            registeredBy: staffId,
+            registrationSource: "field_app",
+            registeredAtLocation: {
+                latitude: Number(latitude) || null,
+                longitude: Number(longitude) || null,
+                address: address || `${street || ""}, ${district || ""}, ${state || ""}`.trim()
+            }
+        });
+
+        const profile = await BuyerProfile.create({
+            user: user._id,
+            companyName: companyName ? companyName.trim() : "",
+            gstNumber: gstNumber ? gstNumber.trim() : "",
+            address: {
+                street: street ? street.trim() : "",
+                city: city ? city.trim() : "",
+                district: district ? district.trim() : (staffArea.district || ""),
+                state: state ? state.trim() : (staffArea.state || "Uttar Pradesh"),
+                pincode: pincode ? pincode.trim() : ""
+            }
+        });
+
+        res.status(201).json({
+            success: true,
+            message: `Buyer / Trader ${user.name} registered successfully!`,
+            data: {
+                id: user._id,
+                name: user.name,
+                mobile: user.mobile,
+                role: user.role,
+                isVerified: user.isVerified,
+                profile
+            }
+        });
+    } catch (error) {
+        console.error("Register Buyer by Staff Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * Get My Registrations (Farmers & Buyers registered by current staff member)
+ */
+exports.getMyRegistrations = async (req, res) => {
+    try {
+        const staffId = req.staff._id;
+        const { role, search } = req.query;
+
+        const query = { registeredBy: staffId };
+        if (role && role !== "all") {
+            query.role = role;
+        }
+        if (search) {
+            const cleanSearch = String(search).trim();
+            // Look up matching profiles
+            const matchingFarmers = await FarmerProfile.find({
+                $or: [
+                    { "location.village": { $regex: cleanSearch, $options: "i" } },
+                    { "location.city": { $regex: cleanSearch, $options: "i" } },
+                    { "location.district": { $regex: cleanSearch, $options: "i" } },
+                    { fatherName: { $regex: cleanSearch, $options: "i" } }
+                ]
+            }).select("user").lean();
+
+            const matchingBuyers = await BuyerProfile.find({
+                $or: [
+                    { companyName: { $regex: cleanSearch, $options: "i" } },
+                    { gstNumber: { $regex: cleanSearch, $options: "i" } },
+                    { "address.city": { $regex: cleanSearch, $options: "i" } },
+                    { "address.district": { $regex: cleanSearch, $options: "i" } },
+                    { "address.street": { $regex: cleanSearch, $options: "i" } }
+                ]
+            }).select("user").lean();
+
+            const profileUserIds = [
+                ...matchingFarmers.map(f => f.user),
+                ...matchingBuyers.map(b => b.user)
+            ];
+
+            query.$or = [
+                { name: { $regex: cleanSearch, $options: "i" } },
+                { mobile: { $regex: cleanSearch, $options: "i" } },
+                { _id: { $in: profileUserIds } }
+            ];
+        }
+
+        const users = await User.find(query).sort({ createdAt: -1 }).lean();
+
+        // Populate profiles
+        const userIds = users.map(u => u._id);
+        const farmerProfiles = await FarmerProfile.find({ user: { $in: userIds } }).lean();
+        const buyerProfiles = await BuyerProfile.find({ user: { $in: userIds } }).lean();
+
+        const farmerMap = new Map(farmerProfiles.map(p => [p.user.toString(), p]));
+        const buyerMap = new Map(buyerProfiles.map(p => [p.user.toString(), p]));
+
+        const populated = users.map(u => {
+            const uid = u._id.toString();
+            return {
+                ...u,
+                farmerProfile: farmerMap.get(uid) || null,
+                buyerProfile: buyerMap.get(uid) || null
+            };
+        });
+
+        const totalRegistered = await User.countDocuments({ registeredBy: staffId });
+        const farmersRegistered = await User.countDocuments({ registeredBy: staffId, role: "farmer" });
+        const buyersRegistered = await User.countDocuments({ registeredBy: staffId, role: "buyer" });
+
+        res.json({
+            success: true,
+            stats: {
+                total: totalRegistered,
+                farmers: farmersRegistered,
+                buyers: buyersRegistered
+            },
+            count: populated.length,
+            data: populated
+        });
+    } catch (error) {
+        console.error("Get My Registrations Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

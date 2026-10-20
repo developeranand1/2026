@@ -9,6 +9,9 @@ router.post("/seed", staffController.seedStaffMembers);
 
 // Authenticated staff endpoints
 router.get("/profile", protectStaff, staffController.getStaffProfile);
+router.post("/register-farmer", protectStaff, staffController.registerFarmerByStaff);
+router.post("/register-buyer", protectStaff, staffController.registerBuyerByStaff);
+router.get("/my-registrations", protectStaff, staffController.getMyRegistrations);
 
 // Admin & HR management endpoints
 router.get("/", protectStaff, authorizeRoles("superadmin", "admin", "hr", "ceo"), staffController.getAllStaff);

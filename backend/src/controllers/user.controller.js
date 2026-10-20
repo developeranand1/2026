@@ -34,7 +34,10 @@ exports.getAllUsers = async (req, res, next) => {
             ];
         }
 
-        const users = await User.find(query).sort({ createdAt: -1 }).lean();
+        const users = await User.find(query)
+            .populate("registeredBy", "name mobile designation role department")
+            .sort({ createdAt: -1 })
+            .lean();
 
         // Fetch Farmer & Buyer Profiles
         const userIds = users.map(u => u._id);

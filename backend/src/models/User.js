@@ -58,6 +58,24 @@ const userSchema = new mongoose.Schema(
 
         listingFeePaidAt: {
             type: Date
+        },
+
+        registeredBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Staff",
+            default: null
+        },
+
+        registrationSource: {
+            type: String,
+            enum: ["web", "field_app", "admin", "direct"],
+            default: "web"
+        },
+
+        registeredAtLocation: {
+            latitude: { type: Number, default: null },
+            longitude: { type: Number, default: null },
+            address: { type: String, default: "" }
         }
     },
     { timestamps: true }
