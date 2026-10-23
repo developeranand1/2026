@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { UserService } from '../../core/user.service';
+import { MandiRateService } from '../../pages/home/mandi-rate.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,9 +16,11 @@ import Swal from 'sweetalert2';
 export class FarmerProfileComponent implements OnInit {
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private mandiRateService = inject(MandiRateService);
 
   isLoading = false;
   isSaving = false;
+  isUploadingPassbook = false;
   userId = '';
 
   statesList = [
@@ -44,6 +47,7 @@ export class FarmerProfileComponent implements OnInit {
     bankAccount: '',
     bankIfsc: '',
     bankName: '',
+    passbookImage: '',
     aadhaarNumber: ''
   };
 
@@ -96,6 +100,7 @@ export class FarmerProfileComponent implements OnInit {
             bankAccount: bank.accountNumber || this.profileData.bankAccount,
             bankIfsc: bank.ifscCode || this.profileData.bankIfsc,
             bankName: bank.bankName || this.profileData.bankName,
+            passbookImage: bank.passbookImage || this.profileData.passbookImage || '',
             aadhaarNumber: fp.aadhaarNumber || this.profileData.aadhaarNumber
           };
         }
@@ -105,6 +110,51 @@ export class FarmerProfileComponent implements OnInit {
         // Keep current form values if backend query fails
       }
     });
+  }
+
+  onPassbookSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'File Too Large',
+        text: 'Passbook photo should be under 2MB.',
+        confirmButtonColor: '#2E7D32'
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64Str = reader.result as string;
+      this.isUploadingPassbook = true;
+      this.mandiRateService.uploadCropImage(base64Str).subscribe({
+        next: (res: any) => {
+          this.isUploadingPassbook = false;
+          if (res?.success && res?.url) {
+            this.profileData.passbookImage = res.url;
+            Swal.fire({
+              icon: 'success',
+              title: 'Passbook Uploaded',
+              text: 'Bank Passbook photo uploaded successfully. Click Save to preserve changes.',
+              confirmButtonColor: '#2E7D32',
+              timer: 2000
+            });
+          }
+        },
+        error: () => {
+          this.isUploadingPassbook = false;
+          Swal.fire('Upload Failed', 'Could not upload passbook image. Please try again.', 'error');
+        }
+      });
+    };
+  }
+
+  removePassbook(): void {
+    this.profileData.passbookImage = '';
   }
 
   onSaveProfile(): void {

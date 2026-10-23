@@ -173,9 +173,58 @@
             </div>
           </div>
 
-          <div class="mb-1">
+          <div class="mb-3">
             <label class="form-label fw-semibold text-secondary">Bank Name</label>
             <input type="text" class="form-control" [(ngModel)]="profileData.bankName" name="bankName" placeholder="e.g. State Bank of India">
+          </div>
+
+          <!-- Bank Passbook Upload Section -->
+          <div class="mt-3 pt-3 border-top">
+            <label class="form-label fw-semibold text-dark d-flex align-items-center justify-content-between">
+              <span><i class="bi bi-file-earmark-image text-success me-1"></i> बैंक पासबुक / चेक फोटो (Bank Passbook / Cheque Copy)</span>
+              <span class="badge bg-light text-muted border">Optional</span>
+            </label>
+
+            <input #passbookInput type="file" accept="image/*" class="d-none" (change)="onPassbookSelected($event)">
+
+            <!-- When passbook is not yet uploaded -->
+            <div *ngIf="!profileData.passbookImage" 
+                 (click)="passbookInput.click()" 
+                 class="border border-2 border-dashed rounded-3 p-3 text-center bg-light cursor-pointer hover-shadow transition-all"
+                 style="cursor: pointer;">
+              <div *ngIf="isUploadingPassbook" class="py-2">
+                <span class="spinner-border spinner-border-sm text-success me-2" role="status"></span>
+                <span class="text-secondary fs-7">Uploading Passbook...</span>
+              </div>
+              <div *ngIf="!isUploadingPassbook">
+                <i class="bi bi-cloud-arrow-up-fill text-success fs-3 d-block mb-1"></i>
+                <span class="fw-semibold text-dark fs-7 d-block">पासबुक या कैंसिल चेक अपलोड करें</span>
+                <small class="text-muted fs-8">JPG, PNG (अधिकतम 2MB) - टैप करके फोटो चुनें</small>
+              </div>
+            </div>
+
+            <!-- When passbook preview exists -->
+            <div *ngIf="profileData.passbookImage" class="position-relative border rounded-3 p-2 bg-light d-flex align-items-center gap-3">
+              <a [href]="profileData.passbookImage" target="_blank" class="flex-shrink-0">
+                <img [src]="profileData.passbookImage" alt="Passbook Preview" class="rounded border object-fit-cover shadow-sm" style="width: 80px; height: 60px;">
+              </a>
+              <div class="flex-grow-1 overflow-hidden">
+                <span class="d-block fw-bold text-success fs-7 text-truncate">
+                  <i class="bi bi-check-circle-fill me-1"></i> Passbook Document Attached
+                </span>
+                <a [href]="profileData.passbookImage" target="_blank" class="fs-8 text-decoration-none text-primary">
+                  <i class="bi bi-eye me-1"></i> View Full Passbook
+                </a>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="passbookInput.click()" title="Change photo">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removePassbook()" title="Remove photo">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ export interface BankDetailsInfo {
   accountNumber?: string;
   ifscCode?: string;
   bankName?: string;
+  passbookImage?: string;
 }
 
 export interface FarmerProfileInfo {

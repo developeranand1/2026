@@ -417,6 +417,13 @@
                 <span class="text-muted d-block fs-8">IFSC Code:</span>
                 <span class="fw-bold text-dark font-monospace">{{ selectedUser.farmerProfile?.bankDetails?.ifscCode || 'Not added' }}</span>
               </div>
+              <div class="col-12 mt-3" *ngIf="selectedUser.farmerProfile?.bankDetails?.passbookImage">
+                <span class="text-muted d-block fs-8 mb-1">Passbook / Cheque Copy:</span>
+                <a [href]="selectedUser.farmerProfile?.bankDetails?.passbookImage" target="_blank" class="d-inline-block border rounded p-1 bg-white shadow-sm hover-shadow">
+                  <img [src]="selectedUser.farmerProfile?.bankDetails?.passbookImage" alt="Farmer Passbook" style="max-height: 120px; max-width: 200px;" class="rounded object-fit-contain">
+                  <div class="fs-8 text-primary mt-1 text-center"><i class="bi bi-box-arrow-up-right me-1"></i>View Full Size</div>
+                </a>
+              </div>
             </div>
           </div>
         </div>

@@ -161,6 +161,7 @@ exports.updateUserProfile = async (req, res, next) => {
             bankAccount,
             bankIfsc,
             bankName,
+            passbookImage,
             location,
             bankDetails,
             // Buyer specific fields
@@ -199,7 +200,8 @@ exports.updateUserProfile = async (req, res, next) => {
                 accountHolderName: bankHolder !== undefined ? bankHolder : (bankDetails?.accountHolderName || ""),
                 accountNumber: bankAccount !== undefined ? bankAccount : (bankDetails?.accountNumber || ""),
                 ifscCode: bankIfsc !== undefined ? bankIfsc : (bankDetails?.ifscCode || ""),
-                bankName: bankName !== undefined ? bankName : (bankDetails?.bankName || "")
+                bankName: bankName !== undefined ? bankName : (bankDetails?.bankName || ""),
+                passbookImage: passbookImage !== undefined ? passbookImage : (bankDetails?.passbookImage || "")
             };
 
             const updateFields = {

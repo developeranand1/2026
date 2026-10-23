@@ -46,7 +46,8 @@ const farmerProfileSchema = new mongoose.Schema(
             accountHolderName: String,
             accountNumber: String,
             ifscCode: String,
-            bankName: String
+            bankName: String,
+            passbookImage: String
         },
 
         totalCropsListed: {

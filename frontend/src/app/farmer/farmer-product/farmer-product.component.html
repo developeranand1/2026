@@ -522,8 +522,8 @@
                 </label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-muted">₹</span>
-                  <input type="number" [(ngModel)]="formOriginalPrice" (input)="calculateDiscount()"
-                    class="form-control border-start-0" placeholder="उदा. 2400">
+                  <input type="number" [(ngModel)]="formOriginalPrice" (input)="onOriginalPriceChange()"
+                    class="form-control border-start-0" placeholder="उदा. 3000">
                 </div>
               </div>
 
@@ -534,7 +534,11 @@
                 <div class="input-group">
                   <span class="input-group-text bg-success-subtle border-end-0 text-success fw-bold">₹</span>
                   <input type="number" [(ngModel)]="formSellingPrice" (input)="calculateDiscount()"
-                    class="form-control border-start-0 fw-bold text-success fs-6" placeholder="उदा. 2250">
+                    [max]="formOriginalPrice > 100 ? (formOriginalPrice - 100) : null"
+                    class="form-control border-start-0 fw-bold text-success fs-6" placeholder="उदा. 2900">
+                </div>
+                <div class="form-text fs-8 text-muted" *ngIf="formOriginalPrice > 0">
+                  मूल भाव से कम से कम ₹100 कम (अधिकतम: <strong>₹{{ formOriginalPrice - 100 }}</strong>)
                 </div>
               </div>
 

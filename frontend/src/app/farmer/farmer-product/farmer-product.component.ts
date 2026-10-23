@@ -275,7 +275,7 @@ export class FarmerProductComponent implements OnInit {
     this.formUnit = 'Qtl';
     this.formOriginalPrice = 0;
     this.formSellingPrice = 0;
-    this.formDiscount = 10;
+    this.formDiscount = 0;
     this.formLocation = this.farmerUser?.district ? `${this.farmerUser.district}, ${this.farmerUser.state || 'UP'}` : 'UP';
     this.formDescription = '<b>Grade A Farm Harvest</b>\n• Moisture: Below 12%\n• Direct farm loading & immediate dispatch available.';
     this.formImages = [];
@@ -401,19 +401,34 @@ export class FarmerProductComponent implements OnInit {
     });
   }
 
+  onOriginalPriceChange(): void {
+    const orig = Number(this.formOriginalPrice) || 0;
+    if (orig > 0) {
+      // Auto always set Selling Price directly to (orig - 100)
+      this.formSellingPrice = orig > 100 ? (orig - 100) : Math.max(0, orig);
+    } else {
+      this.formSellingPrice = 0;
+    }
+    this.calculateDiscount();
+  }
+
   calculateDiscount(): void {
-    const orig = this.formOriginalPrice;
-    const sale = this.formSellingPrice;
+    const orig = Number(this.formOriginalPrice) || 0;
+    const sale = Number(this.formSellingPrice) || 0;
     if (orig > 0 && sale > 0 && orig > sale) {
       this.formDiscount = Math.round(((orig - sale) / orig) * 100);
+    } else {
+      this.formDiscount = 0;
     }
   }
 
   onDiscountChange(): void {
-    const orig = this.formOriginalPrice;
-    const disc = this.formDiscount;
+    const orig = Number(this.formOriginalPrice) || 0;
+    const disc = Number(this.formDiscount) || 0;
     if (orig > 0 && disc > 0 && disc < 100) {
-      this.formSellingPrice = Math.round(orig * (1 - disc / 100));
+      const calculatedSale = Math.round(orig * (1 - disc / 100));
+      // Ensure it is at least 100 rupees less
+      this.formSellingPrice = Math.min(calculatedSale, orig - 100);
     }
   }
 
@@ -490,6 +505,16 @@ export class FarmerProductComponent implements OnInit {
 
     if (!this.formSellingPrice || this.formSellingPrice <= 0) {
       Swal.fire('Required', 'Please enter Price.', 'warning');
+      return;
+    }
+
+    if (this.formOriginalPrice > 0 && this.formSellingPrice > (this.formOriginalPrice - 100)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'अमान्य बिक्री भाव (Invalid Selling Price)',
+        text: `बिक्री भाव (Selling Price) मूल भाव (₹${this.formOriginalPrice}) से कम से कम ₹100 कम होना चाहिए। अधिकतम बिक्री भाव ₹${this.formOriginalPrice - 100} हो सकता है।`,
+        confirmButtonColor: '#2E7D32'
+      });
       return;
     }
 

@@ -217,12 +217,16 @@ exports.addCrop = async (req, res, next) => {
         let salePrice = Number(expectedPrice) || 0;
         let discPercent = Number(discountPercentage) || 0;
 
-        if (origPrice > 0 && salePrice > 0 && origPrice > salePrice) {
+        if (origPrice > 0) {
+            if (salePrice > origPrice - 100) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Selling price (₹${salePrice}) must be at least ₹100 less than the original market price (₹${origPrice}). Maximum allowed selling price is ₹${origPrice - 100}.`
+                });
+            }
             discPercent = Math.round(((origPrice - salePrice) / origPrice) * 100);
-        } else if (origPrice > 0 && discPercent > 0) {
-            salePrice = Math.round(origPrice * (1 - discPercent / 100));
         } else if (salePrice > 0 && origPrice === 0) {
-            origPrice = salePrice;
+            origPrice = salePrice + 100;
         }
 
         const catName = category ? category.trim() : "Food Grains & Cereals";
@@ -351,10 +355,14 @@ exports.updateCrop = async (req, res, next) => {
         let salePrice = Number(updateData.expectedPrice) || 0;
         let discPercent = Number(updateData.discountPercentage) || 0;
 
-        if (origPrice > 0 && salePrice > 0 && origPrice > salePrice) {
+        if (origPrice > 0) {
+            if (salePrice > origPrice - 100) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Selling price (₹${salePrice}) must be at least ₹100 less than the original market price (₹${origPrice}). Maximum allowed selling price is ₹${origPrice - 100}.`
+                });
+            }
             discPercent = Math.round(((origPrice - salePrice) / origPrice) * 100);
-        } else if (origPrice > 0 && discPercent > 0) {
-            salePrice = Math.round(origPrice * (1 - discPercent / 100));
         }
 
         updateData.originalPrice = origPrice;
